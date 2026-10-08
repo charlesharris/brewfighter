@@ -1,167 +1,139 @@
 # Project Research Summary
 
-**Project:** Brew Fighter
-**Domain:** Hybrid genre game — creature-collection (beers) + crafting-sim (brewing) + deduction-puzzle, built in DragonRuby GTK for commercial desktop release
-**Researched:** 2026-10-06
-**Confidence:** MEDIUM-HIGH
+**Project:** Brew Fighter (native iOS collectible brewing RPG)  
+**Domain:** Collectible crafting + deduction + collection RPG, iPhone portrait, SwiftUI-first, commercial App Store release  
+**Researched:** 2026-10-08 (replaces obsolete DragonRuby version)  
+**Confidence:** MEDIUM-HIGH overall
+
+---
 
 ## Executive Summary
 
-Brew Fighter is a hybrid genre game: creature-collection (beers) + crafting-sim (brewing) + deduction-puzzle (Wordle/Obra Dinn style). The recommended stack is DragonRuby GTK 7.x with a pure-simulation core, immediate-mode scene stack, and three-data-tier architecture (Defs / Profile / Session). The critical risk is proving the matchup puzzle is fun before building full scope — an explicit vertical-slice gate with outside playtesters is non-negotiable.
+Brew Fighter is a native iOS deduction-RPG where players brew beers and serve them to patrons to learn hidden taste preferences, then adapt their lineup based on deduced palates. This is a knowledge-driven loop (not a timing/energy loop), which demands premium monetization, instant resumability, and algorithmic balance validation. Research recommends **Swift 6.4 + SwiftUI on Xcode 27 (iOS 27 SDK required from April 2027), with a pure-domain package that runs headless tests and a balance simulator, persisting saves as versioned Codable JSON, not SwiftData.** The core insight is: architecture and persistence decisions made in Phase 1 directly enable or break the TestFlight fun-gate in Phase 3, so get the pure-domain layer testable and the encounter engine reproducible before UI work scales.
 
-The stack is mature and well-documented. The architecture patterns are proven (including by the same-author sibling MechTech DragonRuby project). The main challenges are UI scale (6+ collection screens) and game-design iteration (scoring, clue budget, status effects require headless tuning before playtesting).
+**Critical decision gates** are age rating (plan for **18+**, honestly), premium vs F2P (decide at Phase 3, before economy systems ship), and save durability (versioned JSON with migrations, not @Model). **Biggest risks** are Guideline 1.4.3 (mechanics that read as encouraging excessive drinking), Apple SDK deadline (April 2027 cutoff), Liquid Glass UI collision with cartoon art, and solo-dev release logistics piled into week 7. Research flags recommend deeper work during Phase 1 planning on: iOS 27 SDK build pipeline, art provenance pipeline, and TestFlight playtest protocol.
 
-**Strategic recommendation:** Commit to full v1 scope (~30-40 patrons, 5-8 locations, 5-6 bosses), but sequence to prove the core loop in an ugly vertical slice (rectangles + text, 10 patrons, 6 taps) by Phase 3. No bulk art, world, or content scale until the gate passes. This delays visible progress but prevents rework.
+---
 
 ## Key Findings
 
 ### Recommended Stack
 
-DragonRuby GTK 7.x (7.10 latest observed): zero dependencies, hot reload, one-command Win/Mac/Linux packaging. mruby runtime — no gems, so community libraries (Draco, Zif — stale since 2021-2023) should be avoided in favor of small in-repo systems.
+Swift 6.4 and SwiftUI are the mandated foundation. **Xcode 27 / iOS 27 SDK, building for iOS 26+ deployment** (79% adoption; iOS 27 SDK required for App Store uploads from April 2027). Do not use SwiftData for saves — instead, Codable structs serialized to a versioned JSON file in Application Support, with explicit migration functions and frozen fixtures per schema version.
 
 **Core technologies:**
-- DragonRuby GTK 7.x: engine — fixed choice, user owns license; confirm tier (Standard $48 = manual Steam upload; Indie $96/yr = turnkey `dragonruby-publish` Steam + C extensions/achievements)
-- In-repo scene stack (~100 lines) + intent-based input layer: no UI toolkit exists; focus model and glyph prompts must be built Phase 1
-- Versioned JSON saves via hand-written encoder: engine's `serialize_state` writes Ruby text loaded with `eval` and warns above 20k chars — avoid; engine reads JSON natively via `DR.parse_json`
-- Seeded, serializable PRNG stored in Profile
-- Art pipeline: PixelLab (subscription) or Retro Diffusion (one-time) + locked ~32-color palette + post-process cleanup (proper-pixel-art/unfake) + Aseprite finishing; procedural beer rendering (tinted layered sprites), not per-recipe generation
-- Rendering: 1280×720 logical, art at 4x scale (320×180), `scale_quality=3`
-- Testing: built-in `--test` runner behind a wrapper script (runner only logs a summary)
+- **Swift 6.4 + SwiftUI (iOS 26+):** UI and app model; @Observable for fine-grained updates; @MainActor default isolation in app target, nonisolated domain package.
+- **BrewKit/BrewCore (pure Swift package):** Brewing, encounter scoring, statuses, clues, lineage, progression. Runs swift test on Mac host (no simulator). No SwiftUI, UIKit, or Observation imports.
+- **Codable JSON saves + ProfileStore actor:** Versioned envelope, atomic write with rollback, explicit v1→v2→v3 migrations on raw JSON before decode, frozen fixtures per version.
+- **SwiftUI animation APIs:** contentTransition(.numericText()) for rolling numbers, keyframeAnimator / phaseAnimator for choreography, Canvas + TimelineView for particles, Metal shader modifiers (iOS 17+), no SpriteKit scene host.
+- **AVFoundation + SFX pool:** AVAudioEngine with preloaded AVAudioPCMBuffers for low-latency tap/clink/pour; AVAudioPlayer for looping music; sensoryFeedback + Core Haptics for haptics.
+- **Content as JSON:** Hops, grains, yeasts, patrons, bosses, locations, statuses, dialogue; bundled in package; validated at load and in CI; referenced by stable string ID.
+- **No third-party SDKs:** Analytics, crash reporting, ads all handled by Xcode Organizer + MetricKit + TestFlight feedback, keeping privacy label clean ("Data Not Collected").
 
 ### Expected Features
 
-**Must have (table stakes):**
-- 6-tap party management; collection log/Codex; recipe journal
-- Live attribute preview while brewing — protects "understand why" success criterion
-- 3-pour encounters with itemized score breakdowns and auto-recorded clue notebook (each reaction line tagged with the fact it reveals)
-- Settings, versioned saves, full input abstraction (mouse/keyboard/gamepad), controller-friendly text entry, Steam Deck-readable text, colorblind-safe attribute display
+**Table stakes** (users expect): tap lineup with swap/reorder/presets, collection codexes (Seen/Known/Mastered), rarity tiers with distinct visuals, detail cards, **matchup legibility** (itemized post-pour breakdown), persistent clue notebook, low-cost retry with clue banking, progression gating, live outcome preview while brewing, recipe journal with quick rebrew, memorable patrons with expressions, atmosphere (music/SFX/haptics).
 
-**Should have (competitive):**
-- Sensory-profile matchup against hidden palates (NOT style-matching)
-- Status-effect serving-order tactics; recipe evolution with ancestry; yeast mutation
-- Regulars progression with passive benefits; boss rule-modifiers; real-brewing learning via codex
+**iPhone-specific table stakes:** instant resume after interruption/kill, short interruptible loops (3-5 min), fully offline play (no account/server), atomic versioned local save, cold start ~2 sec, **one-handed portrait** (bottom actions, 44x44 pt+ targets), **Dynamic Type throughout**, **VoiceOver labels**, Reduce Motion support, settings, onboarding, crash resilience.
 
-**Defer (v2+) / anti-features:**
-- Regional expansion, management systems, multiplayer (v2+)
-- No real-time fermentation timers, no pure-RNG hidden traits, no grind gates, no losing beers on defeat, no mini-game brewing, cap status effects at 6-8, no procedurally generated patrons
+**App Store table stakes:** honest age rating (18+ for alcohol references), privacy policy URL, App Privacy label (zero SDKs = "Data Not Collected"), PrivacyInfo.xcprivacy with required-reason APIs, iOS 26 SDK build, screenshots (6.1" required), app preview, reviewer notes explaining theme, metadata complete, Declared Age Range handling (regional, [VERIFY]).
+
+**Differentiators:** sensory-profile matchup layer (16 attributes vs hidden palate, not style-matching), 3-pour deduction encounter with clue reveals, serving-order status effects (6-8 at launch), recipe evolution with preserved ancestry, yeast bank with rarity and mutation, ingredient synergies, Regulars Book with passive benefits, boss encounters (8 in v1), **procedurally rendered beer glass** (SRM color, head, carbonation; resolves AI-art consistency), AdCap-feel juice, ritual reveal moments (deterministic, no loot box), real-brewing codex, share-sheet beer card (local, no trading), colorblind-safe + VoiceOver deduction UI.
 
 ### Architecture Approach
 
-Layered, with a pure domain core: L0 shell (main, Input, Assets, Audio) → L1 data (Defs, Profile, Save) → L2 domain (pure functions, no `args`) → L3 flow (SceneStack, Game) → L4 presentation (Scenes, UI). Three data tiers kept apart: Defs (immutable content), Profile (saved plain-primitive state), Session (transient); Profile/Session reference Defs by id only.
+**Layered separation:** pure domain (no UI frameworks) → observable app model (GameStore + sessions) → SwiftUI views. Domain logic as synchronous (state, input) -> (state, [DomainEvent]) functions, entirely Sendable value types, testable off main actor and in a headless CLI balance harness.
 
-**Major components:**
-1. Brewing sim — pure functions producing attribute vectors with per-source contribution ledgers (powers "why did this succeed/fail")
-2. Encounter engine — palate scoring, status effects (declarative rules), event-log output replayed by scenes as animation/dialogue; `PatronView` boundary enforces hidden information
-3. Collection systems — immutable recipes with `parent_id` lineage from day one, Yeast Bank with forked mutation, Regulars Book derived from play, one generic collection browser
-4. Cross-cutting — intent input layer with single focus rule, scene stack, versioned JSON save with slots + backup, domain-event progression queue
+**Key patterns:**
+1. GameStore is single @MainActor @Observable, holds Profile as @ObservationIgnored value, publishes narrow diff-assigned slices (taps, recipes, codex, etc.) so changes invalidate only affected views.
+2. Pure domain reducers return event logs; Encounter.serve runs synchronously, truth advances immediately, presentation (EncounterPresentation) lags behind and catches up beat-by-beat via PlaybackDirector.
+3. PatronView hidden-information boundary: compile-time package access, lint fallback, prevents UI reading true palates before clue reveals.
+4. Custom chunky UI end-to-end (custom tab bar, NavigationStack per tab, fullScreenCover for encounters, no system chrome on game screens); Liquid Glass is unavoidable with iOS 27 SDK, clashes with cartoon art.
+5. Typed IDs (ID<Tag>) and content refs by stable string; recipes are immutable (edit = create child); lineage is parentID forest reconstructed at load.
+6. Deterministic seeded RNG (SplitMix64) stored in Profile; outcomes recorded; encounters reproducible for testing and balance harness.
 
-### Critical Pitfalls
+### Critical Pitfalls (Top 5)
 
-1. **Full game before core proven** — gate Phase 3 vertical slice with 3+ outside playtesters against design criteria #2/#6/#7; pivot or stop if it fails
-2. **Stat soup (16 attribute bars)** — present in families (Malt/Hop/Yeast/Mouthfeel), glyphs + radar, numbers on drill-down
-3. **Deduction collapses into style-matching or frustration** — style labels computed from attributes (output, not input); info budget 1-2 facts per pour; coarse preference resolution; headless solvability test ≥70%; losing still records clues
-4. **Dominant recipe / no balance tooling** — real brewing tradeoffs; balance harness generating archetype beers; require ≥4 distinct best-in-class
-5. **Input abstraction retrofit** — build Phase 1; one focus rule everywhere; test gamepad-only and keyboard-only every phase
-6. **Save/serialization debt** — versioned JSON, no `eval`, round-trip tests on production paths (dev saves go to game dir, production to OS sandbox); set `devtitle`/`gametitle` before first save ships
-7. **AI art style drift** — style-lock spike (10-12 test assets), locked palette, post-process script, provenance manifest (Steam requires AI-content disclosure)
+1. **Age rating treated as paperwork, but it shapes design, reach, rejection risk.** Alcohol is on every screen → frequent = **18+** per Apple. Plan for 18+ in P1 (craft-beer audience, adult-only). **Prevention:** Fill questionnaire in App Store Connect in P1, rename "Buzzed"/"Wrecked" to "Mellow"/"Loosened Up", add "Drink responsibly" note in Settings, write specific review notes on tasting gameplay. **Detection:** Nobody states the planned rating; store copy contradicts design.
+
+2. **Mechanics and copy reading as encouraging excessive drinking (Guideline 1.4.3).** Real rejections cite drinking-game mechanics. Brew Fighter is not that, but "Buzzed" as a reward, "Wrecked" language trigger skims. **Prevention:** Define rule (player is brewer/server, more alcohol never = more reward), no chug mechanics, **use external TestFlight as an App Review canary** (Beta App Review surfaces alcohol concerns months before launch). **Detection:** Testers describe "Buzzed" as "get them drunk to win"; harness shows high-ABV chaining best strategy.
+
+3. **Marketing metadata, names, trademarks collide with 4+ rules and ad policy.** Guideline 2.3.8: screenshots/icons must be 4+ suitable even at 18+. Design doc names "Untappd," "Citra" hop. **Prevention:** Create app record in P1 to reserve name, rename "Untappd Guy" to generic parody, rename "Citra" to invented, review screenshots against "4+ safe?", add negative prompts to art pipeline. **Detection:** App record doesn't exist; keywords include real brands; portrait shows a logo.
+
+4. **Premium vs F2P deferred until economy built, so economy encodes wrong assumptions.** Timers, energy, "rare drops," soft/hard currency fight instant-retry loop. **Prevention:** **Decide at P3 gate**, after fun-gate. Recommended: **premium** (paid upfront or free-with-one-time-unlock), no energy, no timers, no paid randomness. **Detection:** "timer", "energy", or "premium currency" in plans before decision exists.
+
+5. **Save data that can't survive reinstall, schema change, backgrounding, TestFlight build expiry.** SwiftData is a trap (CloudKit requires relationships optional with inverse, migrations fail with "unknown model version"). **Prevention:** Codable value types in versioned JSON envelope, written atomically by ProfileStore actor, validated by decode before replace, rolling .bak backup. Write migrations from day one with frozen fixtures from every shipped build and round-trip tests. Autosave at every pour and brew. **Detection:** @Model in domain code; no saveVersion; first TestFlight update shows testers empty game.
+
+---
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+### Suggested Phase Structure
 
-### Phase 1: Engine Foundation
-**Rationale:** No UI toolkit exists in DragonRuby; input/focus/save decisions are costly to retrofit
-**Delivers:** Engine setup + run/test wrappers, intent input layer, scene stack, UI kit (focus, List, Grid, Panel, dialogue), Defs + validation, save serializer spike, Tuning.rb, debug HUD, art style-lock spike, license-tier confirmation + hello-world Steam/itch upload check
-**Avoids:** Input retrofit, save debt, art drift, Steam-tier surprises
+**Phase 1: Foundations & Scaffolding**  
+Xcode 27 project, pure Swift domain package (BrewKit) running swift test, versioned JSON save envelope + migrations, app record in App Store Connect, TestFlight hello-world, UI kit tokens. **Research flags:** iOS 27 SDK constraints, art tool selection spike, Required-reason API list recheck, Declared Age Range API scope. **Avoids:** Pitfalls 5, 7, 8, 9, 10, 12, 15.
 
-### Phase 2: Simulation Core
-**Rationale:** The game's fun lives in pure logic that can be tuned headlessly before any UI exists
-**Delivers:** Brewing sim with contribution ledger, palate scoring, encounter state machine, declarative status effects, clue/info-reveal policy, ~10 patron Defs, immutable recipe + lineage model, seeded Rng, headless balance harness (solvability ≥70%, heatmap reports)
-**Avoids:** Deduction collapse, dominant-recipe balance failure
+**Phase 2: Deduction Core & Balance**  
+Headless scoring engine with ledger, palate model, 3-pour encounter, seeded RNG, balance harness (swift run brew-harness), ~10 patrons, ~20 ingredients, validation tests. **Avoids:** Pitfalls 14, 16, 17, 18, 19, 20.
 
-### Phase 3: Core-Loop Vertical Slice + GATE
-**Rationale:** Prove brew → serve → learn is fun before art, world, or content scale
-**Delivers:** Brewing scene with live preview, tap lineup, 3-pour encounter scene, result screen, clue notebook, basic Regulars Book, inventory, Yeast Bank basics, settings, input parity, save/load v1, onboarding draft, 10 patrons, 3-4 locations, placeholder art, 3-OS smoke builds
-**Gate:** 3+ outside playtesters pass design criteria #2/#6/#7; harness solvability ≥70%. If gate fails: pivot or stop.
+**Phase 3: Slice, Live Preview & TestFlight Fun-Gate**  
+Encounter UI with playback director, brew wizard with live preview, clue notebook, recipe journal, tap lineup, instant save/resume, external TestFlight build, **written playtest protocol** (5-8 craft-beer + 2 non-beer testers, no coaching). **Fun-gate:** 2+ of 3 testers explain a failed pour without help. If pass, unblock Phase 4.
 
-### Phase 4: Collections & Progression
-**Rationale:** Collection depth builds on proven core and save schema
-**Delivers:** Codex (Unseen/Seen/Owned/Mastered), generic CollectionBrowser, acquisition-as-unlocks, yeast mutation (fork lineage, show diff), recipe archive with lineage view, Regulars progression (Seen→Friend), closed perk set (unlock/discount/+1 pour/hint), progression event queue, content scale toward ~30-40 patrons, 5-6 bosses, 25+ ingredients, 8+ yeasts
+**Phase 4: Collections & Lineage**  
+Recipe lineage (immutable, parentID), family tree UI, yeast bank with forking mutation, collection codexes, Regulars Book, beer detail + card, ~40 patrons, ~100 ingredients. **Decision:** Premium vs F2P. **Avoids:** Pitfalls 4, 11, 21.
 
-### Phase 5: World & Difficulty
-**Rationale:** World is content + gating over existing systems; node-map avoids free-roam scope explosion
-**Delivers:** 5-8 location Defs, node-map travel, location hotspot scenes, acquisition sources, unlock gating, 5-6 boss encounters with rule overrides, calendar/day abstraction, settings expansion, accessibility (colorblind-safe, text scale), 3-OS QA, partial Steam metadata, itch.io upload
+**Phase 5: City, Bosses, Progression & Economy**  
+World node map (8-10 locations), progression/unlock system, 8 boss patrons with named rule modifiers, economy finalized (currency ledger), balance matrix re-run, full accessibility audit, age-rating re-check.
 
-### Phase 6: Art, Audio & Presentation
-**Rationale:** Bulk art only after systems and content are stable; pipeline is scripted and manifest-tracked
-**Delivers:** Bulk portraits (patrons × expressions, post-processed), ingredient icons, location backdrops, 9-slice UI frames, procedural beer visuals (cached render targets, texture count <1500 vs 2048 cap), pour animation, VFX, music + SFX with sliders/crossfade, animation polish, Steam Deck QA, asset provenance manifest
+**Phase 6: Art, Audio, Haptics & Onboarding**  
+Bulk AI art (30-40 patrons × 4 expressions, provenance manifest), SFX (Sonic Pi → capture → normalize), procedural glass, haptics end-to-end, onboarding curriculum, accessibility final pass, screenshots (4+-safe), metadata draft, perf testing.
 
-### Phase 7: Release Hardening
-**Rationale:** Commercial requirements verified on real builds, not assumed
-**Delivers:** Save migration + corrupted-save recovery QA, error logging, 3-OS production launch tests, Steam store page (capsule, trailer, AI + alcohol content disclosure), itch.io release, wishlist funnel ("coming soon" 2+ weeks pre-launch), achievements (if tier permits), cloud-save verification, credits, help/glossary, RC testing, post-launch plan
+**Phase 7: Release**  
+Privacy/legal finalization, metadata complete, age-assurance API integration [if mandated], TestFlight → review → phased release.
 
-### Phase Ordering Rationale
-
-- Foundations (input/save/UI kit) come first because DragonRuby provides none of them and all are expensive to retrofit
-- Pure simulation precedes UI so balance and solvability are tuned headlessly with a harness
-- The Phase 3 gate front-loads the project's biggest risk — whether deduction gameplay is fun — before content/art spend
-- Collections → world → art is dependency order: content scale needs proven systems; bulk art needs stable content
-- Release hardening is last but Steam-tier and packaging assumptions are spiked in Phase 1 to avoid late surprises
-
-### Research Flags
-
-Phases likely needing deeper research during planning:
-- **Phase 1:** save serializer spike (JSON vs engine-native), controller API verification on real hardware, art style-lock spike, license tier decision, production save paths
-- **Phase 2:** scoring formula design (expect 2-3 tuning passes), clue reveal policy, balance-harness design
-- **Phase 3:** external playtest protocol for the gate
-- **Phase 5:** calendar/day model decision, Steam Cloud path verification
-- **Phase 7:** macOS signing/notarization (absent from DragonRuby docs), Steamworks achievements/cloud API confirmation
-
-Phases with standard patterns (skip research-phase):
-- **Phase 4:** collection browsers, progression queues are proven patterns
-- **Phase 6:** art pipeline follows the Phase 1 spike's scripts; rendering patterns well-documented
+---
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Engine facts from official DragonRuby docs, source, and changelog; licensing from official site (HD-mode tier detail has a docs/changelog discrepancy) |
-| Features | MEDIUM-HIGH | Table stakes well-established from genre conventions; differentiators reasoned — no direct comparable exists |
-| Architecture | MEDIUM-HIGH | Patterns verified in DR docs + working same-author sibling project (MechTech); genre adaptation is synthesis |
-| Pitfalls | MEDIUM | Design risks synthesized from genre + design doc; DR-specific pitfalls from docs and sibling repo |
+| **Stack** | **HIGH** | Xcode/iOS/Swift from Apple (2026-10-08). SwiftUI APIs verified. Codable JSON fits data shape. Audio/haptics standard frameworks. Sonic Pi tool-version verified, workflow (MED, needs spike). |
+| **Features** | **MEDIUM-HIGH** | App Review Guidelines read directly. Age-rating definitions verified. Feature prioritization is synthesis; retention benchmarks from secondary sources (LOW-MEDIUM, generalization risk). |
+| **Architecture** | **MEDIUM-HIGH** | SwiftUI/SwiftPM mechanics HIGH. Pure domain + Observable store is reasoned fit, not benchmarked. Persistence/playback are synthesis (MEDIUM, strong but unproven). |
+| **Pitfalls** | **MEDIUM-HIGH** | Age rating, 1.4.3, App Review facts HIGH. TestFlight, SDK deadline HIGH. SwiftUI perf from WWDC25 session 306. Balance/determinism (MEDIUM, game-design best practices). |
 
-**Overall confidence:** MEDIUM-HIGH
+**Overall:** MEDIUM-HIGH — sufficient for Phase 1 planning.
 
 ### Gaps to Address
 
-- License tier confirmation: gates Steam automation and achievements — resolve in Phase 1
-- Economy model (recommend: ingredients as permanent unlocks, not consumables) — decide before Phase 4
-- Time model (recommend: abstract days, no real-time timers) — decide before Phase 5
-- Content budget: lock v1 patron/boss/location counts (recommend ~30 patrons, 6 bosses, 5-8 locations) — Phase 4/5 planning
-- Attribute list: lock the 16 sensory attributes before Phase 2
-- AI-art commercial terms: read generator EULAs before Phase 6 bulk work; Steam AI disclosure required
-- mruby capability check (`Set`, `Struct`, pattern matching, JSON encoding) — Phase 1 spike
-- Steamworks achievements/cloud and macOS notarization — verify Phase 7 (treat achievements as optional until confirmed)
-- Audio sourcing plan — only an art plan exists; decide by Phase 6
-- Trademark exposure (hop names like "Citra", "Untappd" references) — review before store page
+1. **Sonic Pi + MCP workflow end-to-end:** Tools verified, recording/normalize/integrate unproven. **Action:** 1-day spike in P1 or early P6.
+2. **Art tool consistency at scale:** Style-lock (P1) tests one tool. Scaling to 120+ portraits risks drift. **Action:** Provenance manifest + post-process script (P1); validate first 5 per category (P6).
+3. **Declared Age Range API scope:** Texas SB 2420 enforcement unclear as of 2026-10-08. **Action:** Confirm with Apple docs or counsel in P1; integrate in P7 if required (1-day spike).
+4. **Required-reason API list at submission:** Stable since May 2024 (HIGH) but may expand. **Action:** Re-check Apple docs at P7.
+5. **iPad compatibility and screenshot sizes:** App Store Connect lists 6.1" required, secondary sources cite 6.9". **Action:** Verify in App Store Connect when creating app record (P1).
+6. **Monetization ledger pre-decision:** Sketch economy sources/sinks in P2 to unblock P4; finalize decision at P3. **Action:** Ensure P2 sketches don't assume F2P.
+7. **Name and IP clearance:** Design doc names "Untappd," "Citra," parody references. **Action:** Create names-cleared.md log in P1; counsel review if budget allows; final review in P5.
+
+---
 
 ## Sources
 
-### Primary (HIGH confidence)
-- Official DragonRuby GTK docs repo + changelog (v7.x) — engine features, serialization, texture cache, test runner, packaging
-- Local DragonRuby engine install (`~/src/mechtech/dragonruby-macos`, build 0d709c3, v7.18) — shipped docs read first-hand
-- Same-author MechTech repo learnings — hot-reload traps, mruby quirks, test runner behavior, require ordering
-- DragonRuby pricing page — license tiers
+**PRIMARY (HIGH confidence)**
+- Apple Upcoming Requirements (2026-09-09)
+- Apple Releases (verified 2026-10-08): https://developer.apple.com/news/releases/
+- Apple App Review Guidelines (fetched 2026-10-08): https://developer.apple.com/app-store/review/guidelines/
+- Apple Age Ratings: https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions/
+- Swift 6.4 Release (swift.org, 2026-09-15): https://www.swift.org/blog/swift-6.4-released/
+- WWDC26 Sessions 258, 322, 306
 
-### Secondary (MEDIUM confidence)
-- Steam guides/devlogs — DragonRuby → Steam publishing paths, Auto-Cloud behavior
-- Store reviews and community discussion (Potion Craft, Monster Sanctuary, Travellers Rest) — genre complaint patterns
-- Web summaries of Valve AI-content disclosure policy
-
-### Tertiary (LOW confidence)
-- AI pixel-art tool comparison articles (PixelLab, Retro Diffusion) — pricing/terms need direct verification
-- Steamworks achievements/cloud availability via DragonRuby — unconfirmed, needs spike
+**SECONDARY (MEDIUM confidence)**
+- GitHub API (verified 2026-10-08): Xcode 27 release, Vortex 1.0.4, Sonic Pi 5.0.0, GRDB, SwiftData versions
+- SwiftUI Canvas/TimelineView: swiftcrafted.dev
+- iOS 26 Adoption (Apple, June 2026): 79% active devices
+- 18+ gating Australia/Brazil/Singapore (9to5mac, 2026-02-24)
+- GameAnalytics mobile session length (2025): 2-5 min typical
 
 ---
-*Research completed: 2026-10-06*
-*Ready for roadmap: yes*
+
+*Research completed: 2026-10-08*  
+*Ready for roadmap: Yes*

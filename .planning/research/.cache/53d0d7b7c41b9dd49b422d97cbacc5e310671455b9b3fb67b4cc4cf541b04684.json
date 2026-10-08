@@ -1,0 +1,1 @@
+{"content":"TCA uses Observation via @ObservableState; Point-Free says start vanilla SwiftUI and adopt TCA later if needed; TCA 2.0 (@Feature macro, redesign) in beta, implying migration churn. Recommend plain @Observable MV plus pure domain reducers.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-10-08T18:48:14.436Z","ttl":86400000,"kind":"web"}

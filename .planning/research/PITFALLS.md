@@ -1,488 +1,511 @@
-# Pitfalls Research
+# Domain Pitfalls
 
-**Domain:** Collectible brewing RPG (collection + matchup deduction + crafting sim hybrid), DragonRuby GTK, solo dev, commercial Steam/itch.io release, AI-generated pixel art
-**Researched:** 2026-10-06
-**Confidence:** MEDIUM overall. DragonRuby, Steam and licensing facts are HIGH/MEDIUM (read from the official DragonRuby docs repo at v7.9 and Valve/DR pages). Game-design and AI-art pitfalls are MEDIUM (synthesized from genre patterns plus analysis of this project's own design doc, not from a single authoritative source). Items marked [VERIFY] must be checked in a Phase 1 spike before architecture depends on them.
+**Domain:** Collectible brewing RPG (collection + matchup deduction + crafting sim), native Swift/SwiftUI, iPhone portrait, solo dev, commercial App Store release, AI-generated flat/cartoon art, alcohol-themed
+**Researched:** 2026-10-08 (replaces the obsolete 2026-10-06 DragonRuby/Steam version; game-design pitfalls carried forward and re-expressed for iOS)
+**Overall confidence:** MEDIUM-HIGH. App Review, age-rating, TestFlight and SDK-deadline facts were read from Apple's own pages this session (see Sources). Note: the pages were fetched through a summarizing tool, so the seam rates that provider LOW by default. I upgraded to MEDIUM only where the extracted text matched Apple's guideline wording and a second source. Re-read the guideline text itself at submission time. Items tagged [VERIFY] could not be confirmed and must be checked in the phase named.
 
-**Phase labels used below** (the roadmapper may rename or renumber; the mapping is by capability, not number):
+**Confidence tags used below:** [HIGH] Apple primary doc, matches second source. [MED] Apple doc via summarizer, or credible secondary source. [LOW] Community report or inference. [VERIFY] Unresolved, check before depending on it.
+
+**Phase labels used below** (capability-based, because ROADMAP.md is still the obsolete DragonRuby version and will be regenerated; map by capability, not number):
 
 | Label | Capability |
 |-------|------------|
-| P1 Foundations | Engine setup, repo layout, input abstraction, UI kit, save skeleton, build/packaging smoke test, art style-lock spike |
-| P2 Simulation Core | Headless, data-driven brewing model, attribute scoring, patron palettes, tuning/solvability harness |
-| P3 Encounter Slice | Playable brew -> serve -> learn loop with placeholder art (rectangles + text), status effects, clue system |
-| P4 Collection Systems | Ingredient/yeast/recipe collection, lineage, Regulars Book, tap lineup management |
-| P5 World and Progression | City locations, acquisition, bosses, economy, onboarding curve |
-| P6 Art and Presentation | Bulk art generation/integration, beer visuals, portraits, audio, juice |
-| P7 Release Hardening | Settings, save migration, Steam/itch packaging, store page, Deck/Linux/Windows QA, ratings, AI disclosure |
+| P1 Foundations | Xcode project, Apple Developer enrollment, app record + name reservation, domain core as a pure Swift package, save envelope, TestFlight pipeline, SwiftUI shell + UI kit, art style-lock spike |
+| P2 Deduction Core | Headless scoring/clue/status model, balance + solvability harness, attribute families |
+| P3 Slice + Gate | Recipe iteration, saves, live preview, lineage, **TestFlight outside-playtest fun-gate** |
+| P4 Collections | Ingredients, yeast bank, mutation, family tree, beer cards |
+| P5 City + Economy | Node map, regulars, bosses, **monetization decision executed (economy)** |
+| P6 Art + Polish | Bulk art, audio, haptics, onboarding, accessibility pass, settings |
+| P7 Release | Privacy/metadata, age rating, screenshots, App Review cycles, launch |
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: Building the full game before the core loop is proven fun
+### Pitfall 1: The age rating is treated as end-of-project paperwork, but it shapes design, reach, and rejection risk
 
-**What goes wrong:**
-PROJECT.md records "Full v1 game, not just Phase 1 prototype" as a key decision. The design doc's own Phase 1 exists to answer one question: "Can brewing decisions create interesting beers, and can those beers create interesting patron-selection puzzles?" If the answer is "not really," the project discovers it after UI, art, content and world systems are built on top of the wrong core.
+**What goes wrong:** Alcohol is the *core loop* here (brew it, serve it, ABV is an attribute, statuses include "Buzzed"). The App Store age-rating questionnaire asks about "Alcohol, Tobacco, or Drug Use or References" at None / Infrequent / Frequent. Per Apple's definitions, Infrequent maps to **13+** and Frequent maps to **18+** [HIGH]. Apple's own descriptor definition explicitly includes "drunken behavior." Developers either (a) answer "Infrequent" to land at 13+ (one real brewery game, Brewery Boss, shows 13+ with "Infrequent" [MED]) and then ship a game whose entire premise contradicts the answer, or (b) discover 18+ consequences late.
 
-**Why it happens:**
-Solo developers want visible progress (menus, portraits, maps). Systems games feel fine on paper (16 attributes, 10 statuses, 5 relationship tiers) and only reveal dullness when played. Art and content are expensive to throw away; a bad core becomes a sunk cost that gets patched instead of fixed.
+**Why it happens:** The old 12+/17+ scheme was replaced by 4+/9+/13+/16+/18+ in the iOS 26 generation. Developers had to re-answer the questionnaire by 2026-01-31 or be blocked from submitting updates [HIGH]. People remember "17+" and don't re-check. Also guideline 2.3.6 requires honest answers and warns a mis-rated app "could trigger an inquiry from government regulators" [HIGH].
 
-**How to avoid:**
-Keep the full-v1 ambition but sequence it so the first playable is the design doc's prototype in disguise: P2+P3 produce an ugly, rectangles-and-text, controller-playable brew -> serve -> learn loop with ~10 patrons, ~20 ingredients, 6 taps. Put an explicit go/no-go gate after P3 using the design doc's seven success criteria (especially #2 "understand why a pour succeeded/failed", #6 "deduction not frustration", #7 "describe beers like RPG characters"). No bulk art, no world map, no bosses until the gate passes. Put 3-5 outside playtesters (ideally craft-beer people, not only game people) through the slice and watch them without coaching.
+**Consequences of 18+ you must plan for (not reasons to dodge it):**
+- Since 2026-02-24, unverified users in **Brazil, Australia and Singapore** cannot download 18+ apps; Utah (2026-05-06) and Louisiana (2026-07-01) began age-signal sharing for new accounts [MED].
+- Texas SB2420 (app store age assurance) was enjoined, then the Fifth Circuit administratively stayed the injunction on 2026-05-28, so the law is in an unstable enforcement state [MED]. Whether an 18+ app must call the Declared Age Range API to be compliant is unclear; developers are reading the law both ways [LOW]. [VERIFY at P7 with a lawyer or Apple's developer-forum guidance; integrating the API is a small spike].
+- Regional rating systems differ (Australia, Brazil, Korea GRAC). Check the per-storefront ratings shown on App Information after you save [HIGH that they exist; specifics VERIFY].
+- A 13+ answer purely to widen reach would put "serve beer to bar patrons, ABV, Buzzed" in front of 13-year-olds and invites 1.4.3 ("apps that encourage minors to consume any of these substances will be rejected") [HIGH on the quote].
 
-**Warning signs:**
-Roadmap has art/world/UI-polish phases scheduled before any phase whose exit criterion is "a stranger plays the loop and explains a win/loss." Attribute list or scoring formula still changing while portraits are being generated. Nobody has lost an encounter on purpose to learn something.
+**Prevention:**
+- Make the rating a **P1 decision**, recorded in PROJECT.md Key Decisions. Recommended: **plan for 18+**, honestly answered. The audience is adult craft-beer enthusiasts; the reach loss is small and the rejection/regulatory risk is the real cost.
+- If someone argues for 13+, treat it as a design constraint with teeth: no depiction of consumption, no intoxication states, ABV shown only as a flavor/strength descriptor. That contradicts the design doc's "Buzzed"/"Wrecked", so it is a different game. Don't straddle.
+- Fill in the questionnaire in App Store Connect during P1 against the *design doc* and revisit at every phase transition. It is free and shows what the design implies.
+- Add an "Age Suitability URL" if useful [MED].
 
-**Phase to address:** P2/P3 (gate), roadmap-level sequencing.
+**Detection:** Nobody on the team can say the current planned rating. The store description sells "learn to brew" to a broad audience while the rating answer says Infrequent.
 
----
-
-### Pitfall 2: Stat soup -- 16 sensory attributes the player cannot read, compare, or act on
-
-**What goes wrong:**
-Sixteen numeric attributes (Malt, Sweetness, Dryness, Body, Bitterness, Hop Aroma, Citrus, Tropical, Herbal, Spice, Roast, Fruit, Funk, Sour, Carbonation, ABV) shown as 16 bars or a spreadsheet make the game feel like the "sterile industrial brewing simulator" the design doc says to avoid. Players cannot hold 16 dimensions in working memory, so they stop reasoning about flavor and either brute-force or ignore the numbers.
-
-**Why it happens:**
-The data model has 16 fields, so the UI shows 16 fields. Designers confuse model fidelity with player-facing fidelity. Several attributes are also correlated or mutually exclusive in reality (Dryness vs Sweetness vs Body; Citrus/Tropical/Fruit overlap; ABV is a different kind of quantity than the others), which makes sliders redundant and confusing.
-
-**How to avoid:**
-- Keep 16 in the model but present in families: e.g. Malt side (Malt, Roast, Sweetness, Body), Hop side (Bitterness, Hop Aroma, Citrus, Tropical, Herbal, Spice), Yeast side (Fruit, Funk, Sour, Dryness), Mouthfeel/Strength (Carbonation, ABV). 4-5 glanceable groups, each with a single iconographic "flavor wheel" or radar glyph; numbers only on drill-down.
-- Surface "top 3 traits + 1 flaw" per beer as the primary identity (this is also what makes beers feel like characters).
-- Treat ABV as a separate strength axis (it drives tolerance checks, not preference matching) rather than the 16th flavor bar.
-- Patron palettes should reference families and 3-5 specific axes, never all 16.
-- Run a "5-second glance test" in P3: can a tester say what a beer is good against without opening a detail screen?
-
-**Warning signs:**
-Brew screen has more than ~7 live controls visible at once. Playtesters narrate numbers ("it has 4 citrus") instead of character ("it's bright and snappy"). Two attributes are never decisive in any patron.
-
-**Phase to address:** P2 (model grouping), P3 (display and glance test), P1 (UI kit must support glyph/radar widgets).
+**Phase:** P1 (decision), P5 (re-check after statuses/bosses are final), P7 (submission, age-assurance spike).
 
 ---
 
-### Pitfall 3: Deduction collapses into style-matching, a guessing game, or a one-shot solved puzzle
+### Pitfall 2: Mechanics and copy that read as *encouraging* excessive drinking (Guideline 1.4.3)
 
-**What goes wrong:**
-This is the design doc's explicit warning ("patron likes IPA -> serve IPA"), and there are four distinct ways it fails:
-1. Style leak: patron data or UI mentions styles as the preference unit; the sensory layer becomes decorative. Also happens if beers carry a player-visible style label that was chosen rather than computed.
-2. Under-determined puzzle: 3 pours cannot identify a hidden preference vector over many dimensions. Players guess, lose, and feel cheated (the doc's criterion #6 fails).
-3. Information leak: the example result "+22 Hop Match, +8 Dryness, -12 Excessive Bitterness" prints the scoring breakdown. Show exact weights and the puzzle is solved in one pour; show nothing and it is noise.
-4. One-and-done: once the Regulars Book records a patron's palette, every later encounter is execution, not deduction, and the whole game after the first win per patron is trivial.
+**What goes wrong:** Guideline 1.4.3: "Apps that encourage consumption of tobacco and vape products, illegal drugs, or excessive amounts of alcohol are not permitted. Apps that encourage minors to consume any of these substances will be rejected." [HIGH, verbatim]. Real rejection examples are all drinking-game apps: "primary purpose of encouraging excessive alcohol consumption" and 4.3 spam for duplicating other drinking games [MED, Apple Developer Forums]. Apple's enforcement on alcohol-adjacent apps is also inconsistent: a BAC-calculator app got six identical 1.4 rejections while "dozens" of similar apps stay live [MED, forum thread, one developer's account].
 
-**Why it happens:**
-Preference/score formulas are written before anyone computes how much information each pour reveals. Style names are the easiest shorthand for content authors, so they creep into patron definitions. Nobody simulates a "reasonable player" against the content.
+Brew Fighter is nowhere near a drinking game, but three design-doc elements are exactly what a reviewer skims for:
+- **"Buzzed"** status: "Some patron preferences become less strict." That is a reward for getting patrons drunk.
+- **Alcohol tolerance** + **"Wrecked Palate"** language next to high-ABV beers.
+- Boss/patron comedy ("The Dive Bar Regular", "Level 34 Finance Bro") can drift into drunk-person jokes or "chug" copy.
 
-**How to avoid:**
-- Style is an output, never an input: compute a style label from the attribute profile (and show it as a clue-ish tag), and forbid patron data from referencing style IDs except for the explicit boss gimmicks the doc lists (Beer Judge, German Brewmaster), which should themselves be defined by attribute/technique rules.
-- Define an information budget per pour: each pour reveals 1-2 facts at coarse resolution (Likes/Neutral/Dislikes an axis; tolerance Low/Med/High) with deterministic semantics, never exact weights. Show score breakdown as direction + magnitude buckets, not raw numbers that are invertible.
-- Patron palettes: 3-5 positive axes + 1-3 dislikes + 2 tolerances + 1 hidden (matches the design doc) -- this keeps the hypothesis space small enough for 3 pours to be solvable given prior-knowledge hints (location, personality, bartender tips).
-- Make a headless solvability test (see Pitfall 4 tooling): a scripted "reasonable player" that follows clues should win >=70% of encounters within the pour limit; a "style-only" strategy and a "random" strategy should win far less. Fail the build if a patron is unwinnable or trivially winnable by the best all-rounder.
-- Choose the one-and-done policy deliberately: either (a) known info persists and later encounters escalate (stricter pours, status stacking, combined patrons), or (b) patron mood/context varies per visit (e.g. hunger, "had a long day" shifts one axis), keeping recipes relevant but deduction partially fresh.
-- Fail-forward: losing an encounter must still write what was learned into the Regulars Book. Deduction without persistence of clues is just frustration.
+**Prevention:**
+- Define the rule now: **the player is a brewer/server; more alcohol never means more reward.** Buzzed should be a *mellow/relaxed* effect with a cost (e.g., delicate beers score worse; patron stops after N pours), capped, and never the winning strategy. Consider renaming to "Mellow" or "Loosened Up."
+- No "chug", "get them drunk", shots, drinking-speed or intoxication-escalation mechanics. Pours are small tasting pours; keep the vocabulary of tasting and service.
+- Put a short, adult, non-preachy "Drink responsibly / 18+ (21+ in the US)" note in Settings > About and the store description. It will not save a bad app but signals intent.
+- Write **Notes for Review** (2.3.1 requires specific notes) explaining: brewing/tasting game, no real alcohol sales, no consumption encouragement, age-rated 18+. Include a short screen recording [MED].
+- Keep the app account-free (see 5.1.1(v), Pitfall 12) so the reviewer isn't blocked.
+- **Use external TestFlight as an App Review canary**: Apple's guideline 2.2 says TestFlight builds "should comply with the App Review Guidelines," and the first external build goes through Beta App Review [HIGH]. An alcohol-themed concern will surface there, months before launch, with no launch risk.
 
-**Warning signs:**
-Content spreadsheet column named "Favorite style." Testers who never open the attribute screen still win. Testers who open it still lose repeatedly. A single beer (the "Crowd Pleaser") beats most patrons. A patron can be solved by pour 1.
+**Detection:** Playtesters describe Buzzed as "get them drunk to win." The best strategy in the harness is high ABV chaining. Store copy uses "get wasted", "drink", "chug."
 
-**Phase to address:** P2 (scoring + info model + solvability harness), P3 (clue UX), P5 (escalation for repeat encounters).
+**Phase:** P2 (status design), P3 (first external TestFlight = canary), P6 (copy), P7 (review notes).
 
 ---
 
-### Pitfall 4: A dominant "max everything" beer, and no tooling to see it coming
+### Pitfall 3: Marketing metadata, names and ads collide with 4+ rules, trademarks, and ad-network alcohol policy
 
 **What goes wrong:**
-If satisfaction is the sum of matches minus penalties and brewing has no real tradeoffs, the optimal beer is a balanced, inoffensive middle (the doc's "Crowd Pleaser" bonus makes this worse) or a maxed intensity beer, and the 6-tap lineup collapses to one recipe. Conversely, if tradeoffs are too steep, "creative" beers are always worse than a safe cookie-cutter. Without data you will not notice until playtesting, and by then 40 patrons are authored against the wrong formula.
+- **Guideline 2.3.8:** "make sure your app and in-app purchase icons, screenshots, and previews adhere to a 4+ age rating even if your app is rated higher" [HIGH]. Screenshots showing a patron visibly drunk, "Wrecked", people mid-chug, or a beer-forward icon with suggestive copy can be rejected even though the app is 18+.
+- **Trademarks (5.2.1, 2.3.7):** the design doc names "Untappd" (a company brand), uses "Pokémon-style" as shorthand, and uses hop names like "Citra" and "Nelson." Several hop varieties are registered/branded names [MED, VERIFY each]. Don't pack store metadata with trademarked terms (2.3.7), and 4.1(c) forbids using another product's name in your icon/name.
+- **Name collision:** "Brew Fighter" and similar names may already be taken on the App Store; names are limited to 30 characters (2.3.7).
+- **AI art can generate real beer-brand logos or lookalikes** (a Guinness harp, a Pabst ribbon) and Pokémon/AdCap-looking characters. Guideline 5.2.1 puts trademark liability on you.
+- **Paid acquisition:** Apple Ads requires alcohol ads to be age-targeted, show no consumption of the product, and respect per-country law [MED]; Google and AppLovin have their own alcohol restrictions [MED]. A solo-dev budget will mostly be organic anyway (homebrewing, craft-beer, cozy-game communities), but plan for it.
 
-**Why it happens:**
-Additive scoring rewards breadth; designers tune by hand on a few examples. Content tuning without a matrix view ("every archetype beer vs every patron") is guesswork.
+**Prevention:**
+- Create the App Store Connect **app record in P1** to reserve the name; settle the final name before art (icon, logo) is generated.
+- Rename "The Untappd Guy" to a generic check-in-app parody; use fictionalized hop/yeast names or generic variety names where marks apply. Keep a `names-cleared.md` log.
+- Screenshots/preview: use brewing screen, tap list, deduction clue UI, beer cards, family tree, cute patron portraits reacting, never intoxication visuals. Review the whole set against "would this be OK on a 4+ app?"
+- Add a negative-prompt/QA step to the art pipeline: no logos, no real brands, no readable text.
+- Don't mention Pokémon, Adventure Capitalist, or Untappd in metadata or keywords.
 
-**How to avoid:**
-- Give brewing real tradeoffs: shared attribute budget/conflicts (high attenuation raises Dryness and lowers Body/Sweetness; heavy roast masks hop aroma; high ABV increases warmth and "Hop Burn" risk). Aim for diminishing returns and penalty asymmetry (a disliked axis hurts more than a liked axis helps), so inoffensive ~ mediocre.
-- Cap and condition "free bonus" abilities (Crowd Pleaser only helps while ≥N preferences unknown, and decays as knowledge grows).
-- Build a pure-Ruby tuning harness in P2 (DragonRuby ships a unit-test runner; the docs include `samples/10_advanced_debugging/03_unit_tests`): generate N random/archetype recipes, score vs all patrons, print a heatmap, report (a) patrons nobody beats, (b) patrons everyone beats, (c) the best single beer's win rate, (d) how many distinct beers are best-in-class for at least one patron. Rerun on every balance change. Success target: in a 6-tap lineup at least 4 distinct beers are the unique best answer to some patron.
-- Keep the simulation free of `args`/outputs so the harness can run headless.
-
-**Warning signs:**
-One recipe in everyone's tap list. Balance changes are made by editing a single patron at a time. Authors cannot answer "which patrons does the saison beat?" without playing.
-
-**Phase to address:** P2 (model + harness), re-run at P4/P5 whenever content expands.
+**Phase:** P1 (name reservation + naming rules), P5 (final patron/boss names), P6 (art QA), P7 (screenshots/keywords).
 
 ---
 
-### Pitfall 5: Status effects and serving order that do not actually matter (or become homework)
+### Pitfall 4: Premium-vs-F2P is deferred until the economy is built, so the economy encodes the wrong assumptions
 
-**What goes wrong:**
-The doc lists 9 status effects (Refreshed, Palate Fatigue, Buzzed, Stuffed, Curious, Nostalgic, Hop Burn, Pucker Shock, Wrecked Palate) in a 3-pour encounter. With only 3 pours there are barely 2 meaningful ordering decisions; if effects are invisible, stochastic, or have fuzzy triggers, order becomes noise; if all 9 are live from the start, players must hold a rules matrix in their head.
+**What goes wrong:** PROJECT.md defers the decision to "before the economy phase." The failure mode is that systems built *before* that decision (acquisition, day counter, rare yeast, brewing time) quietly assume one model. Typical contamination:
+- **F2P assumptions:** brew timers, energy/pour limits, "rare yeast hunts" as random drops, soft/hard currency. These directly fight the design doc's core loop and the fun-gate, which depends on instant retry and on learning from losses.
+- **Premium assumptions:** flat content gating, no sinks, no re-engagement. Adding IAP later means retrofitting a currency and a store.
+- **Randomized paid items:** Guideline 3.1.1 requires "apps offering 'loot boxes' or other mechanisms that provide randomized virtual items for purchase must disclose the odds of receiving each type of item to customers prior to purchase" [HIGH]. The doc's "Mutation Chance" yeast and rare culture drops are exactly the item type that would be sold. Paid randomness in an 18+ alcohol game also invites regulator attention [LOW].
+- Australia: loot boxes raise the minimum rating to 16+ [HIGH]; moot at 18+.
 
-**Why it happens:**
-Effects get designed as flavor lists rather than as decisions. Nobody measures "does the best order beat the worst order?"
+**What Apple actually allows** [HIGH]: any digital unlock must use IAP; "unlocking a full version" via IAP is explicitly permitted, so **free download + one-time non-consumable "Full Game" unlock** is a legitimate try-before-buy path. Separate demo/lite apps are not (Guideline 2.2: "Demos, betas, and trial versions of your app don't belong on the App Store - use TestFlight"). Purchased currencies cannot expire and a restore mechanism is required.
 
-**How to avoid:**
-- Introduce 2-3 effects first (Palate Fatigue, Hop Burn, Refreshed), each tied to a single visible attribute threshold (e.g. Bitterness >= 7 applies Hop Burn for the next pour). Add others one at a time via patrons/locations/bosses that teach them.
-- Always show active statuses with icon + one-line rule; effects expire on a visible counter.
-- Add to the harness: for each patron, best-order vs worst-order score delta across the player's tap list; require a meaningful delta (e.g. >=15 satisfaction points) in a healthy fraction of encounters. If ordering never matters, the feature is dead weight; if it always matters, it is a tax.
-- Consider 4-5 pours for bosses so ordering becomes strategic rather than a single binary choice.
+**Prevention:**
+- **Make the decision at the P3 gate, not at P5.** The fun-gate result tells you if the game is a premium-shaped puzzle-collection or a long-tail one. Write it to Key Decisions before P4 starts so collections are designed against it.
+- **Recommended default: premium-shaped.** One-time price or free-with-one-time-unlock; no energy, no timers, no consumable currencies; progression gated by *knowledge* (deduction, regulars) not by time or money; no paid randomness; no ad SDKs (they conflict with the tone, alcohol ad policy, the 18+ privacy posture, and the 2-5 minute session feel). This is also what keeps the design doc's "learn people's tastes" loop honest.
+- Until the decision: keep the day counter a **game-turn counter** (the roadmap already says brewing advances the day counter, never real time), keep rewards authored/deterministic with optional pity, and keep "currency" as a single abstract `Gold` value in one `Economy` module so a sink/IAP can be bolted on.
+- If F2P is chosen anyway: odds disclosure UI (3.1.1), restore purchases button, StoreKit 2, IAP items complete and visible to the reviewer (2.1(b)), 18+ adult-only ad creative review, and a budget for live-ops that a solo dev usually does not have.
+- Apple Small Business Program (15% commission under the revenue threshold) and Family Sharing for non-consumables are cheap to enable; check eligibility at P7 [MED, VERIFY].
 
-**Warning signs:**
-Players cannot name the current status. Winning order is identical for every patron. Testers say "I just serve the best beer first."
+**Detection:** The word "timer", "energy", or "premium currency" appears in a plan before the decision exists. Rare yeast is described as a "drop rate."
 
-**Phase to address:** P2 (rules + harness), P3 (display), P5 (staged introduction).
-
----
-
-### Pitfall 6: Unpredictable, unexplained brewing outcomes (black-box brewing)
-
-**What goes wrong:**
-Players choose grain bill, hop timing, yeast, fermentation temp and conditioning, then get a beer with surprising numbers. If cause and effect is not legible, brewing feels random, experiments are not learnable, "players modify recipes after learning patron preferences" (doc criterion #3) fails, and brewing accuracy ("accidentally learn real brewing concepts") is wasted.
-
-**Why it happens:**
-Many ingredient/process interactions get coded with no preview, no attribution, and no consistent rules of thumb. The pure-simulation temptation (real mash chemistry) produces opaque outputs; the pure-lookup temptation produces flat outputs.
-
-**How to avoid:**
-- Use a small number of consistent, real rules of thumb (hot mash -> fuller/sweeter; cool mash -> drier; early hops -> bitterness, late hops -> aroma; warm ferment -> esters/phenols, cool/lager -> clean; etc.) and make each ingredient contribute to 2-3 dominant attributes plus an identity trait, not 8 small modifiers.
-- Provide a live "brewer's estimate" preview that updates as choices change, with a visible causal tag on the largest contributors ("Dry: yeast attenuation +2, mash 148F +1").
-- Have a beer-literate reviewer sanity-check the rules table; this audience will notice wrong claims and the tone target is 70% real beer culture.
-- Preserve a post-brew "batch notes" screen explaining what drove the result. This is the same text that later powers "lineage" storytelling.
-
-**Warning signs:**
-Testers say "I don't know what that did." Players default to pre-made recipes. Nobody changes fermentation temp because they cannot predict the effect.
-
-**Phase to address:** P2 (rules table + preview API), P3 (UI), content review again at P4.
+**Phase:** P3 (decision), P4/P5 (collection + economy design), P7 (StoreKit + review).
 
 ---
 
-### Pitfall 7: Content explosion and the balance treadmill
+### Pitfall 5: Save data that can't survive reinstall, schema change, backgrounding, or tester builds
 
 **What goes wrong:**
-Collection games are content-bound. The prototype scope (10 patrons, 8 hops, 5 grains, 5 yeasts, 3 adjuncts) is small, but v1 "one city, all systems" implies perhaps 40+ patrons, 6+ bosses, 30+ ingredients, 8 locations. Every patron needs a palette, portrait (with expressions), personality, per-attribute reaction lines, Regulars Book entry, and a balanced win path. Every new ingredient changes the reachable attribute space and invalidates earlier balancing. The dialogue matrix ("Good hops, but that's way too bitter for me") multiplies by patron voices.
+1. **Delete-and-reinstall wipes the app container.** Local-only saves vanish; an old iCloud *device backup* may or may not hold them (a new backup overwrites the old one) [MED]. For a collection game where recipes are emotional investment, this becomes the 1-star review.
+2. **SwiftData is a trap for this app.** CloudKit sync requires: no `@Attribute(.unique)`, every attribute optional or defaulted, every relationship optional with an inverse [MED]. Recipe lineage (parent links), regulars and collections are exactly relationship-heavy. Migration is worse: if you ship the first version **without** a `VersionedSchema`, later `MigrationPlan`s fail with "Cannot use staged migration with an unknown model version," and several developers report migration crashes on first launch only in TestFlight/App Store builds, not in Xcode [MED, forum + blog reports].
+3. **Dumping the whole app state** (UI state, scroll positions, derived attributes) into one blob makes saves unmigratable.
+4. **iOS can kill you any time** (backgrounded, memory pressure, phone call). A save written only at "end of encounter" loses a half-finished pour sequence.
+5. **TestFlight builds expire (90 days) and every new build must load the previous build's saves,** or your playtesters lose their progress each update and stop testing.
+6. **Derived attributes stored in saves** means a balance patch orphans every beer (old issue, still true).
 
-**Why it happens:**
-Content is treated as free once the engine exists. No fixed budget, no data-driven authoring, no review matrix, so the roadmap gets extended whenever another idea appears.
+**Prevention (opinionated):**
+- **Do not use SwiftData for the game state.** Use `Codable` value types in a pure-Swift domain package, stored as a **versioned JSON envelope** (`saveVersion`, `rulesetVersion`, content refs by stable string ID) in Application Support, written **atomically** (write temp, validate by decoding, replace; keep a rolling `.bak`). Application Support is included in standard device backups so restore-to-new-phone works [MED].
+- Domain model: recipes are **immutable values** with `parentID` from the first brew; edit = new child. Store the recipe + `rulesetVersion`; recompute attributes at load from the current ruleset and surface changes ("your Garage Pale Ale changed in 1.1"). Content references use stable string IDs, never indices.
+- Write explicit migration functions from day one, even when only v1 exists, with fixture saves from every shipped/TestFlight build checked into the repo and a round-trip test per fixture.
+- Three layers: static content (bundle, never saved), save data (IDs only), transient UI state (never saved). Settings in their own file.
+- **Autosave at every pour and every brew confirmation, restore to the exact encounter state** (store the encounter seed, pours used, revealed clues, status counters). See Pitfall 7.
+- **Cloud decision by P4, not P7.** Options in order of effort: (1) local-only + user-facing **Export/Import save file** via the share sheet (cheap safety net, ship it in P3); (2) `GKSavedGame` or CloudKit private database via `CKSyncEngine` with last-writer-wins plus a "pick which save" conflict UI [MED]; (3) iCloud Drive document with file coordination. Pick one, scope it, and test two-device conflict + reinstall restore. If skipped for v1, say so in the store description ("progress stored on device; use iCloud Backup") so it is an informed choice.
+- `ITSAppUsesNonExemptEncryption`, privacy manifest entries for `UserDefaults`/file timestamp APIs (required-reason APIs have been enforced since 2024-05-01 [HIGH]) get set in P1 so the first TestFlight upload doesn't stall.
 
-**How to avoid:**
-- Set a content budget up front in the requirements (example: 12 hops, 8 grains, 8 yeasts, 6 adjuncts/conditioning options, 30 patrons, 6 bosses, 8 locations) and treat additions as scope changes.
-- All content as plain data files (Ruby hashes or a simple text format) with a validator (required fields, palette size limits, no style references, attribute range checks). No content in code.
-- Reaction text is generated from templates keyed by (attribute, direction, intensity) with archetype voice overrides (Finance Bro, Patio Dad, Judge) and a few handwritten signature lines per patron. Do not hand-write N x M lines.
-- Reuse archetypes with parameter variation; reserve unique mechanics for bosses.
-- Run the balance matrix (Pitfall 4) as a content CI step.
-- Write the quest/dialogue style guide early so voice (70/30 culture/comedy) stays consistent.
+**Detection:** `@Model` appears in domain code. There is no `saveVersion`. The first TestFlight update shows testers an empty game. Killing the app mid-pour loses the pour.
 
-**Warning signs:**
-Content spreadsheet growing faster than playable slice. Each new patron requires a code change. "Just one more hop" requests. Dialogue lines are copy-pasted with minor edits.
-
-**Phase to address:** P2 (data format + validator), P4/P5 (budgeted content), roadmap-level scope lock.
+**Phase:** P1 (envelope + IDs + immutable recipe), P2 (round-trip tests), P3 (autosave, export/import, fixtures), P4 (cloud decision), P7 (migration QA on real devices).
 
 ---
 
-### Pitfall 8: Collection systems with no pull -- mutation that destroys work, RNG that gates fun, and beers with no identity
+### Pitfall 6: Session-length mismatch and the interruption-driven lifecycle
 
-**What goes wrong:**
-- Yeast "mutation across generations" silently altering a tuned recipe punishes the exact behavior the game wants (iteration and attachment).
-- Pure-RNG rare drops (rare yeast hunts) feel arbitrary; collectors grind or quit.
-- The Regulars Book (Seen -> Served -> Impressed -> Regular -> Friend) becomes a checklist unconnected to play.
-- Beers are all "colored glass + number list," so nobody gets attached; the central "my saison is great against adventurous patrons" fantasy needs beers that read as characters.
-- Completion for its own sake (bottle-cap grinding) in a game that does not need it.
+**What goes wrong:** Mobile sessions are 2-5 minutes and interruptible (notification, call, lock screen, app switch). The design doc's loop is a 12-step "Explore, Acquire, Brew, Serve, Learn, Improve, Expand" with a 5-input brew (grain bill, hop choice + timing, yeast, fermentation temp, conditioning) and 3-pour encounters. Common mistakes:
+- Brew screen takes 5+ minutes to reach a "brew" tap, so players never reach the fun part.
+- An encounter can't be resumed after the OS kills the app; players lose a clue-heavy sequence.
+- Long pour animations/dialogue multiply by hundreds of encounters.
+- The AdCap reference tempts offline-progress timers and "your beer is ready" push notifications. The project explicitly rejected real idle mechanics; push notifications also may not be *required* to use the app (5.1.2(i)).
+- Hub navigation requires 4+ taps to get from launch to a fight.
 
-**Why it happens:**
-Pokemon-style structures are copied (rarity tiers, breeding, dex) without the thing that makes them work: stable identity, readable strengths/weaknesses, and discoveries that change what you do next.
+**Prevention:**
+- **Budgets as acceptance criteria:** launch to first pour <= 20 seconds for a returning player; one encounter (3 pours) 60-120 seconds including clue reading; a "tweak and rebrew" <= 30 seconds. Brewing from a previous recipe is **one tap** (roadmap already requires "rebrew in one action"); new recipes use presets/templates and progressive disclosure (3-4 choices on the first brew, as the roadmap plans).
+- Encounter state machine is **serializable** and autosaved on every transition; test with "kill app at every state, relaunch, continue."
+- Skip/fast-forward and a per-pour animation budget (~1.5-2 s); one-line feedback plus one icon change.
+- No real-time waits, no required notifications. If you add a notification, it is optional and asked in context, never on first launch.
+- Respond to `scenePhase` changes: pause animations, flush the save, stop haptics/audio appropriately.
 
-**How to avoid:**
-- Mutation creates a new forked strain/recipe entry in the lineage with a visible diff; the parent is never overwritten. Offer mutation as opt-in or at a clearly signposted moment.
-- Make acquisition knowledge-driven: rare cultures unlocked by specific patron friendships, location discoveries, or successful serve conditions (deterministic with a few random elements, plus pity guarantees), not blind drops.
-- Define Regulars Book tier criteria in terms of mechanics that already exist (Seen = met, Served = >=1 pour, Impressed = score >=X, Regular = learned all palette axes, Friend = beat with a signature recipe), so progression is a side effect of play, not a separate grind.
-- Give each beer a compact identity card: generated name, top-3 traits, a procedurally composed visual (liquid tint, head, glass, tap-handle/label seeded from the recipe ID and lineage), and a one-line "tasting note" produced from its attributes. Make favorites visible. These are cheap procedural features that carry most of the "beer-as-creature" payoff.
-- Cap the active tap list at 6 but give a recipe archive with sort/filter/compare; the archive UI is a real cost (see Pitfall 11).
+**Detection:** Playtesters stop to ask "can I leave now?" Median session time on TestFlight analytics is >8 minutes with no natural stopping point. Encounter completion rate drops after backgrounding.
 
-**Warning signs:**
-Players stop renaming beers. Testers refer to beers by style ("the IPA") instead of by name. A rare ingredient is strictly better than common ones and nobody keeps commons.
-
-**Phase to address:** P4 (primary), P2 (data model for lineage), P6 (visual identity).
+**Phase:** P1 (state machine design + budgets), P3 (measured in playtest), P6 (animation/skip polish).
 
 ---
 
-### Pitfall 9: Recipe lineage and save data that cannot survive balance changes
+### Pitfall 7: SwiftUI performance traps in a game-like, animation-heavy, data-heavy UI
 
-**What goes wrong:**
-"Evolution" is ambiguous: is a beer a mutable recipe, an immutable version, or a brewed batch? If recipes are mutable, ancestry is lost; if derived attributes are stored, balance patches create beers that no longer match the rules; if derived attributes are recomputed from rules, a post-launch balance patch silently changes a player's win/loss history and tuned lineups.
+**What goes wrong:** SwiftUI is the right call for this menu-heavy game, but "juice" and 16-attribute screens expose its sharp edges. Apple's WWDC25 performance session names the two root causes: **long view body updates** (heavy work in `body`) and **unnecessary view updates** (broad dependencies, e.g., a view that reads a whole array so every row updates when one item changes) and recommends the new SwiftUI Instrument with the Cause & Effect Graph [HIGH, session 306]. Applied to this app:
+- **One god `@Observable GameState`** read by every screen. Any change in tap list, regulars, or clue log invalidates dozens of views. Instead use narrow observable objects/slices per screen and per row view-models.
+- **Scoring/preview computed in `body`.** The live attribute preview (roadmap P3) recomputes 16 attributes from many ingredients on every slider tick. Memoize per recipe, compute off the main actor, or debounce; never construct formatters (`NumberFormatter`, `MeasurementFormatter`) in `body` (Apple's own example).
+- **`TimelineView(.animation)` for ambient bubbles/foam** keeps the whole subtree redrawing every frame (battery, thermals, Low Power Mode). Pause when off screen; cap particle counts; prefer a short `keyframeAnimator`/`PhaseAnimator` over a perpetual timeline.
+- **`Canvas`** is fast for the procedural glass/liquid/bubbles, but its contents are **invisible to VoiceOver** and have no per-element identity or built-in hit-testing/animation. Use it for decoration, put interactive/semantic elements in real views, add accessibility labels (Pitfall 10).
+- **`drawingGroup()`** rasterizes the subtree into an offscreen Metal texture; helpful for many shapes, but can blur text and hurt small views. Measure before and after.
+- **`LazyVStack`/`List` with unstable IDs** (`UUID()` created in `body`, or `id: \.self` on mutable values) destroys and recreates rows; recipe journal and Regulars Book (40+ entries) will hitch.
+- **Matched-geometry and broad `.animation(_:value:)` on containers** animate things you didn't intend. Scope animations with `withAnimation` or `transaction`.
+- **Image memory.** A 2048x2048 RGBA image decodes to ~16 MB (2048 x 2048 x 4 bytes). 40 AI portraits at that size is ~640 MB if they are all resident, a jetsam-kill risk. Export art at ~3x its on-screen size, use asset catalogs, downsample large images with ImageIO, and don't pre-render beer permutations as PNGs; **compose glass + liquid tint + head + label in code** (the roadmap already says "procedural beer glasses").
+- **Testing only on the Simulator or a Pro-model phone.** ProMotion hides hitches that a 60 Hz or older device shows; Simulator timing is meaningless.
 
-**Why it happens:**
-Data model decided late or ad hoc, while lineage UI is the visible feature. Balance patches after launch are almost certain in a systems game and are rarely planned for.
+**Prevention:** Set a perf budget in P1 (steady 60 fps on the oldest supported device, no hitch > 100 ms in brewing/encounter flows). Run the SwiftUI Instrument + Hangs/Hitches on a real device at the end of every phase. Keep the domain in a pure Swift package with `Sendable` value types so the heavy math is testable and movable off the main actor. Pick a deployment target of **iOS 17+** (Observation framework, `@Observable`; iOS 18 if you want newer SwiftUI APIs) and record the oldest test device in the plan.
 
-**How to avoid:**
-- Decide in P2: Recipe = immutable value object (ingredient IDs, process params, parent_id, created_at, ruleset_version). "Edit" always creates a child. Beer instances/batches are out of scope (no inventory, aging or freshness simulation unless it is explicitly scoped later).
-- Store the recipe plus the ruleset version; recompute attributes at load from the current ruleset so balance fixes propagate. Surface changes ("Your Garage Pale Ale changed after the 1.1 balance patch") rather than hiding them. Decide and document this policy.
-- Use stable string IDs for ingredients, patrons, recipes and locations in saves (never array indexes or object references), so adding or reordering content never corrupts old saves.
-- Store lineage from the very first brew even if the family-tree UI ships later.
+**Detection:** Opening the Regulars Book or dragging a temperature slider hitches. The Cause & Effect Graph shows one state change triggering a screen's worth of body updates. Memory graph shows hundreds of MB in image buffers. Device gets warm during idle screens.
 
-**Warning signs:**
-Recipe has an `update` method. Saves reference `ingredients[3]`. There is no `ruleset_version` field.
-
-**Phase to address:** P2 (model), P1 (save schema), P7 (migration QA).
-
----
-
-### Pitfall 10: Scope creep into a management sim, and an overworld nobody budgeted
-
-**What goes wrong:**
-The design doc deliberately defers management systems but leaks them in the core loop ("Improve the brewery"; regulars who visit the brewery; passive benefits like "Equipment repairs cost less," "unlocks food pairing mechanics," "unlocks unusual yeast"). Each perk implies a subsystem (equipment durability, repair costs, food pairing, a brewery that people visit). "JRPG-style" and "Explore" also invite a walkable overworld with tilemaps, collision, NPC scripting and cutscenes -- often 30-50% of a JRPG's tooling.
-
-**Why it happens:**
-Every system sounds like a small addition to a "cozy" game. Without an explicit closed list of allowed regular perks and a decision on exploration form, each design conversation reintroduces them.
-
-**How to avoid:**
-- Define a closed set of regular perk effect types that only touch existing systems (extra info reveal, ingredient/yeast unlock, shop discount, +1 pour in a specific context, tolerance hint). Cut examples that need new systems (equipment repairs, food pairing) and move them to Out of Scope.
-- Make "Improve the brewery" a small fixed upgrade tree (e.g. +tap slot, +brewing option) or cut it for v1; it should not become equipment simulation.
-- Choose exploration form explicitly in P1/P5: recommended is a menu/node-based city map with illustrated location scenes and short dialogue/choice interactions, not a walkable overworld. This preserves "explore -> acquire" while removing most of the tilemap/collision/scripting cost.
-- Any new system proposal must name which design success criterion it improves; if none, it is v2.
-
-**Warning signs:**
-Backlog contains "inventory durability," "staff," "reputation," "events/festivals as systems." Roadmap phases for world build before the encounter gate. Art requests for tilesets.
-
-**Phase to address:** roadmap-level, P4 (perks), P5 (world form).
+**Phase:** P1 (architecture + budgets), P3 (preview perf), P4/P5 (long lists), P6 (art memory + juice).
 
 ---
 
-### Pitfall 11: UI is the hidden majority of the work (no widget kit in DragonRuby)
+### Pitfall 8: The OS/SDK treadmill and Liquid Glass versus a custom chunky AdCap UI
 
-**What goes wrong:**
-This game is menu-heavy: brew screen, ingredient/yeast banks, recipe archive with lineage, tap lineup, encounter screen with clues and statuses, Regulars Book with 40+ entries, settings, save/load, tutorial. DragonRuby gives primitives (sprites, labels, solids, render targets, a layout helper), not a UI toolkit. Without scrolling lists, grids, tabs, modals, tooltips, text wrapping, 9-slice panels, focus navigation and dialogue boxes, each screen is rebuilt ad hoc, and the first controller pass breaks all of them.
+**What goes wrong (dates matter, today is 2026-10-08):**
+- iOS 27 shipped 2026-09-14. **Xcode 27 ignores the `UIDesignRequiresCompatibility` Info.plist opt-out** that let Xcode 26 builds keep the pre-Liquid Glass look; standard controls adopt Liquid Glass automatically and are noticeably larger [MED, Apple Developer Forums thread 839061 + secondary sources].
+- Apple announced (2026-09-09) that **from April 2027 every iOS submission must be built with the iOS 27 SDK or later** [MED]. (The earlier rule, Xcode 26/iOS 26 SDK from 2026-04-28, is already in force [HIGH].) A release target spanning that date cannot stay on Xcode 26.
+- Your design is "bright, chunky, button-heavy" custom UI. Any *system* chrome you use (`NavigationStack` bars, `TabView`, sheets, toolbars, `Menu`, alerts, pickers, `Toggle`) will look like Liquid Glass next to your custom flat art. The mixed result looks unfinished.
 
-**Why it happens:**
-UI is treated as polish at the end of each feature; mouse-driven click hit-testing is the path of least resistance.
+**Prevention:**
+- Build and test on **Xcode 27 / iOS 27 from the first commit**. Don't develop on Xcode 26 and "migrate later."
+- Decide in P1: **custom chrome end to end** (own nav, own buttons, own sheets via `ZStack`/custom transitions) vs **system chrome for utility screens** (Settings, About, Journal) with the glass look accepted. Recommended hybrid: custom for the game surfaces (brew, encounter, taplist), system for Settings/utility, and one UI-kit file that wraps both so a swap is a one-file change.
+- Wrap buttons in your own `ButtonStyle` with explicit minimum 44x44 pt hit targets (Apple HIG) so system size changes don't alter layout.
+- Support the oldest iOS you chose, but test the newest *and* oldest: Liquid Glass vs pre-glass rendering both exist in the wild for the first release.
+- Re-check the SDK deadline text at P7; it may change.
 
-**How to avoid:**
-- Build a small UI kit in P1 before any feature screen: focus manager/graph (every interactive element is a focusable node), list/grid with scrolling, tabs, modal stack, tooltip/help panel, 9-slice panel, text wrapper, dialogue box with typewriter and skip, toast, and prompt-glyph widget. Make it data-driven (declare screen layouts, not draw loops).
-- Cache static panels in render targets; do not rebuild paragraph layouts every tick.
-- Use the engine's `layout` API where it fits (check `docs/api/layout.md`); otherwise define a single grid unit and anchor system.
-- Budget explicitly: expect UI to be 30-40% of total engineering effort for this genre.
+**Detection:** A screenshot mixes translucent system bars with flat sticker art. A new Xcode drop changes spacing everywhere. TestFlight upload rejected "built with an unsupported SDK."
 
-**Warning signs:**
-Each screen has its own input handling code. Mouse works but d-pad cannot reach a control. Text overflows panels.
-
-**Phase to address:** P1 (kit), every later phase (consumers).
-
----
-
-### Pitfall 12: Input abstraction retrofitted too late, or mouse-first UI bolted to a controller
-
-**What goes wrong:**
-PROJECT.md mandates mouse + keyboard + controller from day one, which is right, but the usual failure is a mouse-first click UI with controller "emulated" later: drag-and-drop for reordering taps, sliders for temperature, hover-only tooltips, typed text for beer names. These do not map to a focus-navigated UI, so the retrofit is a rewrite. Steam Deck Verified-style requirements add constraints (glyphs must match the active controller, no keyboard glyphs while controller is active, controller-only text entry).
-
-**Why it happens:**
-Mouse UIs are easiest to prototype. DragonRuby gives you shared `up/down/left/right` plus `key_down.*`, `accept`/`cancel` abstractions and `last_active` -- good primitives, but the game must build an intent layer on top.
-
-**How to avoid:**
-- One input layer: poll once per tick into a small set of intents (`:confirm, :cancel, :nav_up/down/left/right, :tab_prev/next, :menu, :context, :scroll`). Screens consume intents only; no raw `keyboard.key_down.x` in game code except inside the layer.
-- Focus is the primary model; the mouse moves/sets focus (hover = focus, click = confirm). Do not build a separate click path.
-- Use DragonRuby's `accept`/`cancel` names (they handle Switch Pro button swap) and cardinal names; avoid hardcoding `a`/`b`.
-- Track `args.inputs.last_active` and render prompt glyphs for the active device; support remapping keyboard in Settings from the start (store a binding map in the save/settings file).
-- Replace drag-and-drop with pick/place; sliders with steppers; hover-only info with a focus-shown help panel; typed names with generated names + an in-game controller-friendly character picker.
-- Handle controller disconnect/reconnect (`connected` flag), deadzones, and menu repeat rates.
-- Write input tests (replay a scripted sequence of intents through a screen).
-
-**Warning signs:**
-Any `if args.inputs.mouse.click` outside the input layer or hit-test code. Tooltips only on hover. A controller user cannot rename a beer or reach Settings.
-
-**Phase to address:** P1 (layer + focus model), validated at every phase.
+**Phase:** P1.
 
 ---
 
-### Pitfall 13: Save data design -- DragonRuby serialization is not JSON and not forgiving
+### Pitfall 9: Portrait, one-handed reachability and gesture conflicts
 
-**What goes wrong:**
-`GTK.serialize_state` / `deserialize_state` (the DragonRuby docs sample uses `$gtk.serialize_state('game_state.txt', state)`) write Ruby inspect-style text (e.g. `{:entity_id=>3, :player_one=>"test"}`), not JSON. Custom class instances must define their own `serialize`/`inspect`/`to_s` or they do not round-trip; objects holding `args`, procs, or circular references break or bloat the file (the docs mention `serializable_without` for classes that keep `@args`, and the engine's own unit tests assert a "serialization too large" flag around ~3000 state keys). Dumping all of `args.state` mixes saveable data with transient UI/view state. Symbol keys become string keys if you round-trip through `parse_json`. In development, `write_file` writes into the game directory; in production it goes to the OS sandbox (`%AppData%\Roaming\[devtitle]\[gametitle]`, `~/Library/Application Support/[gametitle]`, `~/.local/share/[gametitle]`) so save bugs hide until a production build. A crash or quit during write can corrupt the only save.
+**What goes wrong:** On 6.1-6.9" phones the top third is out of one-handed thumb reach. Games port desktop/tablet instincts: top-right close buttons, top nav bars, drag-and-drop lineup reordering, tiny stat toggles, hover-style tooltips. Specific traps:
+- Primary actions (Serve, Brew, Confirm) placed at the top or middle; destructive or irreversible ones placed right next to the home-indicator swipe zone.
+- **Custom horizontal drags/carousels vs system edge-swipe-back** and sheet drag-to-dismiss: gestures fight; the player accidentally leaves an encounter.
+- Drag-and-drop to arrange 6 taps: fiddly on glass, inaccessible with VoiceOver/Switch Control.
+- Tap targets under 44 pt when 16 attributes are packed in rows.
+- Safe areas: Dynamic Island, rounded corners, home indicator; content hidden or unreachable.
+- iPad runs your iPhone-only app in compatibility mode (PROJECT.md accepts this); also available as "iPhone app on Apple silicon Mac" unless you opt out [MED, VERIFY the exact App Store Connect toggle and any iPad screenshot requirement at P7].
 
-**Why it happens:**
-It is tempting to serialize the whole state hash and call it a save. Hot-reload development masks serialization and path issues.
+**Prevention:**
+- **Bottom-anchored action bar** for the core verbs on every game screen; contextual info and headers up top. Lay out screens as "read at top, act at bottom."
+- Use `.presentationDetents` for half-height sheets so the sheet content stays within the thumb zone.
+- Tap-to-select / tap-to-place as the **primary** lineup mechanism; drag-to-reorder as an enhancement. Provide `accessibilityAction`s for reorder.
+- Disable interactive-dismiss on encounter screens; require explicit "Leave encounter?" confirm.
+- Define a single spacing/hit-target token set in the UI kit and a lint test that finds buttons under 44 pt.
+- Run a one-handed test (right thumb, left thumb) on a real large phone and a small one (iPhone SE-class or mini-class if you support them) at the end of each UI phase.
 
-**How to avoid:**
-- Separate three data layers: (1) static content (patrons, ingredients), loaded from the game directory and never saved; (2) save data, a plain nested Hash/Array/String/Integer/Float/Symbol/bool structure with ID references only; (3) transient runtime/UI state, never saved.
-- Define a save schema with `save_version` and `ruleset_version`; write explicit migration functions from day one, even when only v1 exists.
-- Write to a temp name, validate by deserializing, then promote; keep a rolling `.bak` and multiple slots; add a checksum or at least a sanity check on load and show a friendly recovery path instead of a crash.
-- Autosave at safe points (after an encounter, after brewing), plus manual save. Test load-after-quit in a production build, not only dev.
-- Test round trips automatically: create state -> save -> load -> deep-equal, in the headless test runner.
-- Settings (volume, bindings, display) live in their own small file so a corrupt save never loses them.
-- Steam Cloud: plan on Steam Auto-Cloud pointed at the sandbox save paths, since DragonRuby does not obviously expose Steamworks Cloud API (see Pitfall 17) [VERIFY].
+**Detection:** Testers re-grip the phone to press a button. Accidental encounter exits. VoiceOver can't reorder taps.
 
-**Warning signs:**
-`serialize_state(args.state)` is the save function. Save contains view state (scroll positions, hover). Loading a save from yesterday's build crashes. No production-mode save test exists.
-
-**Phase to address:** P1 (schema and IO skeleton), P2 (round-trip tests), P7 (migration QA).
-
----
-
-### Pitfall 14: DragonRuby dev-mode illusions -- hot reload, global state, and mruby limits
-
-**What goes wrong:**
-- Hot reload keeps globals/classes alive: `$game ||= Game.new` survives a reload with stale state; constants redefine with warnings; code that works after a reload fails on cold boot. `args.state` is effectively a singleton, `DR.reset` only resets `args.state`, not globals or class instances unless you define a top-level `reset`. Bare `iVars` outside classes pollute global object space.
-- DragonRuby embeds mruby, not CRuby: `require` of gems is not supported (`$gtk.require`/`require` of local files only), the stdlib is smaller, and pure-Ruby gems must be vendored as source [VERIFY: Set, Struct, Comparable, `format`/`%`, `String#wrap`, Time APIs before depending on them].
-- Production builds differ from dev (`DR.production?` disables logging and dev tools; creating `metadata/dragonruby_production_build` simulates it).
-- The docs strongly recommend an unzipped clean copy of DragonRuby per game (file access functions assume the binary lives alongside the game) and committing it all to source control.
-
-**Why it happens:**
-Fast iteration hides cold-boot bugs; Ruby habits (require, gems, Set, Marshal) do not all carry over to mruby.
-
-**How to avoid:**
-- Structure the game as classes with `attr_dr` (or explicit args passing) and a single `Game` root created in `boot`, with an explicit `reset` hook; no bare iVars; `args.state = {}` in `boot`.
-- Keep the simulation as pure Ruby classes with no engine dependency (also enables headless tests).
-- Maintain a cold-start smoke test: run `dragonruby` with a production-build marker file on every phase.
-- Spike in P1: confirm which stdlib features you need exist; if not, write tiny local equivalents.
-- Keep the engine directory inside the repo as the docs advise; confirm the DragonRuby license permits committing engine binaries to your repo visibility (keep the repo private) [VERIFY]. Add save/build output paths to `.gitignore`.
-- Use lowercase snake_case file names with no spaces (the packager warns, and Linux/Steam Deck are case-sensitive while macOS usually is not).
-
-**Warning signs:**
-Bugs that vanish after pressing reload. "Works on my Mac" file path casing issues. Use of `Marshal`, `Set`, or gems in early prototypes without checking.
-
-**Phase to address:** P1.
+**Phase:** P1 (UI kit + tokens), every UI phase (verify), P6 (accessibility pass).
 
 ---
 
-### Pitfall 15: Performance traps in a text-and-sprite-heavy DragonRuby game
+### Pitfall 10: Dynamic Type and accessibility retrofit, plus color-only encoding
 
-**What goes wrong:**
-- Array-based primitives and Array-argument geometry calls are slower; the DR performance guide says use Hashes, add outputs in bulk, avoid mutating arrays during iteration, and avoid lerping label `size_enum`/`size_px` (each size/font combination caches a glyph set, so animated text scaling floods the cache; use render targets for scaled text).
-- Texture cache: the 7.8 changelog raised the max cached texture entries to 2048 and cache ejection occurs beyond that. A large set of separate portraits, ingredient icons, beer layers, UI pieces and backgrounds can exceed it and cause load hitches.
-- Rebuilding large paragraph layouts and Regulars Book pages every frame at 60 ticks/sec.
-- Pre-rendering every beer visual permutation (color x head x glass x label) as separate PNGs.
-- Procedural effects (pour animation, foam, carbonation bubbles) with many particles.
+**What goes wrong:** Chunky AdCap-style buttons are typically fixed-size with fixed-size text. Retrofitting Dynamic Type later means touching every screen. The roadmap's own "text scale factor" idea (inherited from the desktop plan) is not the iOS mechanism: use the system.
+- Fixed `.font(.system(size: 14))` doesn't scale. Custom fonts need `Font.custom(_:size:relativeTo:)`; icon sizes need `@ScaledMetric`.
+- Fixed-height rows truncate at accessibility sizes (AX1-AX5); the 16-attribute display is the worst offender.
+- `Canvas` and custom-drawn glasses/bubbles are invisible to VoiceOver unless you add labels/`accessibilityChildren`.
+- Color-only encoding: beer tint, rarity, status effects, "known/suspected/unknown" clue states.
+- Reduce Motion ignored by juice animations (shakes, screen bounces, bubbles).
+- Apple's **Accessibility Nutrition Labels** on the product page are voluntary now and are stated to become required for new apps and updates later [MED]; accessibility gaps will eventually be visible and gating.
 
-**Why it happens:**
-Games like this look static, so performance is not measured; the AI art pipeline emits one PNG per asset by default.
+**Prevention:**
+- P1 UI kit: all text via semantic styles or `relativeTo` custom fonts; layouts built with `ViewThatFits` / `AnyLayout` (horizontal at normal size, vertical at accessibility size); chunky buttons are *min-height*, not fixed height.
+- Standing rule: every status, rarity and clue-state uses **icon + label + color**, never color alone (the roadmap already requires this for Phase 2; extend it to Dynamic Type and VoiceOver).
+- Accessibility Inspector audit at the end of **P2 and P3**, not P6. Test at default, XXL, and AX3.
+- `@Environment(\.accessibilityReduceMotion)` gate on every non-essential animation; haptics respect system settings.
+- Provide `accessibilityLabel`/`accessibilityValue` for beer visuals ("West Coast IPA, golden, bitterness high, citrus medium").
+- Decide which Nutrition Label claims you will make and test those specific features.
 
-**How to avoid:**
-- Compose beer visuals from a handful of grayscale layers tinted at runtime (DR sprites accept r/g/b/a), with head and glass as separate layers, rather than prebuilt permutations.
-- Pack small assets into sprite sheets/atlases; keep distinct texture paths comfortably below ~1500; load per-location portraits lazily where reasonable.
-- Cache static UI panels and text blocks in render targets and invalidate on change; use `DR.benchmark` and add an on-screen frame-time overlay in dev.
-- Follow the DR performance checklist (Hashes not Arrays, bulk `<<`, `:solid` sprites instead of `solids`).
-- Set a budget (e.g. sustained 60 fps on a 2018-era laptop and Steam Deck) and test on the weakest target periodically.
+**Detection:** Text clipped at XXL. Accessibility Inspector reports unlabeled elements in the encounter screen. Reduce Motion on, game still shakes.
 
-**Warning signs:**
-Frame time spikes when opening the Regulars Book or changing locations. Frame drops on Linux/Deck only (the 7.7 changelog mentions Deck framerate fixes). Hundreds of unique PNGs in the sprites directory.
-
-**Phase to address:** P1 (budgets and tooling), P6 (atlasing/integration).
+**Phase:** P1 (kit), P2/P3 (audits), P6 (final pass), P7 (label claims).
 
 ---
 
-### Pitfall 16: AI-generated art -- style drift, fake pixel art, and a reputational risk
+### Pitfall 11: AI flat/cartoon art, consistency across a large asset set, and rights
 
-**What goes wrong:**
-- Style drift across batches: palette, outline weight, light direction, perspective, head-to-body ratio and detail density vary between generations or model versions, so 30+ portraits and dozens of icons do not look like one game.
-- "AI pixel art" is usually not pixel art: inconsistent pixel size, anti-aliasing, off-grid, blurred edges; looks wrong when scaled with nearest-neighbor.
-- Portrait expression matrix: patrons x expressions (neutral/happy/annoyed/impressed) multiplies the asset count and character identity drifts between expressions.
-- Text baked into images, messy transparent backgrounds, hands/props artifacts.
-- Mixed pixel densities between UI, portraits and backgrounds (e.g. portrait at 2x, UI at 4x) look amateur.
-- A later style change requires regenerating everything.
-- Audience risk: cozy/indie/craft communities can react strongly to AI art; Steam requires disclosure of AI-generated content on the store page (verified in Valve's policy coverage), and itch.io has its own AI tagging. Tool terms of service and training-data/copyright questions need documentation.
+**What goes wrong:** (Carried forward from the pixel-art version; the failure modes change with flat vector-like style.)
+- **Style drift:** outline weight, palette, light direction, head-to-body ratio, and detail density differ across batches and model versions; 40+ patrons + 25+ ingredients + 8 yeast + bosses + locations do not look like one game.
+- **Expression matrix:** patrons x (neutral, pleased, sour, delighted) = 160+ images where character identity drifts between expressions.
+- **Edge halos and fringing:** background-removed AI PNGs show light halos on colored UI panels; common in flat-art UIs on saturated backgrounds.
+- **Resolution/format:** AI output is raster, not clean vector; upscaling later blurs. Export at 3x of the largest on-screen use.
+- **Text baked into images** (labels, signs) is wrong, unlocalizable, and sometimes real-brand-like.
+- **Rights:** the US Copyright Office position is that purely AI-generated images aren't copyrightable without sufficient human authorship [MED]; competitors can copy your art. Tool terms of service vary on commercial use. Generated likenesses of real brands/characters create 5.2 exposure (Pitfall 3).
+- **Apple policy:** guideline 5.1.2(i) governs sending personal data to third-party AI; pre-generated art shipped in the bundle does not trigger runtime-AI disclosure [MED, VERIFY if any generative features are ever added at runtime]. Unlike Steam, no AI-art disclosure field exists in the App Store Connect flow that I found [LOW]. Community reaction to AI art in cozy/indie spaces is still a reputational risk [LOW].
 
-**Why it happens:**
-Generating assets one at a time is easy; enforcing consistency is a pipeline problem, and early prototypes never face the 100-asset test.
+**Prevention:**
+- **Style-lock spike in P1:** generate 10-12 assets across every category (patron, ingredient, yeast, location, UI frame, boss, icon) with one pinned tool + version; proceed only if the contact sheet coheres. The roadmap already schedules this spike.
+- **Style bible:** palette (fixed, ~24-32 colors plus tints), outline weight, light direction, canvas sizes per asset class, naming scheme.
+- **Deterministic post-process script** (Python/Swift CLI): trim/pad to exact canvas, remove fringe (matte or decontaminate edges), palette-snap or color-grade, export 1x/2x/3x or a 3x master, write a **manifest** (prompt, tool+version, seed, source file, post-process version).
+- **Procedural where AI is weak:** the beer glass/liquid/head/label (already planned), UI frames, rarity badges, and **expressions via shared face base + overlay eyes/mouth layers** rather than 4 independent portrait generations.
+- Reference art through logical IDs in an asset catalog so the whole set can be swapped later (commissioned or licensed art if the game succeeds).
+- Keep API keys and raw dumps out of git; commit only curated finals + manifest.
+- Budget 10-20 minutes of manual cleanup per asset and an art-direction review gate before P6 bulk generation. Do not start bulk art before the P3 gate (the roadmap already enforces this).
+- Legal housekeeping in P1: save the tool's commercial-use terms (screenshot + date) and note that the art itself is likely unprotectable; protect the *game design, code, names and procedural renderer* instead.
+- Hold an opinion on disclosure: state AI-assisted art plainly on the website/press kit; do not hide it.
 
-**How to avoid:**
-- P1 "style lock" spike: pick the rendering target now (recommended: authored at a low native resolution such as 320x180 or 480x270 and scaled by integer factors to 1280x720, or a fixed pixel scale per asset class). Generate 10-12 test assets across all categories (portrait, ingredient, location, UI frame, glass) and only proceed if they cohere.
-- Write a style bible: fixed palette (e.g. 32 colors), outline rules, light direction, canvas sizes per asset class, naming scheme.
-- Build a deterministic post-process script: downscale to the true pixel grid with nearest-neighbor, quantize to the locked palette, enforce exact canvas sizes, strip anti-aliasing, trim/pad, export to lowercase file names. Every asset passes it.
-- Record a manifest per asset (prompt, model/version, seed, source file, post-process version) so assets are reproducible and replaceable.
-- Use procedural/layered generation where AI is weak: beer visuals, glasses, tap handles, ingredient icons (tintable templates), UI frames, and expression variation (shared face base with overlay eyes/mouth layers) rather than 4 independent generations per patron.
-- Reference all art through logical IDs in a manifest so the entire set can be swapped later (including for commissioned art if the game succeeds).
-- Never rely on AI for in-image text; use game fonts.
-- Handle disclosure early: mark AI use in the Steam content survey, state it plainly on the store page, and keep generation-tool licensing records. Plan manual cleanup time per asset (budget ~10-20 minutes each) and assign an art-direction review gate.
+**Detection:** Palette color count balloons. Two portraits look like different games. A single asset needs many regenerations. Thin white edges on colored buttons.
 
-**Warning signs:**
-Palette color count balloons. Two portraits appear to come from different games. A single asset takes multiple regeneration attempts. Sprites look soft when scaled.
-
-**Phase to address:** P1 (style-lock spike and pipeline scripts), P6 (bulk), P7 (disclosure).
+**Phase:** P1 (style lock + pipeline), P6 (bulk), P7 (rights + disclosure copy).
 
 ---
 
-### Pitfall 17: Licensing/tier and Steam assumptions made at the end
+### Pitfall 12: Solo-dev App Store logistics left to the end
 
-**What goes wrong:**
-From the official pages: DragonRuby Standard ($48 one-time) excludes streamlined Steam publishing, C extensions and bytecode compilation; Indie ($96/yr) and Pro ($128/yr) include `dragonruby-publish` Steam upload and C extensions; Standard can still publish to Steam manually through the Steamworks toolchain (steamcmd). PROJECT.md says the user "owns a license" without stating the tier. Steam features beyond upload (achievements, Cloud API, Steam Input integration) were not found in the docs I reviewed [LOW confidence: treat as not provided out of the box and verify what C extensions or Auto-Cloud can cover]. Other end-of-project Steam surprises: store page must exist well before launch (Valve requires a "Coming soon" page live for at least two weeks before release [MEDIUM, from Steamworks guidance, re-verify]), app fee and identity/tax verification, depot/launch option setup, content survey/age-rating questions (alcohol references), capsule/trailer assets, review turnaround, and macOS/Windows/Linux builds that each need real hardware tests.
+**What goes wrong:** Release week becomes a pile of administration and 2-3 unplanned review cycles.
+- **Apple Developer Program enrollment** (paid annual) can take days; an *individual* account shows your personal legal name as the seller; an *organization* account needs a D-U-N-S number and takes longer [MED].
+- **EU Digital Services Act trader status:** if you sell commercially (paid app or IAP), you must declare trader status and provide legal name, address, phone and email, which Apple **displays publicly** on EU product pages; apps without it are removed from EU storefronts [MED; Apple lists this as in force since 2025-02-17].
+- **Privacy:** a privacy-policy URL in metadata *and* reachable in-app (5.1.1(i)); App Privacy ("nutrition") labels; privacy manifest including required-reason APIs for you and any SDKs [HIGH]. Every analytics/ads SDK complicates this; for this game, add none.
+- **Guideline 2.1(a):** "Submissions ... should be final versions with all necessary metadata and fully functional URLs included; placeholder text, empty websites, and other temporary content should be scrubbed" [HIGH]. Apple reports 40%+ of rejections relate to 2.1 App Completeness (crashes, placeholders, broken links) [HIGH]. AI-art placeholders and "TODO patron" entries are classic triggers.
+- **IAP completeness** (2.1(b)): every IAP configured must be visible and functional to the reviewer or explained in review notes.
+- **No login:** 5.1.1(v) says apps without significant account-based features should work without login. Don't invent accounts. Game Center is optional.
+- **Screenshots:** at least one set for the required iPhone size class, up to 10 per size, no alpha/transparency, must show the app in use rather than title art (2.3.3) [HIGH on rules; the *exact* required pixel sizes changed historically, VERIFY current sizes in App Store Connect at P6].
+- **Review timing:** 50% reviewed under 24 h, 90% under 48 h [HIGH], but that is for clean submissions. First submission of an alcohol-themed game can bounce.
+- **App name** availability (Pitfall 3) and **age rating** (Pitfall 1).
+- **Tooling/signing:** provisioning, capabilities (iCloud, push) added late break CI/TestFlight uploads.
 
-**Why it happens:**
-Store setup looks like release-week administration; engine tier choice looks like a price question.
+**Prevention:**
+- **P1 checklist:** enroll; create app record (reserves name); set bundle ID and capabilities; first TestFlight upload of a hello-world build; draft privacy policy + support page (a simple static site); decide trader status/address; decide the seller identity (individual vs org); complete the age questionnaire.
+- **Metadata from P3 on:** keep a `store/` folder with the description, keywords, privacy answers, screenshot shot-list, review notes. Update at each phase gate. Capture screenshots every phase from real builds so the final set isn't a scramble.
+- Schedule P7 with **three review cycles of buffer** (plan 2-3 weeks) and no hard marketing date until approval; use **phased release / manual release** after approval.
+- Use **App Review appointments** (30-minute call) and the one-appeal-per-rejection path if the alcohol theme is misread [HIGH].
+- Ship with `UIRequiredDeviceCapabilities` and device family that reflect what you tested.
 
-**How to avoid:**
-- P1: confirm license tier; if Standard, decide now whether achievements/cloud/CI automation are worth moving to Indie, or plan manual Steamworks packaging.
-- P1: do a throwaway end-to-end Steam test (a hello-world build uploaded to a private/beta branch through steamcmd or `dragonruby-publish`) so depots, launch options (Windows, macOS app, Linux), and 64-bit settings are proven early. Follow `docs/steam-publishing.md` and `docs/guides/deploying-to-steam.md`.
-- Start the store page, capsule art, and wishlist funnel around the first externally playable slice (P3 gate or P5), not after P7. Plan a demo build; Steam Next Fest/itch demo is a realistic marketing path for a solo cozy game.
-- Treat achievements, trading cards, and cloud as optional stretch; do not promise them in scope until verified.
-- Test on Steam Deck/Linux: DR's Steam guide documents building with `dragonruby-publish --only-package` and copying the Linux build to the Deck.
-- Content/age rating: the game centers on alcohol; complete Steam's content survey honestly, avoid depicting intoxication as aspirational ("Buzzed"/"Wrecked" statuses are palate/comedy states, not drunk-driving jokes), and note regional alcohol-related store restrictions.
+**Detection:** No app record exists past P2. Privacy policy URL points at a placeholder. Screenshots all use debug UI.
 
-**Warning signs:**
-No Steam App ID until late. No one has launched a packaged build on Windows or Linux. A requirement mentions achievements or cloud saves without a technical path.
-
-**Phase to address:** P1 (decision + hello-world publish), P5/P7 (store page, QA, disclosures).
+**Phase:** P1 (enrollment + app record + hello-world TestFlight), P3 (store folder), P6 (screenshots), P7 (submission).
 
 ---
 
-### Pitfall 18: Onboarding a 16-attribute deduction game, and last-minute settings/menus
+### Pitfall 13: TestFlight playtest logistics for the fun-gate fail, producing a false pass or an unreadable result
 
-**What goes wrong:**
-Players must learn brewing choices, attribute families, clue reading, status effects, and the lineage/collection layer. A text-dump tutorial or a final "tutorial level" bolted on in P7 will not do it. Meanwhile settings (display mode, resolution, volume channels, text speed, key/button remap, accessibility), pause/quit-to-title, save slots, credits, and error handling are routinely left until the end, then rushed.
+**What goes wrong:** The roadmap's P3 gate ("at least 3 outside playtesters demonstrate design criteria #2, #6 and #7") is the project's most important decision, and its logistics are non-trivial on iOS.
+- **External testers need Beta App Review** for the first build of each version train (and builds are reviewed automatically once added to an external group) [HIGH]. Plan a 1-3 day delay and keep alcohol-related review notes ready (Pitfall 2).
+- Limits: 100 internal testers (team members only), **10,000 external**, 30 devices per tester, public links with criteria [HIGH]. **Builds expire after 90 days** [MED, standard TestFlight behavior; Apple's page excerpt did not restate it].
+- **Compensation:** Guideline 2.2: "apps using TestFlight cannot be distributed to testers in exchange for compensation of any kind, including as a reward for crowd-sourced funding" [HIGH]. Don't sell/gift TestFlight access as a perk. Paying testers for *their time and feedback* is different from selling access, but keep it clearly separate and don't advertise it as a beta reward [LOW, interpretation].
+- **Wrong testers:** recruiting only friends or fellow developers produces polite approval. The design doc's audience includes craft-beer enthusiasts who will notice wrong brewing facts and judge criterion #7. Testers must be adults (18+; 21+ in the US) given the content [MED].
+- **No signal:** TestFlight gives crash reports and screenshot feedback, not "why they lost." Without instrumentation and observation you can't verify criteria #2/#6.
+- **Third-party analytics SDK** to fix that adds privacy-manifest work and a "data collected" label.
+- **Save compat across builds** wipes testers (Pitfall 5).
+- **Coaching bias:** the developer helps in a live session; the result is invalid.
 
-**How to avoid:**
-- Design the first hour as a staged curriculum: first patron = 1 axis (taught by dialogue), then tolerance, then a status, then lineage. Each new concept is introduced by content, not by a popup wall.
-- Make the Regulars Book and clue log the persistent "what do I know?" memory aid; require it before shipping the slice.
-- Build the settings screen and pause menu in P1 with the UI kit; add settings as features arrive: text speed, skip/fast-forward for dialogue and pour animations (encounters repeat hundreds of times), color-blind-safe icons plus color (beer tints are color-coded), UI scale, and controller remapping.
-- Add an in-game glossary ("What is attenuation?") reached from any attribute, reusing the 70% beer-culture content.
+**Prevention:**
+- Run the gate as a **written protocol** (the roadmap flags this): 5-8 recruits (craft-beer people, homebrewers, plus 2 non-beer gamers) so that 3+ complete it; no coaching; a fixed task script ("play until you've beaten or given up on 3 patrons, then describe your tap list to me"); a post-session interview mapped line-by-line to criteria #2, #6, #7; screen recording with consent, or remote observation via screen share.
+- **Local, privacy-simple instrumentation:** a bounded on-device event log (encounter start/win/lose, pours used, clues revealed, time per screen, brew-screen abandonment) with an **export button** testers can share. No network, no third-party SDK, no account.
+- A **tester build flag** to reset the save and to skip tutorial steps for repeat sessions.
+- Stagger rounds: internal TestFlight in P1-P2 (yourself on real hardware weekly), first external build at the **end of P2** to burn in Beta App Review and the alcohol canary (Pitfall 2) *before* the real gate.
+- Keep a build cadence under the 90-day expiry, with release notes that tell testers what to look at.
+- Pre-register what counts as pass/fail for the gate (e.g., 2 of 3 testers can explain a failed pour without help; 0 of 3 call it a guessing game).
 
-**Warning signs:**
-First-time testers do not know what to do after the first pour. No pause menu in the slice. Animations cannot be skipped.
+**Detection:** Gate plan lacks a recruiting source. All "playtesters" are people who know you. The first external build was submitted the week of the gate.
 
-**Phase to address:** P1 (menus/settings scaffolding), P3/P5 (curriculum), P7 (QA).
+**Phase:** P1 (TestFlight pipeline, hello-world), P2 (first external build), P3 (gate).
+
+---
+
+### Pitfall 14: Building the entire game before the core loop is proven fun
+
+**What goes wrong:** PROJECT.md records "Full v1 game, not just Phase 1 prototype" as a decision. The design doc's own prototype exists to answer one question: "Can brewing decisions create interesting beers, and can those beers create interesting patron-selection puzzles?" If not, UI, art and world systems have already been built on the wrong core. Solo devs want visible progress (portraits, maps), and systems games read fine on paper (16 attributes, 9 statuses, 5 relationship tiers) and only reveal dullness in play.
+
+**Prevention:** Keep the full-v1 ambition but sequence it as the roadmap already does: P1-P3 are an ugly, rectangles-and-text, procedural-glass iPhone build with ~10 patrons, 6 taps, ~20 ingredients; **no bulk art, no city, no bosses until the P3 TestFlight gate passes**. Protect the gate by making the post-gate phases depend on it in ROADMAP.md (already done) and by refusing "just one more" visual work before it.
+
+**Warning signs:** Art generation prompts for 30 patrons before any outside player has lost an encounter. The scoring formula is still changing while portraits are generated.
+
+**Phase:** Roadmap-level; P3 gate.
+
+---
+
+### Pitfall 15: Stat soup, now on a 6-inch screen
+
+**What goes wrong:** 16 sensory attributes (Malt, Sweetness, Dryness, Body, Bitterness, Hop Aroma, Citrus, Tropical, Herbal, Spice, Roast, Fruit, Funk, Sour, Carbonation, ABV) as 16 bars or rows is illegible in portrait; players stop reasoning about flavor and brute-force numbers. Several attributes correlate (Dryness/Sweetness/Body; Citrus/Tropical/Fruit) and ABV is a different kind of quantity (strength/tolerance, not preference).
+
+**Prevention:**
+- Keep 16 in the model, present in **families** (malt, hop, yeast, mouthfeel/strength) with glyphs or a radar/flavor-wheel; numbers on drill-down (the roadmap already specifies families + glyphs).
+- Primary beer identity = **top 3 traits + 1 flaw** + generated name + tasting note + glass visual.
+- Treat ABV as a separate strength axis.
+- Patron palettes reference families and 3-5 specific axes, never all 16.
+- **Five-second glance test** in P3 on an actual phone: can a tester say what a beer is good against without opening detail?
+- Brew screen: <= 7 live controls visible at once; use steppers/segmented controls rather than 5 sliders (also better for one-handed use and accessibility).
+
+**Warning signs:** Testers narrate numbers ("it has 4 citrus") instead of character ("it's bright and snappy"). Detail screens are opened on every pour.
+
+**Phase:** P2 (families), P3 (glance test), P1 (UI kit supports glyph widgets).
+
+---
+
+### Pitfall 16: Deduction collapses into style-matching, a guessing game, or a solved puzzle
+
+**What goes wrong:** (Carried forward, unchanged in substance.) Four failure modes: (1) *Style leak*: patron data references styles, so the sensory layer is decorative (violates the design doc's "Important Design Constraint"). (2) *Under-determined puzzle*: three pours cannot identify a hidden preference vector over many dimensions, so players guess and lose. (3) *Information leak*: the doc's sample "+22 Hop Match, +8 Dryness, -12 Excessive Bitterness" printed with exact numbers solves the patron in one pour; printing nothing is noise. (4) *One-and-done*: once a patron's palette is in the Regulars Book, every later encounter is execution.
+
+**Prevention:**
+- Style is an **output** (computed label), never an input; boss gimmicks (Beer Judge, German Brewmaster) are defined by attribute/technique rules, not style IDs.
+- **Information budget per pour:** 1-2 coarse facts (Likes/Neutral/Dislikes an axis; tolerance Low/Med/High); score breakdown in direction + magnitude buckets, not invertible raw weights. The roadmap's "itemized +/- per-attribute breakdown" in Phase 1 should be checked against this: show it in the slice only if the harness shows it doesn't trivialize patrons, or bucket it.
+- Palette size per patron: 3-5 positives, 1-3 dislikes, 2 tolerances, 1 hidden.
+- **Headless solvability test** (Pitfall 17): a scripted "reasonable player" following clues wins >= 70% within the pour limit; "style-only" and "random" strategies win far less.
+- Choose the one-and-done policy deliberately: escalate later encounters (stacked statuses, fewer pours), or vary per-visit mood/context shifting one axis, and always **bank clues on a loss** (fail-forward).
+
+**Warning signs:** A content column named "Favorite style." Testers win without opening the attribute view. One "Crowd Pleaser" beer beats most patrons.
+
+**Phase:** P2 (info model + harness), P3 (clue UX), P5 (escalation).
+
+---
+
+### Pitfall 17: A dominant "max everything" beer, and no tooling to see it coming
+
+**What goes wrong:** Additive scoring rewards breadth, so a balanced inoffensive beer (the doc's "Crowd Pleaser") or a maxed-intensity beer wins everywhere; the 6-tap lineup collapses to one recipe. Too-steep tradeoffs do the opposite.
+
+**Prevention:**
+- Real brewing tradeoffs: high attenuation raises Dryness and lowers Body/Sweetness; heavy roast masks hop aroma; high ABV raises warmth and Hop Burn risk. Diminishing returns and penalty asymmetry (a disliked axis hurts more than a liked axis helps), so inoffensive means mediocre. Cap/decay "free bonus" abilities.
+- **Swift-native harness:** domain package with no UIKit/SwiftUI dependency; a Swift Testing/XCTest target plus a small CLI executable target that generates N archetype and random recipes, scores vs all patrons, prints a heatmap, and reports (a) unbeatable patrons, (b) trivial patrons, (c) best single beer's win rate, (d) count of distinct best-in-class beers. Gate in CI (Xcode Cloud or a local script): >= 4 distinct best-in-class beers in a 6-tap lineup; >= 70% solvability; best-order vs worst-order delta >= 15 satisfaction points in a healthy fraction of encounters.
+- Keep scoring deterministic; seeded randomness stored in the save (patron ID + visit count) and kept out of the clue channel.
+
+**Warning signs:** One recipe on everyone's tap list. Balance edits are made one patron at a time. Nobody can answer "which patrons does the saison beat?" without playing.
+
+**Phase:** P2 (model + harness), re-run at P4/P5 on every content change.
+
+---
+
+### Pitfall 18: Status effects that don't matter, or become homework
+
+**What goes wrong:** Nine listed statuses in a 3-pour encounter yield barely two ordering decisions. Invisible or fuzzy triggers make order noise; all nine live at once forces a rules matrix in the player's head.
+
+**Prevention:** Start with 2-3 (Palate Fatigue, Hop Burn, Refreshed), each tied to a visible attribute threshold; introduce others one at a time through patrons/locations/bosses. Always show active statuses with icon + one-line rule + visible expiry counter. Add best-order vs worst-order delta to the harness. Consider 4-5 pours for bosses. (The roadmap's "6-8 effects in P2" is on the high side: ship the minimum set that passes the order-delta test.) Re-read Pitfall 2 when finalizing "Buzzed."
+
+**Phase:** P2 (rules + harness), P3 (display), P5 (staged introduction).
+
+---
+
+### Pitfall 19: Black-box brewing (outcomes the player can't predict or learn from)
+
+**What goes wrong:** Players pick grain bill, hop timing, yeast, temperature and conditioning, then get surprising numbers. Without legibility, experiments aren't learnable, criterion #3 ("modify recipes after learning patron preferences") fails, and the "accidentally learn real brewing" promise is wasted.
+
+**Prevention:** A small set of consistent, real rules of thumb (hot mash means fuller/sweeter; early hops bitterness, late hops aroma; warm ferment esters/phenols, cool/lager clean). Each ingredient contributes to 2-3 dominant attributes plus one identity trait. **Live preview with causal tags** ("Dry: yeast attenuation +2, mash 148F +1"), and "?" for undiscovered ingredient traits (roadmap P3). A post-brew "batch notes" screen. Have a homebrewer/BJCP-literate reader check the rules table; this audience will call out wrong facts (carried-forward "accuracy gaffes" risk).
+
+**Phase:** P1 (attribution data), P2 (rules table), P3 (preview UI), content review at P4.
+
+---
+
+### Pitfall 20: Content explosion and the balance treadmill
+
+**What goes wrong:** v1 means 40+ patrons, 8 bosses, 25+ ingredients, 8+ yeast, 5-8 locations. Every patron needs a palette, portrait, expressions, voice lines, Regulars entry, and a balanced win path; every new ingredient reshapes reachable attribute space and invalidates earlier balancing.
+
+**Prevention:** Fix a content budget in requirements and treat additions as scope changes. All content as **bundled JSON (or Swift literal tables) with a validator** in the test suite (required fields, palette size limits, no style references, ranges, unique stable IDs). Reaction text from templates keyed by (attribute, direction, intensity) with archetype voice overrides and a few handwritten signature lines per patron. Use **String Catalogs** from day one (English-only v1 is fine; externalized strings keep content out of code). Run the balance matrix (Pitfall 17) as a content CI step.
+
+**Phase:** P2 (format + validator), P4/P5 (budgeted content).
+
+---
+
+### Pitfall 21: Collection systems with no pull; mutation that destroys work
+
+**What goes wrong:** Silent yeast mutation overwriting a tuned recipe punishes the iteration the game wants; blind-RNG rare drops feel arbitrary; the Regulars Book becomes a checklist; every beer is "colored glass + number list" so no attachment forms.
+
+**Prevention:** Mutation creates a **new forked culture** with a visible trait diff and never overwrites (the roadmap already specifies this). Make rare acquisition knowledge-driven (patron friendship, location discovery, conditions) with pity guarantees (also keeps Pitfall 4 clean). Regulars tiers derived from existing mechanics (Seen = met, Served = >= 1 pour, Impressed = score >= X, Regular = learned all axes, Friend = beat with a signature recipe). Beer identity card: generated name, top-3 traits + flaw, procedural glass, tasting note, favorites, shareable image card (P4). Cap taps at 6 but give the archive sort/filter/compare.
+
+**Phase:** P4.
+
+---
+
+### Pitfall 22: Scope creep into a management sim, an idle game, or a walkable world
+
+**What goes wrong:** Design-doc perks need subsystems (equipment repairs, food pairing, a visited brewery). "Adventure Capitalist" invites idle/offline progress and ad boosts; "Pokémon-style" invites an overworld. Each sounds small in a cozy game.
+
+**Prevention:** Closed set of regular-perk effect types that only touch existing systems (discounts, unlocks, hints, pour bonuses; roadmap P5). Keep the node-based city map (roadmap) as the exploration form. Treat AdCap as a *UI/feel* reference only (PROJECT.md already says so): no offline earnings, no timers, no ads. Any new system must name the design success criterion it improves; otherwise it is v2.
+
+**Phase:** Roadmap-level, P4, P5.
+
+---
+
+### Pitfall 23: Onboarding and settings left to the end, and iOS-specific polish forgotten
+
+**What goes wrong:** A 16-attribute deduction game needs a staged first hour. In the first 5 minutes mobile players decide. iOS-specific items missed: respecting the **silent switch** (audio category `.ambient` unless you intentionally play over it) and audio interruptions; haptic overuse (and not respecting system haptics setting); Restore Purchases button (if any IAP; required by 3.1.1 for restorable items); permission prompts on first launch; dark-mode/forced appearance decisions; localization of numbers/units (ABV, temperature F/C: brewers use both; offer a setting).
+
+**Prevention:** Design the first hour as a curriculum: first patron = 1 axis, then tolerance, then a status, then lineage. Build Settings in P1 (sound, music, haptics, text speed, reduce motion, units F/C, reset tutorial, About with privacy policy link and age note) and extend per phase. Provide skip/fast-forward for dialogue and pours. In-game glossary ("What is attenuation?") reusing the 70% culture content. Test with audio on silent and on a call interruption.
+
+**Phase:** P1 (settings scaffold), P3/P5 (curriculum), P6 (polish), P7 (QA).
 
 ---
 
 ## Moderate Pitfalls
 
 ### Pitfall A: Hidden randomness undermines deduction and fairness
-**What goes wrong:** Per-pour random variance in scoring means clues become unreliable; RNG reseeds on `DR.reset` and is seeded from start time, so replays differ.
-**Prevention:** Make encounter scoring fully deterministic; if variation is wanted, derive it from a seed stored in the save (patron_id + visit_count) and keep it outside the clue channel. Use `DR.reset seed:` in tests.
+**What goes wrong:** Per-pour random variance makes clues unreliable.
+**Prevention:** Deterministic scoring; seeded variation stored in the save and outside the clue channel; seeded RNG injected into the domain package for tests.
 
-### Pitfall B: Brewing accuracy gaffes in front of a beer-literate audience
-**What goes wrong:** Wrong facts (e.g. temperatures, hop timing, yeast behaviors) get called out on forums and in reviews, undermining the 70% culture promise. Over-correction produces simulation bloat.
-**Prevention:** Maintain a "rules of thumb" reference doc, review with a homebrewer/BJCP-style reader, favor simplifications that are directionally true, and mark intentionally gamey rules in the UI copy.
+### Pitfall B: Brewing-accuracy gaffes in front of a beer-literate audience
+**What goes wrong:** Wrong temperatures/hop timing/yeast facts get called out in reviews and forums, undermining the 70% culture promise.
+**Prevention:** A rules-of-thumb reference doc, a homebrewer reviewer, directional truth over simulation bloat, UI copy that marks intentionally gamey rules.
 
-### Pitfall C: Trademarked names in content
-**What goes wrong:** The design doc uses "Citra," "Nelson," "Untappd Guy," and "Pokemon-style" references. Some hop names are registered trademarks of breeding programs; "Untappd" is a company brand; "Pokemon" in store copy invites takedown.
-**Prevention:** Use fictionalized hop/yeast names or generic variety names where marks are claimed, rename the Untappd parody (e.g. a "check-in" app), and avoid brand/IP references in store tags and marketing copy. [MEDIUM, verify before shipping.]
+### Pitfall C: Failure states that punish learning
+**What goes wrong:** Losing costs time/resources, so players avoid experimenting, which kills the deduction loop.
+**Prevention:** Loss = small cost or cooldown-free retry; always bank clues; reward partial success (roadmap P2 already calls for retry + banked clues).
 
-### Pitfall D: Encounter pacing fatigue
-**What goes wrong:** A 3-pour encounter repeated hundreds of times becomes tedious if each pour has long animations and dialogue.
-**Prevention:** Fast-forward/skip, quick-repeat on losses, short feedback (one line + one icon change), and animation budgets per pour (~2 seconds).
+### Pitfall D: Encounter fatigue
+**What goes wrong:** Hundreds of 3-pour encounters with long animations and dialogue.
+**Prevention:** Skip/fast-forward, quick-retry, one-line feedback + icon change, ~2 s animation budget (Pitfall 6).
 
-### Pitfall E: Pixel-perfect scaling and resolution
-**What goes wrong:** Non-integer scaling blurs pixel art; high-DPI mode is Pro-only per the DR tier list; fullscreen/aspect-ratio behavior on ultrawide and Steam Deck (1280x800) differs from 16:9.
-**Prevention:** Lock a logical resolution (DR defaults to 1280x720 logical), design for integer art scales, test letterboxing on 16:10 and ultrawide, and expose fullscreen/borderless/window options in Settings. [VERIFY scale-quality settings in `game_metadata.txt`.]
+### Pitfall E: Thermal and battery on long sessions
+**What goes wrong:** Perpetual `TimelineView`/particle effects warm the device and drain battery; Low Power Mode and Reduce Motion make it worse.
+**Prevention:** Pause ambient animation off-screen/idle, cap particles, test a 30-minute session on an older device (Pitfall 7).
 
-### Pitfall F: Failure states that punish learning
-**What goes wrong:** Losing an encounter costs resources/time, so players avoid experimenting, which is the whole deduction loop.
-**Prevention:** Loss = no cost beyond a cooldown or an easy retry; always bank clues; reward partial success.
+### Pitfall F: Privacy surface creep
+**What goes wrong:** Adding analytics, crash, or ad SDKs adds privacy-manifest, "data collected" label, ATT and policy work (5.1.1, 5.1.2).
+**Prevention:** Zero third-party SDKs for v1; use MetricKit and Xcode Organizer crash reports; local debug logs only. Then the privacy label can read "Data Not Collected," which is also a trust signal for an 18+ audience.
 
-### Pitfall G: Build/test matrix neglect
-**What goes wrong:** Developing on macOS only; Windows path and Linux case-sensitivity bugs, audio encoding warnings, and controller differences appear at release.
-**Prevention:** Package all three platforms each phase (DR packages from one machine); keep a Windows machine/VM and a Linux or Steam Deck test target; honor the packager warnings (file names with spaces/capitals, audio encoding).
+### Pitfall G: Unvetted regional availability
+**What goes wrong:** Alcohol content is restricted or illegal to promote in some countries; Apple can restrict by region and you are responsible for compliance in each territory you enable (2.3.6) [HIGH on the quote; country list VERIFY].
+**Prevention:** Choose storefronts deliberately in Pricing and Availability: launch in a conservative set (US, CA, UK, IE, AU, NZ, EU) and add others after review; re-check after the rating is saved.
+
+### Pitfall H: Xcode toolchain and CI lock-in
+**What goes wrong:** Xcode updates (annual SDK deadline) break builds; signing certificates expire; single-machine builds.
+**Prevention:** Keep the domain in a Swift package with command-line tests (`swift test`), automate archive+upload (Xcode Cloud or `xcodebuild` + `fastlane`), and note the SDK deadline each spring.
 
 ---
 
 ## Minor Pitfalls
 
 ### Pitfall a: Hardcoded strings and magic numbers
-**What goes wrong:** Dialogue and labels buried in code block future localization and make editing painful.
-**Prevention:** Keep text in content data keyed by ID; centralize tuning constants.
+**Prevention:** String Catalogs for UI, JSON for content, one tuning constants file.
 
-### Pitfall b: Naming/typing UX
-**What goes wrong:** Beer naming needs text input, which needs a controller path.
-**Prevention:** Generated names with re-roll plus an optional on-screen character picker; `DR.start_text_input` for keyboard users.
+### Pitfall b: Naming and typing UX
+**What goes wrong:** Beer naming needs text entry; the keyboard covers half the screen in portrait.
+**Prevention:** Generated names with re-roll plus an optional text field with keyboard-safe layout.
 
-### Pitfall c: Audio left for last
-**What goes wrong:** No sound design until late; pour/clink/cheer feedback is a big part of "juice." The packager warns on incorrectly encoded audio.
-**Prevention:** Placeholder SFX in P3; decide audio sourcing (licensed packs, procedural) in P1.
+### Pitfall c: Audio and haptics left for last
+**What goes wrong:** Pour/clink/cheer feedback is a large share of "juice."
+**Prevention:** Placeholder SFX/haptics from P3; decide audio sourcing and licenses in P1 (the roadmap's "Sonic Pi" is part of the obsolete plan; re-decide for iOS).
 
-### Pitfall d: API keys and generation tooling in the repo
-**What goes wrong:** AI-image service keys or cloud credentials committed accidentally; huge raw generation dumps bloat git.
-**Prevention:** Keep keys in env vars; store only curated finals plus the manifest in git; keep raw generations outside the repo.
+### Pitfall d: API keys and generation dumps in the repo
+**Prevention:** Env vars; commit curated finals and manifest only.
+
+### Pitfall e: App icon and launch polish
+**What goes wrong:** App icon (1024x1024, no alpha) generated by AI contains text or brand lookalikes; icons built without current Xcode tooling look off beside system icons.
+**Prevention:** Generate and finalize the icon in P6 after the style bible; check with the current icon tooling in Xcode 27.
 
 ---
 
@@ -490,129 +513,155 @@ First-time testers do not know what to do after the first pour. No pause menu in
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Serialize all of `args.state` as the save | Save in 5 minutes | Un-migratable saves, UI state in saves, size blowups | Never for the shipped save; ok for a debug quicksave |
-| Mouse-only UI, controller "later" | Faster first screens | Rewrite of every screen | Never (violates the stated constraint) |
-| Hardcode patron data in Ruby classes | No parser/validator | Cannot run balance matrix; content edits need code | Only the first 3 patrons in P2, migrate by P3 |
-| Store derived attributes in saves only | No recompute logic | Balance patches orphan old beers | Never without ruleset_version |
-| Style names in patron definitions | Easy authoring | Violates core design constraint; deduction dies | Only for boss gimmicks defined via attribute rules |
-| One PNG per asset and per beer permutation | Simple pipeline | Texture cache pressure, huge asset count | Early placeholders only |
-| AI assets without manifest/post-process | Fast first batch | Impossible to regenerate/replace consistently | Never beyond the P1 style-lock spike |
-| Global `$game` + bare iVars | Quick prototype | Hot-reload stale state, reset bugs | P2 spike only |
-| Skip headless tests of simulation | Saves setup time | No solvability/balance verification | Never |
-| Add Steam later | More time on gameplay | Depot/launch/tier surprises at ship | Never; do a hello-world publish early |
+| SwiftData `@Model` for game state | Fast persistence demo | CloudKit constraints, migration crashes, lineage relationship pain | Never for game state; ok for throwaway spike |
+| Unversioned save format | Ship P1 faster | Unmigratable saves, tester wipe | Never |
+| One giant `@Observable GameState` | Simple wiring | Whole-screen invalidation, hitches | P1 spike only |
+| Scoring/preview inside `body` | No view model needed | Main-thread hitches in brewing | Never past P2 |
+| Hard-coded patron data in Swift types | No parser/validator | Can't run balance matrix | First 3 patrons in P2 only |
+| Store derived attributes in saves | No recompute logic | Balance patches orphan beers | Never without `rulesetVersion` |
+| Style names in patron definitions | Easy authoring | Kills deduction | Only boss gimmicks defined via attribute rules |
+| One PNG per beer permutation | Simple pipeline | Memory pressure, asset sprawl | Early placeholders only |
+| System chrome mixed with custom art | Faster nav | Liquid Glass vs flat mismatch | Utility screens only (Settings, About) |
+| AI assets without manifest/post-process | Fast first batch | Impossible to regenerate consistently | Never beyond the P1 style-lock spike |
+| Third-party analytics SDK | Easy metrics | Privacy label/manifest burden | Never for v1; local logs instead |
+| Build with Xcode 26 "for now" | Avoid Liquid Glass fixes | Rework at the April 2027 deadline | Never for a release target after that date |
+| Defer app record / TestFlight setup | More time on gameplay | Enrollment/provisioning surprises at P3 gate | Never |
 
 ## Integration Gotchas
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| DragonRuby file IO | Assuming dev write paths equal production; shared DR install location | Test saves in a production build (`metadata/dragonruby_production_build`); one clean DR copy per game inside the repo |
-| Steam (`dragonruby-publish`) | Assuming Standard tier includes it; forgetting depots/launch options per OS; Steam Guard in automation | Confirm tier (Indie/Pro for streamlined publish), follow `steam_metadata.txt` setup, do a hello-world upload early, use steamcmd auth tokens |
-| Steam Cloud/achievements | Planning them without an engine path | Verify C-extension/Auto-Cloud routes; treat as optional |
-| Steam Deck | Keyboard glyphs while controller active, no text-entry path, small text | Active-device glyphs, controller-only text entry, legible font sizes, test via `--only-package` Linux build on a Deck |
-| itch.io | Wrong viewport/embed settings for web, missing AI disclosure | Follow DR itch guide (1280x720 viewport); apply AI tags |
-| AI image generators | Mixing models/versions mid-project; no seeds saved | Pin tool+version, store prompts/seeds in manifest, deterministic post-process |
-| Controller hardware | Assuming Xbox layout | Use `accept`/`cancel` and cardinal names; test an Xbox, PlayStation, Switch Pro and the Deck |
+| App Store Connect age rating | Answering from memory of 17+ | Re-answer against the 4+/9+/13+/16+/18+ questionnaire; plan 18+ (Pitfall 1) |
+| TestFlight external | Submitting the first external build the week of the gate | Burn in Beta App Review at the end of P2; keep review notes |
+| StoreKit 2 (if IAP) | No Restore, IAP not visible to reviewer, odds not disclosed for random items | Restore button, IAP reachable in review build, odds UI (3.1.1, 2.1(b)) |
+| iCloud / CloudKit | Using SwiftData sync with unique constraints and non-optional relationships | Codable JSON + `CKSyncEngine`/`GKSavedGame`, or local + export/import (Pitfall 5) |
+| Game Center | Making sign-in required | Optional; no accounts (5.1.1(v)) |
+| Push notifications | Asking on first launch, or requiring them | Optional, contextual, never required (5.1.2(i)) |
+| AI image tools | Mixing models/versions, no seeds saved, no commercial terms on file | Pin tool + version, manifest, archive ToS (Pitfall 11) |
+| Apple Ads / social ads | Showing consumption or untargeted ages | Age-target, no consumption imagery, per-country rules (Pitfall 3) |
+| EU distribution | Missing trader status | Declare in App Store Connect before launch (Pitfall 12) |
+| Xcode/SDK | Developing on an old SDK | Xcode 27 from day one; April 2027 deadline (Pitfall 8) |
 
 ## Performance Traps
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Array primitives, per-tick object churn | Frame time creep | Hash primitives, bulk `<<`, class-level `Array.map` helpers per DR guide | Thousands of primitives per frame |
-| Animated label `size_px`/`size_enum` | Glyph cache growth, hitches | Render-target scaling for text | Any scaling animation across many sizes |
-| Too many distinct textures | Load hitches when entering screens | Atlas/sprite sheets, tinted layers, lazy loading | Past roughly 2048 cached textures (7.8 changelog) |
-| Rebuilding text layout every tick | CPU spikes in Regulars Book/recipe list | Cache in render targets, invalidate on change | Lists of 30-50+ entries with wrapped text |
-| Brute-force scoring in UI thread | Lag when previewing every beer vs every patron | Memoize attribute vectors per recipe, precompute heatmaps offline | 100+ recipes x 40+ patrons if computed live |
-| Large save state | Slow autosave stutter or "too large" serialization | Save only the minimal data layer, autosave off the hot path | Thousands of keys (engine tests flag ~3000) |
-| Particle-heavy pour effects | Steam Deck frame drops | Budget particles, prefer sprite animation | Low-power Linux targets |
+| Broad `@Observable` dependencies | Many rows update on one change | Per-row view models, slice state | Lists of 25-50+ rows (journal, Regulars Book) |
+| Work in `body` (formatters, scoring) | Hitches while dragging controls | Memoize, cache formatters, off-main compute | Live preview of 16 attributes |
+| Perpetual `TimelineView` effects | Warm phone, battery drain | Pause off-screen, cap particles | Any screen left open 5+ minutes |
+| `Canvas` for semantic UI | VoiceOver can't see content, no hit testing | Real views for interactive parts | Accessibility audit |
+| `drawingGroup` everywhere | Blurry text, wasted memory | Apply selectively, measure | Text-heavy panels |
+| Large AI PNGs | Memory warnings, jetsam kills | ~3x master, downsample, asset catalog | ~40+ full-size portraits resident |
+| Unstable `ForEach` IDs | Row flicker, state loss | Stable IDs from domain | Journal/book scrolling and edits |
+| Brute-force scoring on main thread | Lag when previewing every beer vs every patron | Memoize attribute vectors, precompute | 100+ recipes x 40+ patrons |
+| Large save write on main thread | Autosave stutter | Background actor, atomic write | Hundreds of recipes with history |
 
-## Security Mistakes
+## Security / Privacy Mistakes
 
 | Mistake | Risk | Prevention |
 |---------|------|------------|
-| Committing Steam credentials or AI service keys | Account compromise | Env vars; steamcmd handles auth (DR never sees credentials) |
-| Treating the save file as trusted | Crash/corruption on load; modders produce invalid state | Validate on load (schema, ID existence, ranges), fail gracefully |
-| Leaving the in-game HTTP server/dev tools enabled in production | Exposed dev surface | Check `DR.production?` gates; build with production marker |
-| Distributing the DragonRuby engine in a public repo | License violation | Keep repo private [VERIFY license terms] |
+| Treating the save as trusted | Crash on corrupt/edited save | Validate on load (schema, ID existence, ranges), keep `.bak`, fail gracefully |
+| Committing AI-service keys | Account compromise | Env vars, secrets outside repo |
+| Forgetting privacy manifest/required-reason APIs | Upload warnings or rejection | Declare reasons in P1; re-run before each submission |
+| Collecting personal data "for later" | Review friction (5.1.1), label burden | Collect nothing in v1 |
+| Debug menus left in release | Reviewer finds hidden features (2.3.1) | `#if DEBUG` gating; document anything reviewable in Notes |
 
 ## UX Pitfalls
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| 16 numbers on every screen | Cognitive overload, spreadsheet feel | Families, top-3 traits, radar glyph; drill-down for numbers |
-| Exact score breakdowns after each pour | Puzzle solved instantly | Bucketed clues, one or two facts per pour |
-| No visible knowledge log | Players forget what they learned and give up | Regulars Book with confirmed/inferred clues, always accessible |
-| Hover-only tooltips | Controller users blind | Focus-driven help panel |
-| Unskippable animations/dialogue | Fatigue during repeated encounters | Skip/fast-forward, text speed |
-| Color-only status/beer differentiation | Inaccessible | Icons + labels + color |
+| 16 numbers on a phone screen | Overload, spreadsheet feel | Families, top-3 traits, glyph; numbers on drill-down |
+| Exact breakdown after every pour | Puzzle solved instantly | Bucketed clues, 1-2 facts per pour |
+| No visible knowledge log | Players forget and quit | Patron notebook always reachable (roadmap P2) |
+| Top-of-screen primary actions | Re-grip, mis-taps | Bottom action bar, thumb zone |
+| Fixed-size text in chunky buttons | Unreadable at large text | Semantic fonts + `ViewThatFits` |
+| Unskippable animation | Fatigue | Skip/fast-forward, animation budgets |
+| Color-only status/beer differences | Inaccessible | Icon + label + color |
 | Failure that costs progress | Players stop experimenting | Fail-forward with banked clues |
-| Overwhelming recipe archive | Cannot find beers | Favorites, tags, sort/filter, lineage view, compare screen |
+| Interrupt-unsafe encounters | Lost progress on app switch | Serializable state, per-pour autosave |
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Encounter system:** Often missing win/loss clue persistence -- verify losing still updates the Regulars Book.
-- [ ] **Brewing system:** Often missing preview/attribution -- verify a player can predict the effect of changing yeast or mash temp.
-- [ ] **Patron content:** Often missing solvability proof -- verify the headless harness shows each patron is beatable via clues in the pour limit and not by style-only play.
-- [ ] **Status effects:** Often missing visibility and expiry rules -- verify icon, rule text and counters exist.
-- [ ] **Save system:** Often only tested in dev -- verify save/quit/relaunch/load in a production build on all three OSes, plus corrupt-save recovery and version migration.
-- [ ] **Controller support:** Often missing text entry, tooltips, scroll lists -- verify every screen is completable with a gamepad only and with keyboard only.
-- [ ] **Settings:** Often missing remap/persistence -- verify settings survive restart and corrupted saves.
-- [ ] **Lineage:** Often missing parent link on the very first brew -- verify ancestry is written for every recipe including edited ones.
-- [ ] **Art:** Often inconsistent in palette/pixel scale -- verify all assets pass the post-process script and appear coherent in a contact-sheet review.
-- [ ] **Packaging:** Often unverified on Windows/Linux/Deck -- verify clean-machine launch, file-name case, audio, and resolution behavior.
-- [ ] **Steam:** Often missing store page time, depots, content survey, AI disclosure -- verify the release checklist is complete weeks before launch.
-- [ ] **Balance:** Often unmeasured -- verify the matrix report shows distinct best-in-class beers and no dominant recipe.
+- [ ] **Age rating:** questionnaire answered honestly against the actual design (not Infrequent for convenience); per-storefront ratings reviewed; age-assurance (Declared Age Range) decision recorded.
+- [ ] **1.4.3 posture:** no mechanic where more alcohol is the winning strategy; review notes written; responsible-drinking note present.
+- [ ] **Metadata:** every screenshot, preview and icon passes a 4+ review; no brand names/trademarks; name reserved.
+- [ ] **Saves:** kill-app-mid-pour resume works; save from every shipped/TestFlight build loads; delete-and-reinstall behavior is known and disclosed; export/import works.
+- [ ] **Economy:** monetization decision recorded in Key Decisions; no consumable currency/timers unless decided; odds disclosure present if randomized paid items exist.
+- [ ] **Performance:** SwiftUI Instrument + Hitches run on an oldest-supported real device; memory graph checked with all portraits.
+- [ ] **Liquid Glass:** built with Xcode 27; screens reviewed against glass defaults; custom vs system chrome decision documented.
+- [ ] **Reachability:** every core verb reachable one-handed; no gesture conflicts with edge-swipe; hit targets >= 44 pt.
+- [ ] **Accessibility:** XXL and AX3 text pass; VoiceOver can play an encounter; Reduce Motion honored; no color-only signals; Nutrition Label claims verified.
+- [ ] **Art:** all assets pass the post-process script; manifest complete; no text/brand lookalikes; halos checked on real UI backgrounds.
+- [ ] **TestFlight:** gate protocol written before recruiting; at least one prior external build approved by Beta App Review; local instrumentation export works.
+- [ ] **App Store admin:** privacy policy live; privacy manifest and labels done; trader status complete; screenshots from the real build; no placeholder text.
+- [ ] **Deduction:** harness shows every patron beatable via clues; no patron solvable by style alone; losing writes clues.
+- [ ] **Balance:** matrix report shows >= 4 distinct best-in-class beers and no dominant recipe.
 
 ## Recovery Strategies
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Core loop not fun after gate | HIGH | Stop content work; iterate the scoring/clue model with the harness; cut features; re-gate |
-| Stat soup UI | MEDIUM | Introduce attribute families and glyphs; re-skin screens using the UI kit |
-| Style-matching deduction | MEDIUM-HIGH | Remove style references from patron data; rebuild palettes by axes; re-run solvability harness |
-| Dominant recipe | MEDIUM | Add budget/penalty asymmetry; retune with the matrix; patch Crowd Pleaser |
-| Mouse-first UI needing controller | HIGH | Introduce the intent layer and focus manager; rewrite screens screen by screen; slow but doable if UI kit exists |
-| Save format without versioning | HIGH | Introduce `save_version`; write a one-time migration for the existing format; ship before launch |
-| Recipes mutable / no lineage | HIGH | Add parent IDs retroactively (lineage lost for existing data); migrate saves |
-| AI art style drift | MEDIUM-HIGH | Lock a palette and post-process, regenerate the outliers; accept consistent "simple" over inconsistent "detailed"; swap via manifest |
-| Texture/perf issues | MEDIUM | Atlas assets, tint layers, render-target caching |
-| Steam/tier surprise | MEDIUM | Upgrade license tier or switch to manual steamcmd; start store page immediately |
-| Scope creep into management | MEDIUM | Reaffirm Out of Scope list; remove subsystems; keep perk types closed |
+| Wrong age rating declared | MEDIUM | Re-answer questionnaire, update metadata; expect rating-driven reach changes; fix mechanics if 1.4.3 flagged |
+| 1.4.3 rejection | LOW-MEDIUM | Reply with notes + recording, request App Review appointment, rework Buzzed/copy, appeal once if misunderstood |
+| Monetization decided late, economy wrong | HIGH | Strip timers/currency, rebuild reward tables as authored/deterministic, re-run balance matrix |
+| SwiftData chosen, migrations crash | HIGH | Introduce versioned JSON envelope, one-time importer from SwiftData store, ship before launch |
+| No save versioning | HIGH | Add `saveVersion`, write migration from the existing format, fixture saves |
+| God-state invalidation | MEDIUM | Split observable models per screen, add row view-models, re-profile |
+| Liquid Glass mismatch | MEDIUM | Move utility screens to system chrome, restyle custom screens around glass defaults, token-level fix in UI kit |
+| Dynamic Type retrofit | HIGH | Rebuild layouts with `ViewThatFits`/scaled metrics screen by screen; do it per phase, not at once |
+| AI art drift | MEDIUM-HIGH | Lock palette + post-process, regenerate outliers, accept consistent simple over inconsistent detailed |
+| Playtest gate invalid | MEDIUM | Re-run with new recruits and a written protocol; delay P4 start |
+| Review delays at launch | LOW-MEDIUM | Use Notes for Review, appointment, one appeal; keep marketing flexible |
 
 ## Pitfall-to-Phase Mapping
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| 1. Full game before core proven | Roadmap, P3 gate | Outsider playtest meets the design doc's success criteria before P4+ begins |
-| 2. Stat soup | P2, P3 | 5-second glance test passes; brew screen <=7 live controls |
-| 3. Deduction failure modes | P2, P3, P5 | Solvability harness thresholds; no style IDs in patron data; clues persist after loss |
-| 4. Dominant beer / no tooling | P2 | Matrix report: >=4 distinct best-in-class beers in a 6-tap lineup |
-| 5. Status effects | P2, P3, P5 | Order-delta metric; icon+rule visible; staged introduction |
-| 6. Black-box brewing | P2, P3 | Testers predict outcomes of changes; causal tags shown |
-| 7. Content explosion | P2 (format), P4/P5 | Content budget locked; validator in CI; template dialogue in use |
-| 8. Collection with no pull | P4, P6 | Mutation forks; Regulars tiers derived from play; beer identity cards |
-| 9. Lineage/save evolvability | P1, P2, P7 | Immutable recipes, stable IDs, ruleset_version, migration test |
-| 10. Management scope creep | Roadmap, P4, P5 | Closed perk-type list; exploration form decision recorded |
-| 11. UI kit | P1 | Kit supports focus, lists, grids, modals, wrap before first feature screen |
-| 12. Input abstraction | P1 and continuous | Gamepad-only and keyboard-only completion test each phase |
-| 13. Save design | P1, P2, P7 | Round-trip tests, production-build save test, corrupt-save recovery |
-| 14. Dev-mode illusions/mruby | P1 | Cold-start smoke test; stdlib spike results documented |
-| 15. Performance | P1, P6 | Frame-time budget; asset atlas plan; Deck test |
-| 16. AI art consistency | P1, P6, P7 | Style-lock gate; post-process script; manifest; disclosure complete |
-| 17. License/Steam assumptions | P1, P5, P7 | Hello-world Steam upload; store page timing; tier decision |
-| 18. Onboarding/settings | P1, P3, P5, P7 | Fresh-player test; settings persisted; skip/fast-forward present |
+| 1. Age rating as paperwork | P1 decision, P5 recheck, P7 submit | Rating recorded in Key Decisions; questionnaire answers match design |
+| 2. 1.4.3 mechanics/copy | P2, P3 canary, P6, P7 | External TestFlight approved; review notes drafted; Buzzed not dominant in harness |
+| 3. Metadata, trademarks, ads | P1, P5, P6, P7 | Name reserved; names-cleared log; screenshot 4+ audit |
+| 4. Premium vs F2P | P3 decision, P4/P5 design | Decision doc; no timers/currency before it; odds UI if randomized paid |
+| 5. Save data | P1, P2, P3, P4, P7 | Fixtures per build; kill/relaunch test; reinstall behavior documented |
+| 6. Session length / interruption | P1, P3, P6 | Time budgets measured in playtest; resume-at-every-state test |
+| 7. SwiftUI performance | P1, P3, P6 | Instruments run per phase on oldest device |
+| 8. SDK / Liquid Glass | P1 | Builds on Xcode 27; chrome decision recorded |
+| 9. Portrait reachability | P1 kit, each UI phase | One-handed test; 44 pt lint |
+| 10. Dynamic Type / accessibility | P1 kit, P2/P3 audits, P6 | XXL/AX3 screenshots; VoiceOver encounter run |
+| 11. AI art consistency / rights | P1 spike, P6, P7 | Contact-sheet gate; manifest; ToS archived |
+| 12. Solo-dev store logistics | P1, P3, P6, P7 | Hello-world TestFlight; `store/` folder current; 3-cycle buffer |
+| 13. TestFlight logistics | P1, P2, P3 | Written gate protocol; Beta App Review burned in |
+| 14. Full game before proven | Roadmap, P3 gate | Outsider playtest meets criteria before P4 |
+| 15. Stat soup | P2, P3 | Glance test; <= 7 live controls |
+| 16. Deduction failure modes | P2, P3, P5 | Solvability harness; no style IDs in patron data |
+| 17. Dominant beer | P2 | Matrix report thresholds |
+| 18. Status effects | P2, P3, P5 | Order-delta metric; icon + rule visible |
+| 19. Black-box brewing | P1, P2, P3 | Testers predict change outcomes |
+| 20. Content explosion | P2, P4, P5 | Budget locked; validator in CI |
+| 21. Collection pull | P4 | Mutation forks; derived Regulars tiers |
+| 22. Management/idle/overworld creep | Roadmap, P4, P5 | Closed perk list; no timers |
+| 23. Onboarding/settings/iOS polish | P1, P3, P5, P6, P7 | Fresh-player test; silent-switch test |
 
 ## Sources
 
-- DragonRuby docs repo (v7.9): `docs/guides/troubleshoot-performance.md`, `docs/api/state.md`, `docs/api/inputs.md`, `docs/api/runtime.md`, `docs/steam-publishing.md`, `docs/guides/deploying-to-steam.md`, `docs/changelog.txt` (texture cache limit in 7.8, Deck framerate fix in 7.7, packager warnings in 7.6). https://github.com/DragonRuby/dragonruby-game-toolkit-contrib -- HIGH
-- DragonRuby docs `index.txt` (older bundled docs): serialization samples (`serialize_state`/`deserialize_state`, `serialize`/`inspect`/`to_s` on classes, large-state test) -- MEDIUM (older doc version; re-verify in the installed version)
-- DragonRuby license tiers and pricing: https://dragonruby.org/toolkit/game -- HIGH (as of fetch date)
-- DragonRuby devlog on Steam distribution: https://dragonruby.itch.io/dragonruby-gtk/devlog/542709/mid-year-update-quacks-steam-distribution-sound-synthesis-and-pixel-arrays -- MEDIUM
-- DragonRuby community notes on mruby limits (no gems/require): itch.io forum threads surfaced by search -- LOW-MEDIUM
-- Steam AI content disclosure policy (pre-generated vs live-generated, shown on store page): coverage at https://www.theregister.com/2024/01/10/developers_steam_ai/ and https://www.pcgamesn.com/steam/ai-content-reporting -- MEDIUM
-- Steam Deck Verified requirements (glyphs, controller-only text entry, default config, legibility): https://partner.steamgames.com/doc/steamdeck/compat -- MEDIUM
-- Genre/design pitfalls (stat soup, deduction information budgets, dominant strategies, content treadmills, collection-system attachment, solo-dev scope): synthesis from the project design doc `brewfighter-design-v1.md` and general genre knowledge -- MEDIUM; not independently sourced
-- Steam "coming soon" page lead time, app fee, content survey process: Steamworks guidance recalled from prior knowledge -- MEDIUM, re-verify before launch planning
+- Apple App Review Guidelines (1.4.3, 2.1, 2.2, 2.3.1-2.3.8, 3.1.1, 3.1.2, 4.1, 4.2, 5.1.1, 5.1.2, 5.2): https://developer.apple.com/app-store/review/guidelines/ - MED (HIGH on quoted text; fetched through a summarizer, last ~12K characters of the page not read)
+- Apple age ratings values and definitions (tiers, Alcohol/Tobacco/Drug descriptor, Infrequent=13+, Frequent=18+, regional notes): https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions - MED
+- Apple "Set an app age rating" (override, regional ratings, unrated): https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating/ - MED
+- Apple Upcoming Requirements (Xcode 26 SDK from 2026-04-28; age-rating answers due 2026-01-31; DSA trader status; required-reason APIs): https://developer.apple.com/news/upcoming-requirements/ - MED
+- April 2027 iOS 27 SDK requirement (announced 2026-09-09) and iOS 27 launch (2026-09-14): https://www.macobserver.com/news/april-2027-sdk-requirement-five-platforms/ ; Apple Developer Forums on Liquid Glass / `UIDesignRequiresCompatibility` ignored in Xcode 27: https://developer.apple.com/forums/thread/839061 - MED
+- Apple 18+ app download gating in Brazil/Australia/Singapore and age-sharing in Utah/Louisiana: https://www.helpnetsecurity.com/2026/02/25/apple-expands-age-verification-controls/ - MED; Texas SB2420 Fifth Circuit stay: https://alerts.zwillgen.com/alerts/injunction-temporarily-lifted-for-texas-app-store-accountability-law - MED (status unstable)
+- Apple Developer Forums on alcohol/drinking-game rejections and BAC calculator rejections: https://developer.apple.com/forums/thread/649488 , https://developer.apple.com/forums/thread/689498 , https://developer.apple.com/forums/thread/848256 - LOW-MED (individual developer reports)
+- Brewery Boss: Beer Game App Store listing (13+ with Infrequent alcohol references; free + $0.99 ad removal): https://apps.apple.com/us/app/-/id1566591698 ; Fiz (17+ at time of listing): search result - LOW-MED
+- WWDC25 session 306, Optimize SwiftUI performance with Instruments: https://developer.apple.com/videos/play/wwdc2025/306/ - MED-HIGH
+- SwiftData + CloudKit constraints and SwiftData versioned-schema migration crashes: https://fatbobman.com/en/snippet/rules-for-adapting-data-models-to-cloudkit/ , https://mertbulan.com/never-use-swiftdata-without-versionedschema/ , https://developer.apple.com/forums/thread/742904 - MED
+- TestFlight limits and Beta App Review: https://developer.apple.com/testflight/ - MED-HIGH
+- App Review turnaround statistics and rejection tips (50% <24h, 90% <48h; 40%+ rejections are 2.1): https://developer.apple.com/distribute/app-review/ - MED-HIGH
+- Accessibility Nutrition Labels: https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels - MED
+- EU DSA trader status in App Store Connect: https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements - MED
+- Apple Ads restricted-content guidance for alcohol: https://ads.apple.com/policies - LOW-MED
+- US Copyright Office position on AI-generated images: secondary coverage (e.g., https://blog.promise.legal/ai-game-assets-copyright-steam-disclosure-2026/) - MED; not legal advice
+- Game-design pitfalls (stat soup, deduction information budgets, dominant strategies, content treadmills, collection attachment, solo-dev scope): synthesized from `brewfighter-design-v1.md`, PROJECT.md, and the prior research round (2026-10-06) - MEDIUM; not independently sourced
+- Not verified this session: exact current App Store Connect screenshot pixel sizes, Korea GRAC requirements for this game, specific hop trademark registrations, per-country alcohol-app restrictions, whether the Declared Age Range API is mandatory for an 18+ game under Texas law, Apple Small Business Program eligibility details.
 
 ---
-*Pitfalls research for: collectible brewing RPG in DragonRuby GTK (commercial solo release)*
-*Researched: 2026-10-06*
+*Pitfalls research for: collectible brewing RPG, native Swift/SwiftUI iPhone, commercial solo App Store release*
+*Researched: 2026-10-08*

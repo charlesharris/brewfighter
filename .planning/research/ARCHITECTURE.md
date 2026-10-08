@@ -1,22 +1,38 @@
 # Architecture Research
 
-**Domain:** 2D collectible-brewing JRPG / tactical-encounter game on DragonRuby GTK (mruby)
+**Domain:** Data-driven, UI-heavy collectible brewing RPG, native Swift/SwiftUI, iPhone portrait
 **Project:** Brew Fighter
-**Researched:** 2026-10-06
-**Confidence:** MEDIUM-HIGH overall. HIGH on every DragonRuby API/behavior claim (read first-hand from the shipped docs and OSS runtime source of engine build `0d709c3`, v7.18, 2026-09-11, plus the sibling MechTech repo's hard-won learnings). MEDIUM on the genre-level structural patterns (well established, but they are applied here by synthesis, not copied from a DragonRuby precedent; none exists for this genre). LOW on items explicitly tagged `[VERIFY]` — these need a spike before a phase depends on them.
+**Researched:** 2026-10-08 (replaces the 2026-10-06 DragonRuby version, which is obsolete)
+**Confidence:** MEDIUM-HIGH overall.
 
-> **Source note.** `docs.dragonruby.org` serves a JS shell that does not render via fetch (same failure the sibling MechTech research hit). All engine facts below come from the local unpacked distribution at `/Users/charris/src/mechtech/dragonruby-macos/` (`docs/api/*.md`, `docs/oss/dragon/*.rb`, `samples/`, `CHANGELOG-CURR.txt`). Brew Fighter needs **its own** unpacked engine copy (engine docs: "unzip a clean copy for every game"; file IO is sandboxed relative to the binary).
+- HIGH: Apple API availability (PhaseAnimator, KeyframeAnimator, `withAnimation` completion, Observation, `@Environment(Type.self)` are all iOS 17+; `Observations` async sequence is iOS 26+). Read from Apple documentation text via a markdown mirror (sosumi.ai).
+- HIGH: SwiftPM mechanics (`.defaultIsolation`, `Bundle.module`, `.copy` vs `.process`) and Dictionary hash-seed randomization (Swift forums PSA).
+- MEDIUM: Xcode 27 / Swift 6.4 / iOS 27 specifics. Secondary sources only (release writeups, forum threads, Nil Coalescing, Point-Free), not Apple primary pages.
+- MEDIUM: The persistence and architecture recommendations. They are reasoned synthesis from this project's shape, not an industry standard.
+- Items tagged `[VERIFY]` need a spike before a phase depends on them.
+
+> **Environment note.** As of today (2026-10-08) iOS 27, Xcode 27 (Swift 6.4) shipped on 2026-09-14. Uploads must be built with the iOS 27 SDK from April 2027. Xcode 27 needs an Apple Silicon Mac. Brew Fighter will ship on this toolchain, so everything below assumes Xcode 27 / Swift 6 language mode.
 
 ---
 
 ## Executive Position (the opinionated version)
 
-1. **Three kinds of data, never mixed.** (a) **Defs**: immutable authored content (hops, yeasts, patrons, statuses, locations) loaded at boot. (b) **Profile**: the player's persistent, saved state — pure primitives (Hash/Array/Symbol/Integer/Float/String/true/false/nil), referencing Defs **by id only**. (c) **Session**: transient runtime state (scene stack, in-flight encounter, cursor positions, animations) — never saved. Everything else in this document follows from keeping these three apart.
-2. **The game's rules live in a pure domain layer with no `args` in sight.** Brewing, palate scoring, status effects, clue reveal, lineage, collection progression are plain modules over plain hashes: `(inputs) -> (new_state, events)`. They are unit-testable under `./dragonruby --test` with no window, and a headless **balance harness** can run every patron against every beer. This is the single biggest quality lever for a game whose entire value is "the matchup puzzle is genuinely good".
-3. **Scenes are thin.** A scene reads an `Intent` (normalized input), calls the domain, plays back the returned **event log** as animation/dialogue, and renders. It owns no rules. (This is the Pokémon-Showdown shape: simulator emits an ordered event stream, presentation plays it back.)
-4. **Explainability is an architecture requirement, not a UI nicety.** Design success criterion #2 ("players understand why one beer succeeds and another fails") means the brewing engine and scoring engine must return **ledgers** (per-source contributions) as a first-class output, not just final numbers. Retrofitting explanation onto a sum is a rewrite.
-5. **Hidden information is enforced by a type boundary.** The UI can only ever receive a `PatronView` (what the player has learned), never the patron Def's true palate.
-6. **Save from day one, in a boring versioned envelope.** Ids not references, plain data only, `save_version` + migrations, safe parse (no `eval` of disk text — see Save section).
+What carried over from the DragonRuby research, because it is platform-independent and still right:
+
+1. **Three tiers of data, never mixed.** *Content* (immutable authored definitions, bundled JSON), *Profile* (persisted player state, ids only), *Session* (transient runtime state, never saved).
+2. **The rules live in a pure domain package with no UI import.** Brewing, palate scoring, statuses, clue policy, lineage and progression are synchronous `(State, Input) -> (State, [Event])` functions over `Sendable` value types. They run headless under `swift test` and a CLI balance harness. This is the biggest quality lever for a game whose value is "the matchup puzzle is genuinely good".
+3. **Encounters emit an event log. Presentation replays it.** Rules never wait on animation.
+4. **Explainability is architecture.** Brewing and scoring return *ledgers* (per-source contributions), not just totals (design success criterion #2).
+5. **Hidden information is a type boundary.** The UI receives a `PatronView`, never the true palate.
+
+What is new for SwiftUI (the decisions this document makes):
+
+6. **Plain "MV" with `@Observable`, not TCA and not MVVM-per-screen.** A small number of `@MainActor @Observable` objects (one `GameStore`, plus one session object per flow) adapt the pure domain to SwiftUI. The pure domain *is* the reducer layer; a framework on top buys a solo dev nothing.
+7. **Navigation = custom chunky tab bar over per-tab `NavigationStack`s, with encounters as a `fullScreenCover`.** Modals are driven by one `Modal` enum at the root.
+8. **Staged animation = authoritative state advances immediately; a *presentation* state lags behind and catches up beat by beat.** A `PlaybackDirector` task steps beats; `KeyframeAnimator` / `PhaseAnimator` / `Canvas` supply the juice. Skip = apply the remaining events with no animation, landing on the identical end state.
+9. **Persistence = a versioned Codable JSON envelope in Application Support, written atomically by an actor.** Not SwiftData. GRDB is the documented escalation path.
+10. **Content = JSON files per category in an SPM resource bundle, decoded into typed `Def` structs with phantom-typed ids and validated at load and in CI.**
+11. **One local Swift package (`BrewKit`) holds everything that is not SwiftUI. The Xcode app target holds all UI.** Boundaries are enforced by target dependencies, the `package` access modifier `[VERIFY]`, and a lint test.
 
 ---
 
@@ -25,326 +41,381 @@
 ### System Overview
 
 ```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ L4  PRESENTATION   (reads state, writes only args.outputs / audio)          │
-│  Scenes (title, world map, location, brewing, tap lineup, encounter,       │
-│  collection browsers, regulars book, settings)                              │
-│  UI kit: Layout · widgets (List, Grid, Panel, Meter, Dialogue, Tooltip,    │
-│  AttributeView, BeerGlass, TreeView) · Focus nav · Theme · Text            │
-│  Event playback (encounter log -> timed animation / barks / SFX)            │
-├────────────────────────────────────────────────────────────────────────────┤
-│ L3  FLOW           (the only layer that knows about Intent + scenes)        │
-│  SceneStack · Game (root: owns profile/session/scenes) · Autosave policy    │
-│  Domain-event queue consumer wiring                                         │
-├────────────────────────────────────────────────────────────────────────────┤
-│ L2  DOMAIN         (PURE: no args, no outputs, no globals, no rand)         │
-│  Brewing sim · Recipes+Lineage · Beers · YeastBank · Palate scoring ·      │
-│  Statuses/Modifiers · Encounter state machine · Clues+Knowledge ·          │
-│  Bosses (rule overrides) · Codex · Regulars · Perks · Progression/Unlocks · │
-│  World/Location rules · Rng (seedable)                                      │
-├────────────────────────────────────────────────────────────────────────────┤
-│ L1  DATA                                                                    │
-│  Defs registry (static content + boot validation) · Tuning (one file) ·    │
-│  Profile schema (new_game, shape) · Save (envelope, migrations, IO)         │
-├────────────────────────────────────────────────────────────────────────────┤
-│ L0  PLATFORM SHELL (the ONLY code touching args.inputs / DR.* IO)           │
-│  main.rb (boot/tick/reset) · Input -> Intent · Assets/Paths · Audio ·      │
-│  Screen constants · Log · Dev tools (HUD, scene jumper, cheats)             │
-└────────────────────────────────────────────────────────────────────────────┘
-  Dependency rule: a layer may call only layers BELOW it. L2 never calls L3/L4.
-  Exception: L4 reads L2 pure functions for display math (e.g. preview scoring).
+┌──────────────────────────────────────────────────────────────────────────┐
+│ L4  VIEWS  (App target, SwiftUI)                 reads Store/Session,    │
+│  Features: Hub · Brew · Taps · Encounter · Town Map · Collection ·       │
+│            Regulars Book · Recipe Tree · Settings · Onboarding           │
+│  DesignSystem: Theme · ChunkyButton · AttributeBars · BeerGlassView ·    │
+│            PatronPortrait · Meter · Toast · Haptics modifiers            │
+├──────────────────────────────────────────────────────────────────────────┤
+│ L3  APP MODEL  (App target, @MainActor, @Observable, NOT persisted)      │
+│  GameStore (profile slices + intents) · BrewSession · EncounterSession   │
+│  Router (per-tab paths, Modal) · PresentationQueue (unlock/reward toasts)│
+│  Presentation (pure Swift): EncounterPresentation · BeatScript ·         │
+│            PlaybackDirector                                              │
+├──────────────────────────────────────────────────────────────────────────┤
+│ L2  DOMAIN  (BrewKit/BrewDomain, PURE, nonisolated, Sendable values)     │
+│  Brewing · Styles · Palate · Statuses · Encounter · Clues/Knowledge/     │
+│  PatronView · Lineage · YeastBank · Regulars · Perks · Codex ·           │
+│  Progression · World · Bosses (rule overrides)                           │
+├──────────────────────────────────────────────────────────────────────────┤
+│ L1  DATA  (BrewKit/BrewModel, BrewContent, BrewPersistence)              │
+│  Model: ids · AttributeVector · Defs · Recipe/Beer/Profile · Events ·    │
+│         Rng        Content: JSON bundle · loader · validator · tuning    │
+│  Persistence: SaveEnvelope · Migrations · ProfileStore (actor)           │
+├──────────────────────────────────────────────────────────────────────────┤
+│ L0  PLATFORM ADAPTERS (App target, behind small protocols)               │
+│  Audio · Haptics (sensoryFeedback) · FileSystem · Clock · StoreKit seam  │
+└──────────────────────────────────────────────────────────────────────────┘
+ Dependency rule: a layer may use only layers BELOW it. L2 never imports SwiftUI,
+ Observation, or Combine. L4 reads L2 only through L3 (exception: pure display math).
+ Test/harness tooling (brew-harness, BrewKit tests) sits beside L2 and uses L1+L2 only.
 ```
 
 ### Component Responsibilities
 
 | Component | Responsibility | Typical Implementation |
 |-----------|----------------|------------------------|
-| `main.rb` | Engine entry points only: `boot`, `tick`, `reset`. Delegates to `$game`. | Top-level functions (proven in sibling MechTech), `$game ||= Game.new; $game.args = args; $game.tick` |
-| `Game` | Root owner of `@profile`, `@session`, `@scenes`. Runs one frame: input -> update top scene -> drain events -> render stack -> autosave check. | One `attr_dr` class instance in `$game` (engine docs: iVars+classes are the "long-term maintainable" option; `args.state` is for prototyping) |
-| `Input` | Converts raw keyboard/mouse/controller into a per-frame `Intent` hash. The only reader of `args.inputs`. | Stateless module, `Input.frame(args) -> Intent` |
-| `SceneStack` | Push/pop/replace, lifecycle (`enter/pause/resume/exit`), overlay rendering order, transitions. | Array of `{type:, s:{}}` hashes + a registry of stateless scene modules |
-| `Scenes::*` | One screen's flow. Reads Intent, calls domain, renders. No rules. | Modules with `enter(params)`, `update(s, ctx)`, `render(s, ctx)` |
-| `UI::*` | Reusable widgets and layout; produce primitives + hit rects; own focus navigation. | Stateless helpers over `Layout`, `Geometry.rect_navigate` |
-| `Defs` | Static content registry; id lookup; boot-time validation of every cross-reference. | `Defs.register(:hop, :citra, {...})`, `Defs.get(:hop, :citra)`, `Defs.validate!` |
-| `Tuning` | All balance numbers: attribute curves, scoring weights, status magnitudes. | One file, nested modules, **permanently one file** (sibling lesson: hot reload re-executes only the saved file) |
-| `Brewing` | Recipe + yeast instance + Defs -> `Beer` (attributes + ledger + derived stats). | Pure staged pipeline: mash -> boil -> ferment -> condition -> finalize |
-| `Recipes` / `Lineage` | Immutable recipe versions, parent links, diff, family-tree queries. | Flat hash `id -> node` with `parent_id`; children index derived |
-| `Palate` | `(beer, patron palate, statuses, context) -> {total, components[]}`. | Pure function; components array is the feedback/clue source |
-| `Statuses` | Status Defs as declarative modifier rules + duration/decay; apply/tick/expire. | Data rules + one evaluator |
-| `Encounter` | The pour-by-pour state machine; returns `(state, events)`. | Pure; no timing, no rendering |
-| `Knowledge` / `Clues` | What the player has learned about each patron; clue selection policy; `PatronView`. | Profile-persisted `revealed` facts + pure view builder |
-| `Codex` | Unified discovery state (`unseen/seen/owned/mastered`) for every collectible kind. | One table in Profile, kind-adapters for UI |
-| `Regulars` / `Perks` | Seen->Served->Impressed->Regular->Friend derivation; passive benefits as data effects. | Derived from per-patron stats + thresholds in Defs; `Perks.query(profile, :key)` |
-| `Progression` | Consumes domain events; grants Codex discoveries, unlocks, rewards, tutorial triggers. | Event-queue consumer |
-| `Save` | Versioned envelope, migrations, slots, safe IO, backup. | Own serializer + `DR.write_save_data`/`read_save_data` |
-| `Assets` / `Paths` | Logical id -> file; missing-asset fallback; sprite/audio registries. | Sibling-proven `Paths` + JSON index; `Assets.sprite(kind, id)` |
-| `Rng` | Seedable, serializable PRNG for mutation, drops, name generation. | ~20-line own LCG/xorshift whose state lives in Profile |
+| `BrewfighterApp` (composition root) | Boot: load catalog, load profile, build `GameStore`, install environment, scene-phase save | `@main App`; optional `@State var store: GameStore?` set in `.task` (async load) |
+| `GameStore` | Owns the authoritative `Profile` value; exposes narrow, diff-assigned read slices; exposes intent methods (`brew`, `setTap`, `startEncounter`, `finishEncounter`); applies domain events via `Progression`; schedules autosave | `@MainActor @Observable final class` |
+| `BrewSession` | Draft recipe + live `BeerPreview` (recomputed once per edit); masks undiscovered traits as "?" | `@Observable`, created per brew-flow; `apply(_ edit: DraftEdit)` |
+| `EncounterSession` | Holds *truth* (`EncounterState`, ObservationIgnored) and *shown* (`EncounterPresentation`); runs playback; surfaces `phase` | `@Observable`, created per encounter cover |
+| `Router` | Per-tab `NavigationPath`/`[Route]` + root `Modal?` | `@Observable`, `@Environment`-injected |
+| `PlaybackDirector` + `BeatScript` | Convert events into timed beats; step them; support skip, Reduce Motion, injected sleep | Pure beat generation + `Task` |
+| `DesignSystem` | Reusable chunky UI: buttons, meters, attribute bars, glass, portraits, toasts | SwiftUI `View`s + `ViewModifier`s + `ButtonStyle`s |
+| `BrewModel` | Value types shared by every other target: `ID<Tag>`, `Attribute`, `AttributeVector`, Defs, `Recipe`, `Beer`, `Profile`, `DomainEvent`, `Rng` | Foundation-only, `Sendable`, `Codable` |
+| `BrewDomain` | All rules. See per-system notes below | `enum` namespaces of `static` pure functions |
+| `BrewContent` | JSON resource bundle, `ContentLoader`, `ContentCatalog`, `ContentValidator`, `Tuning`, string/dialogue tables | `Bundle.module`, `JSONDecoder` |
+| `BrewPersistence` | `SaveEnvelope`, `Migrations`, `ProfileStore` | `actor` + atomic file writes |
+| `BrewFixtures` | Canonical test/preview catalogs, profiles, beers, patrons | Plain builders; used by tests, previews, harness |
+| `brew-harness` | Headless balance/solvability runner | SwiftPM `executableTarget` |
 
 ### Recommended Project Structure
 
-Repo layout follows the sibling MechTech convention (proven by running): game source at repo-root `mygame/`, engine unpacked beside it (gitignored while the repo is private-and-small, or committed per engine guidance for "shelf life" — a roadmap-level decision; the engine license forbids redistributing the engine in a public repo), launched by a `./run` script that `cd`s into the engine dir and passes `./mygame`.
-
 ```
 brewfighter/
-├── run  test                         # wrapper scripts; `test` OWNS its exit code (engine --test always exits 0)
-├── tools/                            # asset generation/post-processing, content lint, balance-harness runner
-├── dragonruby-macos/                 # engine (own copy). mygame -> ../mygame symlink
-└── mygame/
-    ├── app/
-    │   ├── main.rb                   # boot / tick / reset ONLY
-    │   ├── boot.rb                   # THE ordered require list (adding a file = one line here)
-    │   ├── core/                     # paths, screen, log, ids, rng, tuning.rb (single file), events
-    │   ├── content/                  # Defs registry + one file per category (see Content section)
-    │   │   ├── defs.rb  validate.rb
-    │   │   ├── attributes.rb         # canonical ordered attribute list + display metadata
-    │   │   ├── hops.rb grains.rb adjuncts.rb yeasts.rb techniques.rb
-    │   │   ├── styles.rb statuses.rb traits.rb abilities.rb
-    │   │   ├── patrons/*.rb          # one file per patron or small group
-    │   │   └── locations.rb bosses.rb perks.rb
-    │   ├── domain/                   # PURE. Grep for `args`/`outputs`/`inputs` here must return nothing.
-    │   │   ├── vec.rb                # attribute-vector math (add/scale/clamp/dist)
-    │   │   ├── brewing/              # mash.rb boil.rb ferment.rb condition.rb rules.rb simulate.rb
-    │   │   ├── recipes.rb lineage.rb beers.rb yeast_bank.rb
-    │   │   ├── palate.rb statuses.rb encounter.rb clues.rb knowledge.rb bosses.rb
-    │   │   ├── codex.rb regulars.rb perks.rb progression.rb world.rb
-    │   ├── state/                    # profile.rb (new_game + shape), session.rb, save.rb, migrations.rb, settings.rb
-    │   ├── platform/                 # input.rb, audio.rb, assets.rb
-    │   ├── ui/                       # theme.rb text.rb focus.rb + widgets/*.rb (attribute_view, beer_glass, list, grid, ...)
-    │   ├── scenes/                   # scene_stack.rb + one file per scene
-    │   ├── game.rb                   # Game root
-    │   └── dev/                      # debug HUD, scene jumper, give-item cheats, fixture loaders
-    ├── data/                         # runtime-read: paths.json, text corpora (dialogue/barks) as JSON
-    ├── sprites/                      # portraits/ beers/ ingredients/ locations/ ui/ _missing.png
-    ├── sounds/
-    ├── metadata/game_metadata.txt
-    └── tests/                        # test_*(args, assert): domain, golden brews, balance harness, save round-trip
+├── App/
+│   ├── Brewfighter.xcodeproj
+│   └── Brewfighter/                      # app target: iPhone only, portrait, iOS 18 floor [decision]
+│       ├── BrewfighterApp.swift          # @main, composition root, scenePhase save hook
+│       ├── AppModel/                     # GameStore, BrewSession, EncounterSession, Router, Settings
+│       ├── Presentation/                 # EncounterPresentation, BeatScript, PlaybackDirector (pure Swift, no SwiftUI import)
+│       ├── Features/
+│       │   ├── Hub/  Brew/  Taps/  Encounter/  TownMap/
+│       │   ├── Collection/  RegularsBook/  RecipeTree/  Settings/  Onboarding/
+│       ├── DesignSystem/                 # Theme, buttons, meters, AttributeBars, BeerGlassView, PatronPortrait
+│       ├── Platform/                     # AudioClient, HapticsClient, EntitlementsClient (StoreKit seam)
+│       └── Resources/                    # Assets.xcassets (art), Fonts, Sounds, Localizable.xcstrings, PrivacyInfo.xcprivacy
+├── Packages/BrewKit/
+│   ├── Package.swift
+│   ├── Sources/
+│   │   ├── BrewModel/
+│   │   ├── BrewDomain/
+│   │   │   ├── Brewing/   (Mash, Boil, Ferment, Condition, Finalize, Simulate)
+│   │   │   ├── Styles/  Palate/  Statuses/  Encounter/  Clues/
+│   │   │   ├── Lineage/  YeastBank/  Regulars/  Codex/  Progression/  World/  Bosses/
+│   │   ├── BrewContent/
+│   │   │   ├── Loader/ Validator/
+│   │   │   └── Resources/Content/        # hops.json grains.json yeasts.json adjuncts.json styles.json
+│   │   │                                 # statuses.json patrons/*.json bosses.json locations.json
+│   │   │                                 # perks.json tuning.json strings/ manifest.json
+│   │   ├── BrewPersistence/
+│   │   ├── BrewFixtures/
+│   │   └── brew-harness/
+│   └── Tests/  BrewModelTests · BrewDomainTests · BrewContentTests · BrewPersistenceTests · BalanceTests
+│               Fixtures/saves/v1.json v2.json ...   # frozen real saves, one per schema version
+├── tools/                                # art generation/post-process, asset manifest check, content lint
+└── scripts/test                          # `swift test` in package + xcodebuild test for app target
 ```
 
 ### Structure Rationale
 
-- **`domain/` is import-clean of the engine.** This is what makes `--test` and the balance harness possible, and it mirrors the sibling's rule ("Input and Camera are the ONLY files touching engine objects"). Enforce with a grep test.
-- **`content/` separate from `domain/`.** Authoring a patron or hop must never require touching rule code; rules never contain content literals.
-- **One ordered require list (`boot.rb`).** DragonRuby's `require` is not CRuby's: paths are relative to `mygame/`, order is explicit, nothing auto-resolves (`docs/oss/dragon/runtime/require.rb`).
-- **`tuning.rb` stays one file.** Hot reload re-executes only the saved file; derived constants split across files go stale silently.
+- **One package, several targets, not several packages.** A solo developer wants a single `Package.swift` to maintain. Target boundaries still give compile-time dependency direction (`BrewDomain` cannot see `BrewPersistence` unless it declares it) and let tests build only what they need.
+- **UI stays in the app target.** Splitting features into modules is a team-scale tool. The design system can be promoted to its own local package later if previews or build times demand it.
+- **`Presentation/` is pure Swift inside the app target** so it can be unit-tested without a host app and promoted into a package target without edits.
+- **`BrewKit` supports macOS** (`platforms: [.iOS(.v18), .macOS(.v15)]`, Foundation only). That is what makes `swift test` and `swift run brew-harness` run on the Mac in seconds, with no simulator boot. This is the headline productivity win of the whole structure.
+- **Def *types* live in `BrewModel`, def *data* lives in `BrewContent`.** `BrewDomain` needs the types to compute but must not depend on how they are loaded. The domain receives a `ContentCatalog` as a parameter (never a global).
 
 ---
 
-## Data Model: The Three Tiers
+## Concurrency & Isolation Setup
 
+- **App target:** Xcode 26+ new projects default to `MainActor` default isolation plus Approachable Concurrency. Keep the defaults. Stores and sessions are implicitly `@MainActor`.
+- **`BrewKit` package:** leave the SwiftPM default (nonisolated). Do **not** add `.defaultIsolation(MainActor.self)`. Every domain type is a `Sendable` struct/enum; every domain function is synchronous and nonisolated, so it can be called inline from the main actor for live preview and from a `TaskGroup` in the harness. SwiftPM exposes `.defaultIsolation(_:)` from tools-version 6.2; new packages default to nonisolated and non-Approachable (Use Your Loaf; Donny Wals).
+- **`swift-tools-version: 6.2` or later** gives Swift 6 language mode by default. Known rough edge: with MainActor default isolation in a *package*, `Bundle.module` and `CodingKey` conformances can warn. A further reason to keep the package nonisolated.
+- **`ProfileStore` is the only `actor`.** Encoding and file IO happen off the main thread there.
+
+```swift
+// Packages/BrewKit/Package.swift  (illustrative)
+// swift-tools-version: 6.2
+import PackageDescription
+
+let package = Package(
+    name: "BrewKit",
+    platforms: [.iOS(.v18), .macOS(.v15)],
+    products: [
+        .library(name: "BrewModel", targets: ["BrewModel"]),
+        .library(name: "BrewDomain", targets: ["BrewDomain"]),
+        .library(name: "BrewContent", targets: ["BrewContent"]),
+        .library(name: "BrewPersistence", targets: ["BrewPersistence"]),
+        .library(name: "BrewFixtures", targets: ["BrewFixtures"]),
+    ],
+    targets: [
+        .target(name: "BrewModel"),
+        .target(name: "BrewDomain", dependencies: ["BrewModel"]),
+        .target(name: "BrewContent", dependencies: ["BrewModel"],
+                resources: [.copy("Resources/Content")]),   // .copy keeps folder structure; .process flattens
+        .target(name: "BrewPersistence", dependencies: ["BrewModel"]),
+        .target(name: "BrewFixtures", dependencies: ["BrewModel", "BrewContent"]),
+        .executableTarget(name: "brew-harness",
+                          dependencies: ["BrewDomain", "BrewContent", "BrewFixtures"]),
+        .testTarget(name: "BrewDomainTests",
+                    dependencies: ["BrewDomain", "BrewContent", "BrewFixtures"]),
+        // ... BrewContentTests, BrewPersistenceTests, BalanceTests (Swift Testing)
+    ]
+)
 ```
-DEFS (static, boot-loaded, immutable)        PROFILE (saved, pure primitives)          SESSION (transient)
-─────────────────────────────────────        ───────────────────────────────           ────────────────────
-hop/grain/adjunct/yeast/technique defs       version, sim_version, rng_state           scene stack + scene states
-style defs, status defs, trait/ability defs  day, location_unlocks, flags              in-flight encounter state
-patron defs (TRUE palate), boss defs         inventory {ingredient_id => qty}          brew-in-progress (draft recipe)
-location defs, perk defs, unlock rules       yeast_bank {culture_id => instance}       cursor/focus/scroll per scene
-attribute list + display metadata            recipes {id => node(parent_id,…)}         animation timers, toasts
-                                             beers {id => {recipe_id, snapshot,…}}     event queue (drained each tick)
-                  ▲                          taps [beer_id × 6]                        input-mode (:mouse/:kb/:pad)
-                  │ resolved by id at        codex {kind => {id => level}}
-                  │ point of use             knowledge {patron_id => {facts…}}
-                  └──────────────────────    patron_stats {patron_id => {served, best, wins…}}
-                                             settings (separate file, cross-slot)
-```
 
-**Rules that make this work:**
-
-1. **Ids in state; Defs resolved at point of use.** Never store a Def hash (or any object reference) in Profile or Session. Reasons: saves survive content edits; hot reload of a content file takes effect immediately; no aliasing (the engine's own serializer special-cases shared references via `entity_keys_by_ref` — avoid ever depending on that).
-2. **A beer is a *result*, not a Def.** `Beer = f(recipe, yeast_instance, Defs, Tuning)`. Persist `recipe` (source of truth) **and** a cached `snapshot` (attributes + ledger) stamped with `sim_version`. On load, if `sim_version` is stale, recompute (opt-in "rebrew on patch" — a balance patch will alter players' beers slightly; accept and document, because the alternative is that Tuning fixes never reach existing saves).
-3. **The yeast *instance* is part of the recipe input.** Mutation across generations means a culture is stateful (`{culture_id, generation, traits_delta, lineage}`); `Brewing` takes the instance, not just the Def id.
-4. **Saves are written only at safe points** (hub/world/after-results, never mid-encounter, never mid-brew-UI). This deletes the hardest class of serialization problem (resumable encounter state) for free. Encounter state is Session-only; the encounter *outcome* is Profile.
+**Deployment floor (decision for the roadmap):** every API this architecture needs is iOS 17.0+ (`@Observable`, `@Environment(Type.self)`, `PhaseAnimator`, `KeyframeAnimator`, `withAnimation(completion:)`, `sensoryFeedback`). The Xcode 27 `@State` lazy-init fix back-deploys to iOS 17 when built with Xcode 27. **Recommend iOS 18.0**: it adds `navigationTransition(.zoom)` and the modern `Tab` API at a small reach cost (iOS 26 was on 79% of iPhones by June 2026). iOS 17 is viable if reach matters more than polish. Do not use iOS 26-only APIs (e.g. `Observations`) in v1.
 
 ---
 
 ## Architectural Patterns
 
-### Pattern 1: Immediate-mode scene stack with module scenes + plain-hash state
+### Pattern 1: Pure domain reducers returning `(state, events)`
 
-**What:** DragonRuby calls `tick` 60x/sec and wants you to recompute everything each frame. The scene stack holds `{ type: :encounter, s: {…} }` entries; each scene *type* is a stateless module. Frame = `Input.frame` → `update` top scene only → drain events → `render` from the lowest visible scene up to the top (overlays like pause/inventory render over the scene beneath).
+**What:** Every multi-step rule is `static func f(_ state: S, _ input: I, _ catalog: ContentCatalog) -> (S, [DomainEvent])`. No `async`, no clocks, no `Date()`, no global RNG, no SwiftUI. Randomness is an explicit `inout Rng`.
+**When to use:** Encounter, brewing, yeast repitch, progression. All of L2.
+**Trade-offs:** + trivially testable; + events feed animation, the "why" breakdown, the clue notebook and transcripts from one source; + the harness calls the same functions the UI does. - slightly more allocation than inline mutation (irrelevant at 3 pours).
 
-**When to use:** All screens. A JRPG needs at least `world → location → encounter → result popup` and `any → menu → detail panel` (two-to-four deep).
-
-**Trade-offs:** + hot reload friendly (redefine module; state hash survives), + trivially serializable/inspectable in the console, + no stale-class-instance trap (sibling learned: reloading a *class* does not re-run `initialize`, so newly added iVars are `nil`). − A field newly added to a scene's state mid-session is `nil` until that scene is re-entered: reload-then-F5 is the dev workflow (document it).
-
-**Example:**
-```ruby
-module Scenes
-  module Encounter
-    def self.enter(params)                       # returns the scene's state hash
-      { enc: ::Encounter.start(params[:patron_id], params[:tap_ids], params[:knowledge]),
-        phase: :choosing, cursor: 0, playback: [] , playback_t: 0 }
-    end
-
-    def self.update(s, ctx)                      # ctx = { intent:, profile:, nav:, defs: }
-      case s[:phase]
-      when :choosing
-        s[:cursor] = UI::Focus.move(s[:cursor], ctx[:intent][:nav], tap_count: 6)
-        if ctx[:intent][:accept]
-          s[:enc], events = ::Encounter.serve(s[:enc], ctx[:profile][:taps][s[:cursor]])
-          s[:playback] = events; s[:playback_t] = 0; s[:phase] = :playing_events
-        end
-      when :playing_events
-        Playback.advance(s, ctx)                 # animates events with timing; skippable via accept
-        ctx[:nav].replace(:results, enc: s[:enc]) if s[:enc][:over] && s[:playback].empty?
-      end
-    end
-
-    def self.render(s, ctx) ; ... ; end
-  end
-end
-```
-
-### Pattern 2: Pure simulation returning `(new_state, events)`; presentation plays the event log
-
-**What:** `Encounter.serve(state, beer) -> [state', events]` where `events` is an ordered array of typed hashes: `{t: :score_component, label:, delta:, attr:}`, `{t: :clue, fact:}`, `{t: :status_applied, id:}`, `{t: :patron_line, key:}`, `{t: :satisfaction, from:, to:}`, `{t: :encounter_over, result:}`. The scene turns events into timed animation, SFX, dialogue.
-
-**When to use:** Encounter (primary), and any multi-step domain operation whose result the player must *watch* (brew result reveal, yeast mutation reveal).
-
-**Trade-offs:** + logic never waits on animation (no frame counters in rules); + tests assert on event arrays; + the same events produce the "why" breakdown, the Regulars Book clue log, and replay/debug output; + skippable/fast-forward is trivial. − slightly more allocation than inline mutation (irrelevant at 3 pours/encounter).
-
-Precedent: Pokémon Showdown's simulator consumes player choices and emits a protocol message stream that clients render; choice-requests are separate targeted messages ([Showdown simulator docs](https://github.com/smogon/pokemon-showdown/blob/master/sim/SIMULATOR.md)).
-
-### Pattern 3: Attribute vector + contribution ledger
-
-**What:** Every sensory profile is one canonical ordered attribute list (`ATTRIBUTES = [:malt, :sweetness, :dryness, :body, :bitterness, :hop_aroma, :citrus, :tropical, :herbal, :spice, :roast, :fruit, :funk, :sour, :carbonation, :abv]` — the design's ~16). Brewing stages **append contributions** rather than mutating one number:
-
-```ruby
-# a contribution: where it came from, what it moved, and why
-{ attr: :bitterness, delta: +3.2, source: [:hop, :magnum], stage: :boil, why: :bittering_addition_60min }
-# Brewing.simulate returns:
-{ attrs: {malt: 4.1, …}, ledger: [ …contributions… ], derived: {og:, fg:, abv:, ibu:, srm:, atten:}, traits: [:dry_hopped] }
-```
-
-Palate scoring does the same (`components: [{attr:, delta:, kind: :like|:dislike|:tolerance|:status|:style, why:}]`).
-
-**When to use:** Brewing, scoring, status modifiers, boss rules. **Trade-offs:** + powers "Why is my beer 7 bitter?", ingredient tooltips, post-pour breakdown, and the clue engine; + stage-local unit tests; − a little bookkeeping per rule. Separate **raw sim values** (OG/IBU/attenuation/ester index, real-ish units) from **sensory attributes** (0-10 scale) via curves in `Tuning` — it keeps the brewing "accurate enough to learn from" (tone: 70% genuine) while the matchup layer stays readable.
-
-### Pattern 4: Declarative rules interpreted by one evaluator
-
-**What:** Synergies (Saaz + lager yeast), status triggers/effects, boss modifiers, perk conditions, unlock conditions are **data**: `{ when: {all: [{attr: :bitterness, gt: 6}, {style_in: [:ipa]}]}, apply: {mult: 0.75, to: :hop_aroma} }`, interpreted by a single `Rules.satisfied?(pred, ctx)` / `Rules.apply(...)`. A lambda escape hatch exists in Defs (Defs are Ruby, not saved), used sparingly for bosses.
-
-**Why:** the UI can *describe* a rule from data (tooltips, Regulars Book, status icons) and the clue engine can reason over it; arbitrary code can't be introspected. (Sibling project converged on the same shape: a single `satisfied?` evaluator.) **Trade-off:** the predicate vocabulary needs designing up front and will be extended; keep it small and grow by need.
-
-### Pattern 5: Hidden-information boundary (`PatronView`)
-
-**What:** `Patron Def` holds the true palate. `Knowledge.view(patron_def, profile_knowledge) -> PatronView` returns only what the player has learned (`likes: [{attr, confidence}]`, `bitterness_tolerance: :unknown | :low`, `hidden: :unrevealed`). **Scenes and widgets receive `PatronView` only.** `Palate.score` receives the true palate, and lives in L2 where only `Encounter` calls it.
-
-**Clue policy (anti-frustration, success criterion #6):** each scored component maps to candidate facts; reveal policy picks the most informative *unrevealed* fact, guaranteeing at least one new fact per pour until the patron is fully known, with style-name hints as softer clues (never decisive — the design constraint forbids "likes IPA → serve IPA"). Knowledge persists in Profile so the Regulars Book fills in across encounters.
-
-**Dynamic palates:** The Influencer ("preferences change with trends") and Buzzed ("preferences less strict") mean palate is *computed*: `Patron.palate_for(def, context)`. Build the hook now even if only static patrons ship first.
-
-### Pattern 6: Intent abstraction (input)
-
-**What:** `Input.frame(args)` runs once per tick and returns a normalized hash; scenes never read `args.inputs`. Built-ins verified in engine docs: `inputs.last_active` (`:keyboard/:mouse/:controller`), shared `key_down.left_right/up_down` for keyboard+dpad, `controller_one.accept/cancel` (handles Switch A/B swap), `connected` flag, `Geometry.rect_navigate`.
-
-```ruby
-module Input
-  def self.frame(args)
-    i = args.inputs; c = i.controller_one
-    pad = c && c.connected
-    {
-      mode:    i.last_active,                                   # drives hint glyphs + hover-vs-focus
-      nav:     { x: i.key_down.left_right, y: i.key_down.up_down },   # discrete menu steps
-      move:    i.directional_vector,                            # continuous (world walking, if any)
-      accept:  i.keyboard.key_down.enter || i.keyboard.key_down.space || (pad && c.key_down.a),
-      cancel:  i.keyboard.key_down.escape || (pad && c.key_down.b),
-      menu:    i.keyboard.key_down.tab    || (pad && c.key_down.start),
-      detail:  i.keyboard.key_down.d      || (pad && c.key_down.west),    # prefer cardinal names (docs)
-      tab_l:   i.keyboard.key_down.q      || (pad && c.key_down.l1),
-      tab_r:   i.keyboard.key_down.e      || (pad && c.key_down.r1),
-      pointer: { x: i.mouse.x, y: i.mouse.y, moved: i.mouse.moved, click: i.mouse.click, wheel: i.mouse.wheel },
+```swift
+public enum Encounter {
+    public static func serve(
+        _ state: EncounterState, tap: Int, catalog: ContentCatalog
+    ) -> (EncounterState, [EncounterEvent]) {
+        // 1. palate = Patron.palate(for: state.patron, context: state.context, catalog)
+        // 2. components = Palate.score(beer.attrs, palate, state.statuses, state.lastServed)  // ledger
+        // 3. statuses' = Statuses.advance(state.statuses, afterServing: beer)
+        // 4. facts = Clues.select(components, patron, knowledge)          // >= 1 new fact until known
+        // 5. return (state', [.scored(components), .statusApplied(..), .clue(fact), .satisfaction(from:to:), ...])
     }
-  end
-end
+}
 ```
 
-**Notes:** the sibling found `controller_one` handling needs an explicit nil/connected guard and that mruby diverges from CRuby in small ways (`&.`, `defined?`, dynamic constant assignment) — **verify idioms by running, not recalling**. Remapping (commercial requirement) = a mapping table consulted inside `Input.frame` (engine sample `09_ui_controls/06_input_remapping`). Hint glyphs ("[Enter] / (A)") switch on `intent[:mode]`. `[VERIFY]` `controller.key_down.accept` vs `.a` in this build.
+### Pattern 2: "MV" adapters: observable store over a value-typed Profile
 
-### Pattern 7: Focus-or-hover menu navigation (one rule everywhere)
+**What:** `GameStore` keeps the real `Profile` as an `@ObservationIgnored` value and publishes **narrow slices** (`taps`, `inventory`, `recipes`, `yeastBank`, `knowledge`, `regulars`, `codex`, `day`), each assigned only if changed.
+**Why (this is the key SwiftUI trap for this project):** Observation tracks at the property level. If views read `store.profile.taps` and `profile` is one big observable struct property, *any* change to *any* field invalidates *every* view that read *any* part of it. With a 1000-recipe profile and 16-bar attribute views that becomes an invalidation storm. Slices plus manual `!=` guards keep invalidation proportional to what changed. (Apple's WWDC25 Instruments session names unnecessary updates and long body updates as the main hitch sources.)
+**Trade-offs:** + fine-grained updates without extra frameworks; - a `publish` function to maintain (one line per slice, covered by a test that asserts every `Profile` field is mirrored).
 
-**What:** Every interactive screen is a list of `{id:, rect:}` targets. If `mode == :mouse`, hovered target = the one under the pointer and click activates; otherwise focus moves via `Geometry.rect_navigate(rect:, rects:, left_right:, up_down:)` and `accept` activates (exactly the engine's `02_menu_navigation_advanced` sample). Put this in `UI::Focus` once; every list/grid/tab bar/tap-lineup uses it, so controller support is never a retrofit.
+```swift
+@MainActor @Observable
+final class GameStore {
+    let catalog: ContentCatalog                       // immutable; also injected via @Entry
+    @ObservationIgnored private var profile: Profile  // source of truth (value type)
+    @ObservationIgnored private let saver: ProfileSaving
+    private(set) var taps: [BeerID?]
+    private(set) var inventory: Inventory
+    private(set) var recipes: RecipeBook
+    // ... one stored slice per Profile concern
 
-### Pattern 8: Ids-in-state + `Defs` registry + boot validation
+    func commit(_ events: [DomainEvent]) {
+        let next = Progression.apply(events, to: profile, catalog: catalog)
+        publish(next)
+        saver.scheduleSave(next)                      // debounced; flushed on scenePhase .background
+    }
+    private func publish(_ new: Profile) {
+        if new.taps != taps { taps = new.taps }
+        if new.inventory != inventory { inventory = new.inventory }
+        // ...
+        profile = new
+    }
+}
+```
 
-**What:** content files call `Defs.register(kind, id, hash)` (idempotent overwrite, so hot-reloading one content file just re-registers its entries). `Defs.validate!` runs in `boot` and **fails loudly** on: duplicate id, unknown attribute key, ingredient referencing nonexistent trait, patron preference on a non-attribute, location referencing missing patron, status referencing missing rule, missing sprite for a Def with `art:` declared (warn + `_missing.png` fallback). Direct copy of a validated sibling pattern (`Room.validate_links!`, `Constructs.validate!` at boot).
+**Environment injection:** inject the store with `.environment(store)` and read with `@Environment(GameStore.self)`. Inject immutable and non-observable collaborators (`catalog`, `clock`, `audio`, `haptics`) through `@Entry` environment values so they never trigger invalidation. Rows take **ids**, not whole models, and re-read their own slice (stable identity: never `UUID()` in `body`; never use a mutable `Hashable` value as a list id).
 
-### Pattern 9: Generic collection adapter (build the Pokédex once)
+**Root model ownership (Xcode 27 note):** `@State` became a macro in Xcode 27. The initial-value expression for an `@Observable` is now evaluated lazily and once, back-deployed to iOS 17 (builds with Xcode 27 only). Do not both give `@State` a default value *and* assign it in `init`; that no longer compiles. Because the store needs an async load (catalog + profile), use `@State private var store: GameStore?` and build it in `.task`, with a launch view until it exists. For models parameterized by a parent value, use `.task(id:)` rather than constructing in `init`.
 
-**What:** Ingredients, yeast cultures, recipes/beers, patrons, techniques, equipment are all "things you discover, own, and browse". Unify: Profile holds `codex[kind][id] = :seen | :owned | :mastered` (plus kind-specific records elsewhere), and each kind supplies a small adapter: `{ list:, tile:, detail:, sort_keys:, filters: }`. **One** `Scenes::CollectionBrowser` (grid/list + detail panel + tabs) serves them all. The Regulars Book is the same browser with a progression-aware detail panel.
+### Pattern 3: Authoritative state vs presentation state (event-log playback)
 
-**Why:** the design has ~6 collection UIs; bespoke screens would be the largest UI cost in the project.
+**What:** `Encounter.serve` runs synchronously and advances *truth* immediately. The UI never renders truth. It renders `EncounterPresentation` (shown satisfaction, shown breakdown lines, shown statuses, patron mood, dialogue line, revealed clues). `BeatScript.make(events) -> [Beat]` groups events into timed beats. `PlaybackDirector` applies each beat's events to `EncounterPresentation` inside `withAnimation`, fires an effect cue, and sleeps for the beat's hold.
+**Why:** (a) skip is exact: apply all remaining events with no animation and you are at the same presentation state; (b) tests inspect `[Beat]` and `EncounterPresentation` as data; (c) hidden information cannot leak early, because a clue is not in `shown` until its beat plays; (d) Reduce Motion just shortens holds and drops effects.
 
-### Pattern 10: Domain-event queue (decoupling progression from actions)
+```swift
+@MainActor @Observable
+final class EncounterSession {
+    enum Phase { case choosing, playing, finished }
+    private(set) var phase: Phase = .choosing
+    private(set) var shown = EncounterPresentation()   // what the player has been SHOWN
+    private(set) var cues = EffectCues()               // counters; views use .keyframeAnimator(trigger:)
+    @ObservationIgnored private var truth: EncounterState
+    @ObservationIgnored private var playback: Task<Void, Never>?
+    @ObservationIgnored private let sleep: @Sendable (Duration) async throws -> Void   // injected: tests pass { _ in }
 
-**What:** domain operations return events (`:beer_brewed`, `:patron_served`, `:encounter_won`, `:ingredient_acquired`, `:yeast_mutated`); `Game` collects them into the Session queue and calls `Progression.process(profile, events)` once per tick: codex discoveries, Regulars stage changes, unlock checks, tutorial triggers, (later) achievements. Brewing never needs to know that winning unlocks a farmer's grain.
+    func serve(tap: Int) {
+        guard phase == .choosing else { return }
+        let (next, events) = Encounter.serve(truth, tap: tap, catalog: catalog)
+        truth = next; phase = .playing
+        let beats = BeatScript.make(events, reduceMotion: reduceMotion)
+        playback = Task { await play(beats) }
+    }
+    func skip() { playback?.cancel() }                 // play() fast-forwards the remainder
 
-**Trade-off:** indirection; keep the event vocabulary small (≈15 types) and typed with symbols.
+    private func play(_ beats: [Beat]) async {
+        var i = 0
+        while i < beats.count, !Task.isCancelled {
+            let beat = beats[i]
+            withAnimation(beat.animation) { shown.apply(beat.events) }
+            cues.fire(beat.cue)
+            try? await sleep(beat.hold)
+            i += 1
+        }
+        for beat in beats[i...] { shown.apply(beat.events) }   // skip path: no animation
+        phase = truth.isOver ? .finished : .choosing
+    }
+}
+```
+
+### Pattern 4: Choosing the right animation tool (all verified iOS 17+)
+
+| Need | Use | Notes |
+|------|-----|-------|
+| Variable, event-driven sequencing of a battle | `PlaybackDirector` (`Task` + injected sleep) | Owns timing. Do not chain game logic through animation completion callbacks. |
+| State change with spring/ease (meter fill, badge in) | `withAnimation { shown.apply(...) }` | The default workhorse. |
+| One-shot multi-property choreography with precise curves (score pop: scale+offset+opacity; patron recoil; meter overshoot) | `KeyframeAnimator(initialValue:trigger:content:keyframes:)` or `.keyframeAnimator` | Content closure runs every frame, so keep it cheap. Trigger with a counter from `cues`. |
+| Small fixed set of discrete visual states (idle patron bob, glass tilt-pour-settle, button press) | `PhaseAnimator(_:trigger:content:animation:)` | Phases are a fixed array; it is not an event player. |
+| Continuous particles (foam, bubbles, confetti, ambient dust) | `TimelineView(.animation(paused:))` + `Canvas` | Particle state is a small value sim stepped by the timeline date. Pause when off-screen. Canvas content is not accessible: pair with real views/labels. |
+| Chaining a view-level step after a specific animation settles | `withAnimation(_:completionCriteria:_:completion:)` | Use sparingly. |
+| Numbers that feel good (satisfaction, coins) | `.contentTransition(.numericText())` + animation | |
+| Taps feel | `.sensoryFeedback(_:trigger:)` | Respect a Settings haptics toggle. |
+
+SpriteKit (`SpriteView`) is a fallback **only** if Canvas particle counts cause measurable hitches on the oldest supported device `[VERIFY]` with the Instruments 26 SwiftUI template. Do not start there.
+
+### Pattern 5: Attribute vector + contribution ledger
+
+**What:** One `enum Attribute: CaseIterable` (the ~16 sensory attributes). `AttributeVector` is a fixed-size array indexed by it (deterministic order, fast, trivially `Codable` as a keyed object by raw name). Brewing stages *append* ledger entries rather than mutating a number; scoring does the same with components.
+
+```swift
+public struct Contribution: Codable, Sendable, Hashable {
+    public var attr: Attribute
+    public var delta: Double
+    public var source: Source        // .ingredient(IngredientID) / .technique(..) / .yeast(..) / .status(..)
+    public var stage: Stage          // .mash / .boil / .ferment / .condition / .finalize
+    public var why: ReasonKey        // localizable reason key, e.g. "boil.bittering_60min"
+}
+// Brewing.simulate(recipe, yeast, catalog) -> BeerResult { attrs, ledger, derived(og/fg/abv/ibu/srm), traits }
+```
+
+Keep raw sim values (OG, IBU, attenuation) separate from 0-10 sensory attributes via curves in `Tuning`. Model ABV as a derived stat and expose *perceived alcohol* as a 0-10 attribute (decision needed in the brewing phase; both tolerance and Buzzed key off it).
+
+### Pattern 6: Declarative rules, interpreted by one evaluator
+
+**What:** Synergies, status triggers/effects, boss modifiers, perks and unlock conditions are Codable *data* (`Predicate`, `Effect`) interpreted by one `Rules` evaluator, so the UI can describe a rule from data (tooltips, Regulars Book).
+**Swift specifics:** the DragonRuby version used a lambda escape hatch. JSON content cannot. Instead, bosses use a **closed enum of named built-in rule kinds, parameterized by data** (`styleConformance`, `commonnessPenalty`, `trendPalette`, `adjunctPenalty`), implemented in Swift. Write `init(from:)`/`encode(to:)` for these enums by hand with a `"type"` discriminator; the synthesized `Codable` shape for enums with associated values is verbose and awkward to author by hand, and a case rename would silently break content or saves.
+
+### Pattern 7: Hidden-information boundary (`PatronView`)
+
+**What:** `PatronDef` holds the true palate. `Knowledge.view(patron:, knowledge:) -> PatronView` returns only what the player has learned. Views and sessions receive `PatronView` only; `Palate.score` receives the truth and is called only from `Encounter` inside `BrewDomain`.
+**Enforcement, strongest first:**
+1. **Compile-time via Swift's `package` access level** `[VERIFY]`: declare `PatronDef.palate`, `PatronDef.hidden` and boss rule parameters `package`. Targets inside `BrewKit` (Domain, Content, Fixtures, harness) can read them. The Xcode app target is a different build "package" and cannot. A 30-minute spike in the scaffolding phase confirms this behaves as expected across an Xcode-project-plus-local-package boundary. This keeps the UI inside the app target (not a `BrewKit` target) for this reason.
+2. **Fallback:** a lint test (`scripts/test`) that fails if `App/` references the palate fields or `catalog.patrons[...].palate`.
+3. **Test:** a `PatronView` snapshot test proving a fresh player's view contains no values.
+**Clue policy (anti-frustration, criterion #6):** each scored component maps to candidate facts; the policy reveals the most informative unrevealed fact and guarantees at least one new fact per pour until the patron is fully known. Style names are soft clues only (design constraint). Knowledge is committed to the Profile **after every pour**, so a force-quit mid-encounter never loses revealed clues (ENC-06).
+**Dynamic palates:** `Patron.palate(for:context:)` is a function (Influencer trends, Buzzed). Build the hook now.
+
+### Pattern 8: Navigation = custom tab bar, per-tab stacks, root modal enum
+
+**What:**
+- Root view = `switch` over `selectedTab` with a **custom chunky bottom bar** (Adventure Capitalist feel; thumb-zone, one-handed). Each tab owns an `@Observable Router` held in root `@State`, so its path survives tab switches even though the unselected view is torn down.
+- Each tab: `NavigationStack(path: $router.path)` with `navigationDestination(for: Route.self)` declared once at the stack root. `Route` is a `Hashable & Codable` enum carrying **ids only** (`.beer(BeerID)`, `.recipeFamily(RecipeID)`, `.patronEntry(PatronID)`).
+- Root `Modal` enum, presented with `.fullScreenCover(item:)` / `.sheet(item:)` at the root: `.encounter(EncounterSetup)`, `.brewResult(BeerID)`, `.onboarding(Step)`, `.settings`, pickers (ingredient, hop timing).
+- **Encounters are a `fullScreenCover`, not pushed routes.** They are atmospheric (no nav bar), must not be swipe-dismissible (`.interactiveDismissDisabled()`), have their own internal phase machine (`choosing -> playing -> result`), and are Session-only, so nothing needs state restoration. Sheets may be nested inside the cover (beer detail, clue notebook).
+- **Rewards and unlocks go through a `PresentationQueue`** on the hub rather than being presented in the same frame as a dismissal. This avoids the known SwiftUI sheet/cover dismiss-then-present race and guarantees unlock celebrations are never dropped.
+- Polish: `matchedTransitionSource` + `navigationTransition(.zoom)` (iOS 18) for collection card to detail.
+**Why a custom bar and not `TabView`:** since Xcode 27, the `UIDesignRequiresCompatibility` opt-out of Liquid Glass is ignored for apps built with the iOS 27 SDK (apps linked against the 26 SDK keep it; uploads must use the 27 SDK from April 2027). System tab bars and navigation bars will therefore be Liquid Glass, which clashes with a flat, chunky, cartoon skin. Hide the system nav bar on game screens and draw your own chrome; let system sheets, alerts and the keyboard look native. Add accessibility traits (`.isTabBar` and `.isSelected`) to the custom bar. `[VERIFY]` in a spike that the custom bar plus safe-area and home-indicator behavior is acceptable on small and large iPhones.
+
+### Pattern 9: Generic collection browser (build the Pokédex once)
+
+**What:** Ingredients, yeasts, recipes/beers, patrons, techniques are all "things you discover, own, and browse". One `CollectionBrowser<Item: CollectionItem>` (LazyVGrid/list, filter chips, sort, completion %, detail destination) where `CollectionItem` supplies `id`, `tile`, `detail`, `state` (`unseen/seen/owned/mastered`), `sortKeys`. Regulars Book and Yeast Bank are the same view with a custom detail. In `Profile`, one `codex[kind][id] = state` table.
+**Why:** the design has about six collection UIs; bespoke screens are the largest UI cost in the project.
+
+### Pattern 10: Domain-event queue (Progression)
+
+**What:** domain operations return `DomainEvent`s (`beerBrewed`, `patronServed`, `encounterWon`, `ingredientAcquired`, `yeastMutated`). `GameStore.commit` passes them to `Progression.apply`, which updates codex, Regulars stage inputs, unlocks, tutorial triggers and rewards, and returns the new `Profile`. Brewing never knows winning unlocks a farmer's grain. Keep the vocabulary small (about 15 events).
 
 ### Pattern 11: Seedable, serializable RNG
 
-DragonRuby's `rand` is global engine state (seeded from start time, reset by `DR.reset`) and cannot be saved. Anything stochastic that must be reproducible or fair (yeast mutation, drops, procedural patron names, flavor-text picks) uses `Rng.next(profile[:rng_state])` with the state in Profile, **recorded into the result** (e.g., a Beer stores `mutation_seed`). Encounters themselves must be deterministic: this is a deduction game.
+Swift's `SystemRandomNumberGenerator` cannot be seeded or saved. Implement `struct Rng: RandomNumberGenerator, Codable, Sendable` (SplitMix64 or xoshiro) whose state lives in `Profile`, pass `inout Rng` to the few stochastic functions (yeast mutation, drops), and **record outcomes into results** (a mutated culture stores its `mutationSeed`). Encounters themselves are fully deterministic: it is a deduction game.
+
+### Pattern 12: Derived, never stored
+
+Regulars stage (`Seen -> Served -> Impressed -> Regular -> Friend`), beer style label (BREW-06), completion percentages and the lineage index are **derived** from stored facts plus thresholds in Content. Rebalancing thresholds can then never desync a save.
 
 ---
 
 ## Data Flow
 
-### Frame flow
+### The Three Tiers
 
 ```
-args.inputs ─► Input.frame ─► Intent
-                                │
-                                ▼
-                  SceneStack.top.update(s, ctx)
-                                │  calls pure domain fns with Profile slices + Defs
-                                ▼
-          domain returns { new_state, events[] } ──► scene stores state, starts playback
-                                │
-                                ▼
-          Game drains domain events ─► Progression.process(profile, events) ─► Profile
-                                │
-                                ▼
-          SceneStack.render (bottom→top) ─► UI widgets ─► args.outputs.{sprites,labels,…}
-                                │
-                                ▼
-          Autosave policy (safe points only) ─► Save.write(slot, profile)
+CONTENT (bundled, immutable)              PROFILE (persisted, Codable, ids only)       SESSION (transient)
+────────────────────────────              ──────────────────────────────────────       ───────────────────
+hop/grain/adjunct/yeast Defs              schemaVersion, simVersion, contentVersion    Router paths, Modal
+style, status, trait, ability Defs        rng state, day, flags, unlocks               BrewSession (draft recipe, preview)
+patron Defs (TRUE palate), boss Defs      inventory {IngredientID: qty}                EncounterSession (truth + shown)
+location, perk, unlock-rule Defs          yeastBank {instances w/ generation, mutations} PresentationQueue
+Attribute list + display metadata         recipes {id -> Recipe(parents:[id], choices)} cursor/scroll, toasts, animation cues
+Tuning (scoring weights, curves)          beers {id -> {recipeID, snapshot, simVersion}}
+String tables + dialogue tables           taps [BeerID? x 6], lineup presets
+          ▲                               codex, knowledge {patronID -> facts}
+          │ resolved by id at point       patronStats {served, best, wins}
+          └──────────────────────         settings (separate file; not in a slot)
 ```
 
-### Core loop flow (Explore → Acquire → Brew → Serve → Learn → Improve)
+**Rules:**
+1. **Ids in state; Defs resolved at point of use.** Never store a Def (or any class instance, especially an `@Observable`) in `Profile`. Saves survive content edits.
+2. **A beer is a *result*:** `Beer = f(recipe, yeastInstance, catalog, tuning)`. Persist the `recipe` (truth) and a cached `snapshot` (attrs + ledger) stamped with `simVersion`. On load, if `simVersion` is stale, recompute: a balance patch intentionally reaches existing saves.
+3. **The yeast *instance* (generation, trait deltas) is an input to brewing**, not just a `YeastID`.
+4. **Save at safe points** (hub, after encounter result, after brew confirm, each pour's knowledge commit, scene-phase background). Encounter *state* is never persisted; its *outcome* and learned *knowledge* are.
+
+### Intent -> Domain -> Commit -> Save
 
 ```
-WorldMap/Location ──visit──► patrons/acquisition sources (Defs.location + Profile.flags)
-      │ acquire                                                    │ challenge
-      ▼                                                            ▼
-Profile.inventory/yeast_bank ◄── rewards ◄── Encounter result ◄── Encounter (3 pours × 6 taps)
-      │                                          ▲   │
-      ▼                                          │   └─► Knowledge.reveal ─► Profile.knowledge ─► PatronView
-Brewing scene: draft Recipe ──Brewing.simulate──► Beer (attrs+ledger) ──► taps[6]
-      │ save as child recipe (Lineage: parent_id)                      ▲
-      └─────────────────── learn → modify → rebrew ───────────────────┘
+Tap in View
+   │  store.serveBeer / session.serve / store.brew ...
+   ▼
+Session or Store (MainActor)
+   │  calls pure domain:  (state', events) = Domain.fn(state, input, catalog[, &rng])
+   ▼
+events ──► Presentation (EncounterSession: beats → shown state → Views)
+   │
+   └────► GameStore.commit(events) ─► Progression.apply ─► new Profile
+                                          │
+                                          ├─► publish slices (diff-assign) ─► Views re-render
+                                          └─► ProfileSaver.scheduleSave ─► ProfileStore (actor) ─► atomic file write
 ```
 
-### Encounter flow (the heart; fully headless-testable)
+### Encounter flow (heart of the game; fully headless-testable)
 
 ```
-Encounter.start(patron_def, tap_beers, knowledge, ctx)  → enc{satisfaction:0, pours_left:3, statuses:[], last_served:[]}
-loop (≤3 pours):
-  serve(enc, beer):
-    palate     = Patron.palate_for(def, ctx)                       # dynamic palates / boss rules
-    components = Palate.score(beer.attrs, palate, enc.statuses, enc.last_served)
-    delta      = Σ components  (+ boss/perk modifiers via Rules)
-    statuses'  = Statuses.apply_triggers(enc.statuses, beer.attrs) ; Statuses.tick(...)
-    facts      = Clues.select(components, def, knowledge)          # ≥1 new fact until fully known
-    return enc', [ components…, status events…, clue events…, patron_line, satisfaction, maybe over ]
-result → events [:encounter_won/lost] → Progression → Profile (patron_stats, knowledge, rewards, codex)
+EncounterSetup(patronID, tapBeerIDs)  ──►  Encounter.start(...)  ──► truth0 {satisfaction 0, poursLeft 3, statuses []}
+loop (<= 3 pours):
+  view: player taps tap #n
+  session.serve(n) ─► Encounter.serve(truth, n) ─► (truth', events)
+        events = [scored(components…), statusApplied…, clue(fact), patronLine(key), satisfaction(from,to), over?]
+  BeatScript.make(events) ─► [Beat]  ─► PlaybackDirector ─► shown (animated)   (skip => same end state)
+  store.commit(knowledge events)   // clues persist per pour
+end: store.commit(encounterWon/Lost + rewards) ─► Progression ─► Profile ─► autosave ─► cover dismisses ─► PresentationQueue plays unlocks
 ```
 
-### State management
+### Content boot flow
 
 ```
-Profile (saved)  ◄── only mutated through domain functions + Progression
-Session (RAM)    ◄── mutated by Game/SceneStack/scenes (their own slice)
-Defs (static)    ◄── never mutated after boot (hot reload re-registers, never edits in place)
-Settings         ◄── own file, applied on boot; not part of a slot
+App launch ─► ContentLoader.load(Bundle.module) ─► decode Defs (Codable) ─► ContentCatalog (immutable)
+          └─► ContentValidator.validate(catalog)  ─► DEBUG: assertionFailure on issues; Release: preconditionFailure
+                 (content is code-signed with the app: a load failure is a developer bug, not a user error)
+          └─► ProfileStore.load() ─► migrate ─► Profile ─► GameStore(catalog, profile)
 ```
 
 ---
@@ -352,102 +423,134 @@ Settings         ◄── own file, applied on boot; not part of a slot
 ## Subsystem Notes
 
 ### Brewing engine
-- **Pipeline:** `mash(grain_bill, mash_temp) → boil(hops@time, additions) → ferment(yeast_instance, temp, days) → condition(option) → finalize`. Each stage `(acc, choices, defs) → acc'` appending to the ledger. Mash temp drives fermentability/body/sweetness; boil drives bitterness/aroma/flavor by utilization-vs-time curves; fermentation drives attenuation/esters/phenols/funk via yeast Def × temperature curve (out-of-range temp = off-flavor contributions, a *teachable* mechanism); conditioning applies specialized traits.
-- **Live preview:** `Brewing.simulate` must be cheap and pure so the Brewing scene recomputes the preview every change (and optionally every tick). Cache by recipe hash if profiling ever demands it — unlikely at this size.
-- **ABV ambiguity (needs a design decision in the Brewing phase):** design lists ABV among the 16 "attributes" and "Alcohol strength" among the sensory list. Model **ABV as a derived physical stat** (`derived[:abv]`) and expose **perceived alcohol** as a 0-10 attribute through a curve, so patron "alcohol tolerance" and the `Buzzed` status can both key off it.
-- **Determinism:** no RNG in brewing except explicit yeast-mutation draws that are recorded into the result.
+- Pipeline `mash -> boil -> ferment -> condition -> finalize`; each stage `(acc, choices, catalog) -> acc'` appending to the ledger. Mash temperature drives body/sweetness/fermentability; boil drives bitterness/aroma via utilization curves; fermentation drives attenuation/esters/phenols/funk via yeast Def x temperature (out-of-range temperature yields teachable off-flavor contributions); conditioning applies specialized traits.
+- **Live preview** is a pure sync call executed once per `BrewSession.apply(_ edit:)` (microseconds). No debouncing or `Task` needed. Masking of undiscovered traits as "?" (BREW-03) uses a `Knowledge`-derived mask in the preview, the same boundary idea as `PatronView`.
+- **Determinism rules (Swift-specific, verified):** Swift randomizes Dictionary/Set hash seeds per process, so iteration order varies between launches. Never iterate a `Dictionary` to score, build a ledger or emit events. Iterate `Attribute.allCases`, sorted keys, or arrays. Setting `SWIFT_DETERMINISTIC_HASHING=1` in CI hides the problem; do not rely on it. Use `Int` fixed-point for satisfaction scoring (exact repro, stable thresholds) and `Double` for brewing curves with explicit rounding at the boundary `[decision for scoring-math phase]`.
+- Budget **style classification** (`Styles.classify(attrs, derived)`) and **rarity/commonness** metadata into `Beer` from the start. Boss rules (Beer Judge, Untappd Guy) need them.
 
 ### Recipe lineage
-Recipes are **immutable versions**. "Modify" = create child: `{ id, parent_id, name, created_seq, choices:{…}, diff_tags:[…] }`. `Recipes.diff(parent, child)` yields human-readable change tags ("+ Dry hop 3d", "Yeast: Saison → Belgian Abbey") used for family-tree edges and auto-name suggestions. Store `parent_id` from the **first** persisted recipe — it is impossible to reconstruct ancestry later. Children index is derived at load. Family-tree UI (a `TreeView` widget) can arrive late; the data cannot.
+- Recipes are immutable versions: `Recipe { id, parents: [RecipeID], createdSeq, choices, diffTags, archived }`. **`parents` is an array** so crossbreeding stays a data change instead of a migration, although v1 only ever writes 0 or 1 parent. "Modify" = create a child; "delete" = `archived = true`, never destructive (COLL-04).
+- `LineageIndex` (children map, roots, depth, ancestors/descendants) is a pure function built at load from `recipes`. At 100-1000 nodes, in-memory graph queries are trivial; **this is not a reason to adopt a database.**
+- Persist `parents` from the **first** saved recipe. Ancestry cannot be reconstructed later. The tree UI can arrive late; the data cannot.
+- Family-tree rendering: a custom SwiftUI `Layout` (or Canvas edges plus positioned views) over a precomputed tidy-tree layout from the index. Deep research item when that phase arrives.
 
 ### Collections
-- **Yeast Bank:** instances with `generation`, `traits_delta`, `lineage`; mutation is a seeded draw at pitch/harvest time, resolved in a pure `YeastBank.repitch(instance, rng_state) → [instance', rng', events]`.
-- **Ingredients:** Defs carry *gameplay identity* (trait bundles + synergy rules + drawbacks as Rules data), not just numbers; inventory is `{id => qty}`.
-- **Regulars:** stage is **derived**, never stored (`Regulars.stage(patron_stats, def.thresholds)`), so rebalancing thresholds can't desync saves. Passive benefits are `effects: [{key: :repair_cost_mult, value: 0.8}]` in the patron Def and read through `Perks.query(profile, key)` — no per-patron special-case code.
+- **Yeast Bank:** instances `{cultureID, generation, traitDeltas, lineage}`; `YeastBank.repitch(instance, rng: inout Rng) -> (instance', events)`. Mutation forks, never overwrites (COLL-06).
+- **Ingredients:** gameplay identity = trait bundles + synergy `Rule`s + drawbacks as data; inventory is `[IngredientID: Int]`.
+- **Regulars:** stage derived; passive benefits are `effects: [Effect]` in the patron Def read through `Perks.query(profile, key)`; no per-patron special-case code.
 
 ### World
-Location Def: `{ id, kind, name, unlock: pred, patrons: [spawn rules], sources: [{ingredient/yeast/recipe acquisition}], backdrop, music, hotspots }`. **Scope lever for the roadmap (needs a user decision):** the design says "explore" but does not say *how*. Free-roam tile worlds (collision, camera, Tiled maps, NPC pathing) are a large cost center and not what makes this game distinctive. Recommended v1: **node-map travel + each location as an illustrated backdrop with focusable hotspots (patrons, shop counter, brew station)** using the same focus nav as menus. Controller/mouse/keyboard parity is then free. Walkable maps can be layered later without changing Domain, because Domain only knows Location Defs and Profile flags. Time model hook: a single integer `profile[:day]` (stock rotation, festival availability) — decide in design whether brewing consumes days.
+Location Def `{ id, kind, name, unlock: Predicate, patrons: [spawn rules], sources: [acquisition], art keys }`. Node-map travel with each location as an illustrated backdrop plus hotspots (patrons, shop counter, brew station) as plain SwiftUI buttons over an `Image`. No tile maps, collision or camera. Render the node map as a `ScrollView` of positioned node buttons with Canvas-drawn paths. A single integer `profile.day`; decide in design whether brewing consumes days (BREW-07 says yes).
 
-### Boss encounters
-Bosses are **encounters with rule overrides**, not special code paths: Boss Def = patron Def + `rules: [...]` (declarative where possible: Beer Judge → `style_conformance` penalty rule; Untappd Guy → `commonness` penalty / `rarity` bonus; Influencer → `palate_trend` rule; German Brewmaster → `adjunct` penalty). This needs two derived beer metadata fields that must exist in `Beer` from the beginning: **style classification** (`Styles.classify(attrs, derived) → {style_id, conformance}`) and **rarity/commonness** (from ingredient rarities and style frequency). Budget them in the brewing phase even though bosses ship later.
+### Bosses
+Boss Def = patron Def + `rules: [RuleKind]` (named built-ins parameterized by data, see Pattern 6). Same `Encounter` engine, no special code path.
 
-### Save/load
-- **Envelope:** `{ save_version: 1, sim_version:, content_version:, saved_at:, playtime:, profile: {…} }`; migrations are a chain `Migrations.run(data)` stepping `v→v+1`; unknown-newer version refuses to load with a clear message.
-- **Slots + backup:** 3 slots; write `slotN.sav` after verifying a read-back parse; keep `slotN.bak` of the previous good save; on corrupt load, offer the backup. Autosave at safe points (return to hub, after encounter result, after brew confirm). Settings are a separate cross-slot file.
-- **Engine IO facts (HIGH, read from docs):** `DR.write_save_data/read_save_data` (added 7.14) is the engine-preferred path for user-specific data (dedicated save enclave on locked-down platforms; `__save_data__` dir otherwise, excluded from packaging). `DR.write_file` goes to the sandboxed data dir: macOS `~/Library/Application Support/[gametitle]`, Windows `%APPDATA%\[devtitle]\[gametitle]`, Linux `~/.local/share/[gametitle]`; **in dev builds it writes into the game directory.** No rename/atomic API exists (only write/append/delete/stat/list) → the write-verify-backup scheme above is how to get safety.
-- **Serializer choice (opinionated):** the engine's built-in `DR.serialize_state` is `state.to_s` written to disk and `DR.deserialize_state` **`eval`s the text** (`GTK::Codegen.eval_hash`, `docs/oss/dragon/runtime/save_state_load_state.rb`). Consequences: (1) loading executes whatever is in the file — acceptable for a private prototype, a liability for a commercial game with Steam Cloud, hand-edited saves, and player-typed strings (beer names!) going through `inspect` escaping `[VERIFY: mruby `String#inspect` escaping of `#{`/`#@`/`#$` and control chars]`; (2) it silently **sets `Kernel.tick_count` from a `:tick_count` key** in the loaded data — never use that key; (3) it logs a "serialization too large" warning above 20,000 characters (a realistic size for 100+ recipes with lineage). **Recommendation:** write a ~60-line JSON writer (there is **no** `to_json` in the engine) and read with `DR.parse_json` (native, no eval; returns string keys → one schema-aware `Save.symbolize` pass; store ids as strings). Spike this in the foundation phase with a round-trip test covering floats, nil, booleans, nested arrays, quotes/newlines/unicode/emoji in names. Fall back to the engine-native format only if the spike shows JSON round-tripping is lossy.
-- **Profile contents must be plain primitives.** No Procs, no class instances, no shared references (use ids), floats rounded on write.
+### Content pipeline
+- **Format:** JSON per category, `Codable` into `Def` structs defined in `BrewModel`. Not Swift literals (large literal compile times; not AI/tool-authorable), not plists (worse diffs, same Codable). Bundled with `.copy("Resources/Content")` so folders (`patrons/*.json`) are preserved and filename collisions cannot flatten. Always access via `Bundle.module`.
+- **Typed ids:** `struct ID<Tag>: RawRepresentable, Hashable, Codable, Sendable, ExpressibleByStringLiteral` with `typealias HopID = ID<HopTag>`. A `HopID` cannot be passed where a `YeastID` is expected; cross-references in JSON are plain strings validated at load.
+- **Validation (`ContentValidator`)** returns `[Issue]`: duplicate id, unknown attribute name, unknown ingredient/trait/status/location/patron reference, patron preference outside the attribute set, missing localization key, **missing art asset** (checked against an asset manifest generated from `Assets.xcassets` by `tools/`), patron with no hidden-preference clue path, unreachable location. Runs in tests (CI gate) and at DEBUG launch.
+- **Tuning:** `tuning.json` (scoring weights, status magnitudes, attribute curves) is part of `ContentCatalog`. The harness accepts `--tuning path.json` and `--content-dir path` overrides, so balance sweeps need no recompile. This replaces the DragonRuby "single-file tuning for hot reload" rule.
+- **Localization-ready (PLAT-06):** content holds *keys* (`"nameKey": "patron.darryl.name"`); strings live in a String Catalog (`.xcstrings`). Domain events carry keys and structured `Fact`s, never prose. Dialogue (ENC-03) is a `DialogueTable` mapping `(patronID or archetype, factKind, polarity) -> lineKey` with archetype fallback, so a clue line is always tagged with its underlying fact.
+- **Art:** convention `portrait.<patronID>.<mood>`, `ingredient.<id>`, `location.<id>`, resolved in the asset catalog. The validator flags missing art so content ships before art, and regenerated AI art drops in without code changes. Keep a provenance manifest (tool, prompt, seed) beside the source images.
+- **Beer visuals are procedural and derived:** `BeerVisualSpec` (SRM color, head height/retention, carbonation, glass type) is a pure function of the `Beer` in the domain (testable). `BeerGlassView` renders it with SwiftUI shapes/Canvas. The shareable beer card (COLL-11) uses `ImageRenderer`.
 
-### Rendering & art pipeline
-- **Pixel look (HIGH):** `metadata/game_metadata.txt`: `scale_quality=0` (nearest) and `hd=true` (the sibling's setting); sprite-level `scale_quality_enum` can override. Resolution: **recommend 1280×720 logical space, all art authored/processed at integer multiples and drawn at an integer `ART_SCALE`** (single constant in `core/screen.rb`), crisp pixel TTF text at fixed `size_px` steps. The engine also supports true low-res canvases (`aspect_mode`/`aspect_size`, e.g., 640×360, 320×180 — new in 7.14) which gives authentic chunky UI but forces every font and layout decision to be pixel-grid-exact and exposes AI-generated art's inconsistent pixel grids. `[VERIFY]` in an art-pipeline spike with real generated assets before locking; keeping all geometry behind `Screen`/`Layout` makes the switch a one-file change.
-- **Beer visuals are procedural composition, cached.** Glass sprite + tinted liquid layer (sprites support `r,g,b,a` tint) + head layer sized/colored from attributes, composed into a **render target once per distinct beer visual signature** (`args.outputs[:beer_#{sig}]`) and drawn as a sprite thereafter. **Pitfall straight from the docs:** merely *accessing* `args.outputs[:name]` invalidates the cached texture — create it on first need, never every frame.
-- **Text:** a glyph set is built and cached per `(font, size_px/size_enum)`; lerping size causes huge glyph caches (use render targets to scale labels). Use `String#wrap(n)` / `wrapped_lines` for dialogue boxes; `DR.calcstringbox_h` for sizing — **cache measurements** in widget state, don't remeasure per frame.
-- **Asset registry:** `Assets.sprite(:portrait, :darryl, :happy)` → path by convention (`sprites/portraits/darryl_happy.png`); `Defs.validate!` + `DR.stat_file` flag missing art and substitute `_missing.png` so **content can ship before art**, and regenerated art drops in without code changes (`DR.reset` already calls `reset_sprites`, invalidating the sprite cache). Texture atlases are Pro-only — not required.
-- **Audio:** `args.audio[:id] = {input:, gain:, looping:}`; wav ≤ 44.1 kHz, ogg for music; wrap in `Sfx.play(:pour)` / `Music.set(:taproom)` (gain-lerp crossfade).
+### Persistence
+
+**Decision: versioned Codable JSON envelope, in Application Support, written atomically by `actor ProfileStore`.**
+
+| Option | Verdict | Reasoning |
+|--------|---------|-----------|
+| **Codable JSON file (recommended)** | Use | Domain is pure value types: persisting them directly needs no mapping layer. Fixtures are diffable text. Tests are headless. Profile is small (about 1 MB at 1000 recipes). Whole-file atomic write is simple and robust. |
+| SwiftData | Reject for v1 | `@Model` classes are reference types bound to a framework; our pure-value domain would need a second mapping layer, so no boilerplate is saved. iOS 27 improved it (sectioning, observers, `.codable` attributes) but `ModelActor` still runs on the main thread unexpectedly and Codable attributes cannot participate in predicates, sorting or migrations. `@Query` brings nothing, since the store already holds in-memory slices. Reconsider only if CloudKit sync becomes a requirement. |
+| GRDB (7.x, full Swift 6 support) | Documented escalation | Choose if the profile grows to many MB, or you want queryable history (every encounter log, analytics). Put it behind the same `ProfileStore` protocol so the swap is local. Adds a dependency and a SQL schema. |
+
+- **Envelope:** `{ schemaVersion, simVersion, contentVersion, savedAt, playtimeSeconds, profile }`. Encode with `.sortedKeys`, ISO-8601 dates, ids as strings, and hand-written Codable for enums with associated values (explicit discriminators).
+- **Additive evolution is free:** new fields decode with `decodeIfPresent` plus a default. Only structural changes need a migration.
+- **Migrations:** small `v -> v+1` functions on the raw JSON tree (`[String: Any]`), then decode current `Profile`. No frozen copies of old types. **Every schema version ships a frozen real save in `Tests/Fixtures/saves/`, and a test loads each one through the full chain.** This is the highest-leverage persistence test.
+- **Atomic write + backup:** encode in the actor, write to a temp file, decode-verify it, then `replaceItemAt` the live file, keeping the previous good file as `profile.bak.json`. On decode failure, fall back to the backup and surface a recovery message. Refuse to load a save with `schemaVersion` newer than the app.
+- **When to save:** after domain commits (debounced about 1 s), after each pour's knowledge commit, and **immediately on `scenePhase == .background`** (iOS can kill a backgrounded app at any time). A force-quit mid-encounter restarts at the hub: no resumable encounter state, clues retained, and the loss cost (ENC-06) applies or not by explicit design `[decision]`.
+- **Backup/sync:** Application Support is included in iCloud/device backup by default, which gives new-phone restore for free. CloudKit/Game Center sync is v2.
+- **Settings** live in a separate small file (or `UserDefaults`), cross-save. If `UserDefaults` is used, declare the reason in `PrivacyInfo.xcprivacy` `[VERIFY]` current required-reason API list at submission time.
 
 ### Testing & balance harness
-- **Runner (HIGH, sibling-verified):** `./dragonruby ./mygame --test tests/…` discovers `test_*(args, assert)`; assertion-free tests report *inconclusive* (treat as failure); engine exit code is always 0 and a missing suite falls through into the game loop — so `./test` owns the exit code and bounds runtime with `timeout`/`gtimeout`.
-- **Domain suites that earn their keep here:** (1) **golden brews** — fixed recipe → attribute ranges; (2) **"two IPAs differ"** — assert score variance across a set of IPA-styled beers vs. one patron (encodes the design's critical constraint); (3) **solvability** — for every patron Def, ∃ a ≤3-pour sequence from ≥1 plausible tap lineup reaching 100 (and none wins on pour 1 with zero information); (4) **determinism** — same inputs, same event log; (5) **save round-trip + migration** fixtures; (6) **content validation** — `Defs.validate!` passes. The harness is only possible *because* the domain is pure.
-
----
-
-## Scaling Considerations
-
-"Scale" here is content volume and code size, not users.
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| Prototype (≈10 patrons, ≈20 ingredients, ≈20 beers) | Everything in the layering above works unoptimized. Ruby-literal content files, full recompute of previews each change. |
-| v1 (≈30-60 patrons, ≈100 ingredients/yeasts, 100-300 recipes/beers per long save) | Keep content files per-category and moderate in size (engine 7.16 warns when a source file nears **codegen limits** `[VERIFY threshold]`); move large text corpora (barks, dialogue, flavor text) to `data/*.json`. Save size grows past the 20k-char engine warning → another reason for own serializer. Virtualize long collection lists (draw only visible rows). |
-| Post-v1 (regions as content packs, rival brewers) | Content packs = more `content/` files registered at boot; Profile gains `region_progress`. Domain unchanged — this is why "regions are content, not mechanics" holds. |
-
-### Scaling Priorities
-1. **First bottleneck: per-frame UI allocation/measurement.** Rebuilding dozens of label/sprite hashes and calling `calcstringbox` each tick for tap lists, 16-bar attribute views and ingredient grids. Fix: cache prefabs/measurements in scene state keyed by content hash; batch with `outputs.sprites << array.map {…}` per engine perf guide; use `Hash` primitives (not Arrays), `.each` over `.map` when discarding results, `reject!` after iteration not `delete` during.
-2. **Second: load/validation time and source-file size** at boot as content grows (see codegen note), and save size.
+- **Runner:** Swift Testing in `BrewKit`; `swift test` on the Mac. Use parameterized tests (`@Test(arguments: catalog.patronIDs)`) for per-patron solvability.
+- **Suites that earn their keep:** (1) golden brews (fixed recipe to attribute ranges); (2) "two IPAs differ": score variance across IPA-styled beers vs one patron (encodes the design's critical constraint); (3) solvability: every patron has a <= 3-pour sequence from at least one plausible lineup reaching 100, none wins on pour 1 with zero info (PLAT-07: >= 70% solvable, >= 4 best-in-class archetypes); (4) determinism: same inputs, same events, run in two processes without `SWIFT_DETERMINISTIC_HASHING`; (5) save fixtures through all migrations; (6) content validation; (7) `PatronView` hides truth; (8) `BeatScript`/`EncounterPresentation` skip equivalence (animated end state == skipped end state).
+- **`brew-harness`:** `swift run -c release brew-harness --patrons all --lineups enumerate --tuning t.json` fans out with a `TaskGroup` (the domain is nonisolated and `Sendable`) and prints JSON/CSV plus a text transcript renderer for any encounter.
+- **App-target tests:** UI logic that must be covered (`PlaybackDirector` with an injected instant sleep, `Router`, store slice-mirroring) uses Swift Testing in the app test target. Previews use `BrewFixtures`.
 
 ---
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Rules in scenes
-**What people do:** compute satisfaction inside the encounter scene's `tick` because the data is right there.
-**Why it's wrong:** no headless tests, no balance harness, animation timing entangled with logic; the explanation UI must re-derive what the scene already computed.
-**Do this instead:** scene calls `Encounter.serve`; plays the returned events.
+### Anti-Pattern 1: A ViewModel per screen that re-implements rules
+**What people do:** reflexive MVVM: `BrewViewModel` computes attributes, `EncounterViewModel` scores pours.
+**Why it's wrong:** no headless tests, no harness, rules fork between preview and encounter.
+**Do this instead:** views and thin sessions call `BrewDomain`; sessions only hold UI-adjacent state.
 
-### Anti-Pattern 2: Collapsing to a single number
-**What people do:** `satisfaction += beer.score` with one blended formula, or style-name matching ("likes IPA").
-**Why it's wrong:** violates the design's critical constraint, destroys clue generation, kills explainability.
-**Do this instead:** per-attribute components with labeled deltas; style as a *clue/bias component*, never the decider.
+### Anti-Pattern 2: Putting rules or `@Observable` on domain types
+**What people do:** mark `Beer` or `EncounterState` `@Observable` "so the UI updates".
+**Why it's wrong:** reference semantics leak into saves and tests, isolation and `Sendable` get tangled, and the harness can no longer fan out.
+**Do this instead:** domain = values; observation lives only in L3.
 
-### Anti-Pattern 3: UI reading hidden truth
-**What people do:** pass the patron Def to the encounter UI "for convenience".
-**Why it's wrong:** one careless label leaks the answer; tests can't prove the boundary.
-**Do this instead:** `PatronView` only; grep test that `scenes/` and `ui/` never reference `Defs.get(:patron…)[:palate]`.
+### Anti-Pattern 3: One giant observable `profile` read by every view
+**What people do:** `store.profile.recipes[...]` everywhere.
+**Why it's wrong:** any profile change invalidates all readers (see Pattern 2).
+**Do this instead:** diff-assigned slices, id-based rows.
 
-### Anti-Pattern 4: Objects or Defs inside saved state
-**What people do:** store the `Beer` object / the hop Def hash in the profile.
-**Why it's wrong:** content edits orphan saves; shared references round-trip oddly; hot reload leaves stale copies.
-**Do this instead:** ids + records of plain primitives; resolve Defs at point of use.
+### Anti-Pattern 4: Game logic driven by animation
+**What people do:** apply score in `onAnimationCompleted`, or use `Task.sleep` as the game clock.
+**Why it's wrong:** skip, Reduce Motion, backgrounding and tests all break.
+**Do this instead:** truth advances synchronously; presentation catches up (Pattern 3).
 
-### Anti-Pattern 5: Reading `args.inputs` anywhere but `Input`
-**Why it's wrong:** controller/remap support becomes a retrofit across every scene (explicit project constraint: input abstraction from day one).
-**Do this instead:** `Intent` only; enforce with a grep test.
+### Anti-Pattern 5: UI reading hidden truth
+**What people do:** pass `PatronDef` to the encounter screen for convenience.
+**Why it's wrong:** one careless label leaks the answer.
+**Do this instead:** `PatronView` only, `package`-access and lint enforced.
 
-### Anti-Pattern 6: Hot-reload traps (both reproduced in the sibling repo)
-- **Tunable freeze:** `@x ||= Tuning::X` caches the value forever; saving `tuning.rb` then does nothing, silently. Read `Tuning::` at point of use.
-- **Boolean latch:** `@flag ||= true` snaps a deliberate `false` back. Use `@flag = false if @flag.nil?`.
-- **`DR.reset` mid-tick** destroys state the current tick still needs → use `DR.reset_next_tick` from input handling. `DR.reset` does **not** clear globals or your constructed objects → top-level `reset` hook must nil `$game`.
-- **Class reload doesn't re-run `initialize`** → new iVars are nil; either keep a `defaults!` schema method (sibling pattern) or use hash state (Pattern 1).
+### Anti-Pattern 6: Dictionary iteration in scoring or event emission
+**Why it's wrong:** order differs per launch (random hash seeds), producing flaky tests, differing ledgers and unreproducible bug reports.
+**Do this instead:** enum-indexed vectors, `allCases`, sorted keys.
 
-### Anti-Pattern 7: Label-size animation, per-frame render-target access, Array primitives
-Documented engine performance traps (`docs/guides/troubleshoot-performance.md`, `outputs.md`): lerping `size_px/size_enum` explodes the glyph cache; touching `args.outputs[:rt]` every frame invalidates its texture; Array primitives are slower and deprecated (`DR.warn_array_primitives!` audits).
+### Anti-Pattern 7: Synthesized Codable for saved associated-value enums and renamed cases
+**Why it's wrong:** renaming a case or changing a payload silently breaks every existing save.
+**Do this instead:** explicit string discriminators, a migration, and a frozen fixture.
 
-### Anti-Pattern 8: Premature ECS / third-party frameworks
-Draco/Zif-style frameworks add a dependency and a second paradigm on top of an unfamiliar Ruby dialect. This game's "entities" are data records (beers, recipes, patrons) manipulated by pure functions; there is no per-frame entity simulation. Plain modules + hashes is the correct weight. (Same conclusion as the sibling project's research.)
+### Anti-Pattern 8: SwiftData `@Model` as the domain model
+**Why it's wrong:** couples rules to a framework and reference types and forces a mapping layer anyway.
+**Do this instead:** Codable value `Profile` (Persistence section).
 
-### Anti-Pattern 9: Free-roam world as the default
-**Why it's wrong:** tile maps, collision, camera, NPC movement are a large, non-differentiating cost for a brewing/tactics game; they also complicate controller parity.
-**Do this instead:** node-map + backdrop hotspots for v1 (see World).
+### Anti-Pattern 9: Fighting Liquid Glass with `UIDesignRequiresCompatibility`
+**Why it's wrong:** ignored for apps built with the iOS 27 SDK, and the SDK is mandatory for uploads from April 2027.
+**Do this instead:** own the chrome (custom tab bar, hidden nav bar on game screens); accept system sheets.
+
+### Anti-Pattern 10: Constructing `@Observable` models in a view `init` from parent values
+**Why it's wrong:** re-runs on parent recreation; the Xcode 27 `@State` macro rule changes make some forms uncompilable.
+**Do this instead:** root-owned stores; `@State` + `.task(id:)`.
+
+### Anti-Pattern 11: Premature frameworks
+TCA (2.0 redesign is in beta, so migration churn is guaranteed), swift-dependencies, ECS, SpriteKit scene graphs, SwiftData, Combine. The pure-domain split already provides TCA's headline benefit (testable reducers) without a macro-heavy dependency. Revisit only if the app layer's state graph genuinely becomes hard to reason about (Point-Free's own advice: start vanilla, adopt later if needed).
+
+### Anti-Pattern 12: `GeometryReader`-driven layout and unstable list identity
+**Why it's wrong:** geometry fed through broad observable state and `UUID()`/mutable-hash ids are the top hitch causes called out by Apple's Instruments guidance.
+**Do this instead:** `ViewThatFits`, `containerRelativeFrame`, `@ScaledMetric`, stable ids.
+
+---
+
+## Scaling Considerations
+
+"Scale" is content volume and code size, not users.
+
+| Scale | Architecture Adjustments |
+|-------|--------------------------|
+| Prototype (about 10 patrons, about 21 ingredients, about 20 beers) | Everything above, unoptimized. Fixtures drive previews. |
+| v1 (40+ patrons, about 100 ingredients/yeasts, 100-1000 recipes) | Decode content once at launch (a few MB of JSON decodes in tens of ms; do it in `.task` behind a launch view). `LazyVGrid` for collections with id-only rows. Profile about 1-2 MB: encode in the `ProfileStore` actor. Split `patrons/*.json` per patron or small group for merge-friendliness. |
+| Post-v1 (regions as content packs, trading, sync) | Add content directories and a `region` field; domain unchanged ("regions are content, not mechanics"). Escalate persistence to GRDB behind `ProfileStore` if history/queries appear; add CloudKit if sync is required. |
+
+### Scaling Priorities
+
+1. **First bottleneck: SwiftUI invalidation and list cost** in collection screens and 16-bar attribute views. Fix: slices, id-only rows, `Equatable` row views, caching derived display data. Profile with the Instruments 26 SwiftUI template (long view body updates, unnecessary updates).
+2. **Second: Canvas particle cost** on the oldest supported device. Fix: cap particle counts, pause off-screen `TimelineView`s, pre-render static layers with `drawingGroup`/`ImageRenderer` caches keyed by `BeerVisualSpec`.
+3. **Third: build and preview times** as BrewKit grows. Fix: keep BrewKit light (Foundation only, no third-party macros), prefer package tests over app tests, promote the design system to a local package only if previews slow down.
 
 ---
 
@@ -457,67 +560,96 @@ Draco/Zif-style frameworks add a dependency and a second paradigm on top of an u
 
 | Service | Integration Pattern | Notes |
 |---------|---------------------|-------|
-| DragonRuby runtime | `boot/tick/reset` top-level (or `Main` module — engine-recommended as scale grows; it disables Array/OpenEntity primitives and adds `start`; **precedence is `Main.tick`, `self.tick`, `Object.tick`**) | Pick one and stick to it. Sibling proved top-level + `$game` works. Own engine copy per project; commit engine for shelf-life if repo stays private. |
-| Steam | `dragonruby-publish` automates Steam upload for **Indie/Pro**; **Standard** must use Steamworks tooling directly (HIGH, `deploying-to-steam.md`) | **Confirm license tier before planning achievements/cloud/overlay** `[VERIFY]`. For Steam Auto-Cloud, confirm where `DR.write_save_data` lands vs the documented per-OS `write_file` dirs. 7.18 added Steam Big Picture fullscreen behavior (Pro). |
-| itch.io | `dragonruby-publish` | Simple; do it early as a CI-style smoke test of packaging. |
-| Controllers | Engine abstraction over SDL game pads; `inputs.controllers[0..3]`, `connected`, `accept/cancel` | Test with Xbox + PlayStation + Switch Pro; Steam Deck path documented (`--only-package`, Linux build). |
-| Accessibility | Engine has VoiceOver/A11y emulation (macOS/iOS, 7.13); sample `09_ui_controls/04_accessiblity_for_the_blind` | Not a v1 requirement; keep widgets' text available (`UI` widgets know their label strings) so it's addable. |
+| StoreKit 2 | `EntitlementsClient` protocol in `Platform/`; domain knows only abstract resources/entitlements | Monetization undecided (premium vs F2P+IAP). Keep the seam, build nothing else until the economy phase. |
+| Haptics | `.sensoryFeedback` on cue counters, behind a Settings toggle | |
+| Audio | `AudioClient` protocol (AVFoundation); cues come from beats | Respect silent switch and mixing. |
+| Accessibility | VoiceOver labels on every custom control, Dynamic Type via `@ScaledMetric`/`ViewThatFits`, Reduce Motion via `BeatScript`, no color-only information | UX-03/04. Canvas drawing needs sibling accessibility elements. |
+| TestFlight / App Store | Ship a TestFlight build in the first UI phase and keep shipping | External TestFlight needs beta app review `[VERIFY]` limits/expiry. App Store age rating questionnaire (new 13+/16+/18+ tiers) will be asked about alcohol references; keep the "no glorified intoxication" stance already in Out of Scope. `[VERIFY]` current guideline text at submission. |
+| Privacy manifest | `PrivacyInfo.xcprivacy` declaring required-reason APIs actually used (UserDefaults, file timestamps) | Zero tracking, zero analytics SDKs in v1. |
 
 ### Internal Boundaries
 
 | Boundary | Communication | Notes |
 |----------|---------------|-------|
-| Scene ↔ Domain | Direct function calls with Profile slices + ids; returns `(state, events)` | Scenes never mutate Profile directly except through a domain/Progression function |
-| Domain ↔ Domain | Direct calls **downward only** (Encounter→Palate→Statuses→Rules); **sideways via events** (Encounter→Progression) | Brewing never calls Encounter and vice-versa |
-| Domain ↔ Defs | `Defs.get(kind, id)` at point of use | Never cache Def objects in state |
-| Scene ↔ Scene | Only through `SceneStack` (`push/pop/replace(type, params)`); params are plain hashes of ids | Result scenes receive the encounter outcome, not references |
-| UI ↔ Input | `Intent` + `ctx[:intent]` only | |
-| Game ↔ Save | `Save.write(slot, profile)` / `Save.read(slot) → profile` | Profile must be plain data; Save owns envelope/migration |
-| Content ↔ Assets | Def `art:` key → `Assets.sprite` convention; boot validation flags missing | |
-| Tooling ↔ Domain | `tools/` + `tests/` run the pure domain headless (balance harness) | Domain has zero engine deps — that is the contract |
+| View <-> Store/Session | Reads observable slices; calls intent methods | Views never call `BrewDomain` mutators directly; pure display math is allowed. |
+| Store/Session <-> BrewDomain | Direct sync calls returning `(state, events)` | Always passes `catalog` explicitly. |
+| BrewDomain <-> BrewDomain | Calls downward only (`Encounter -> Palate -> Statuses -> Rules`); sideways via events | Brewing never calls Encounter. |
+| BrewDomain <-> BrewContent | None. Domain receives a `ContentCatalog` value | Content depends on Model only. |
+| Store <-> BrewPersistence | `ProfileSaving` protocol: `scheduleSave(Profile)`, `load() -> Profile` | The only `actor` boundary. |
+| Session <-> Presentation | `[DomainEvent]` in, `EncounterPresentation` + cue counters out | `Presentation/` has no SwiftUI import. |
+| Tooling/Tests <-> Domain | `brew-harness` and `swift test` | Domain has zero UI deps: the contract. |
+| Content <-> Assets | Def art keys resolved against the asset catalog; validator checks a generated manifest | |
 
 ---
 
 ## Suggested Build Order (dependencies, for roadmap)
 
-Dependency logic: **Platform shell → Data foundations → Pure domain (headless, tested) → Core-loop UI (the vertical slice) → Persistence of the loop → Collections → World → Commercial wrapper.** Prove the *matchup puzzle* before building the *world around it* (matches the design's own Phase-1 prototype intent: "Can brewing decisions create interesting beers, and can those create interesting patron-selection puzzles?").
+Dependency logic: **scaffold + prove the toolchain -> typed data + content pipeline -> pure domain (headless, harness-gated) -> thin app skeleton -> vertical slice (brew -> serve -> learn) -> persistence of the loop -> collections -> world -> bosses -> commercial wrapper.** Prove the *matchup puzzle* before building the world around it (the design's own Phase-1 intent), but get a real device and TestFlight loop running early, because SwiftUI/Xcode 27 specifics are where the unknowns are.
 
-| # | Build | Depends on | Why this position |
-|---|-------|-----------|-------------------|
-| 0 | **Engine setup & scaffolding:** own engine copy, `mygame/` layout, `run`/`test` wrappers with owned exit code, `boot.rb` require list, `core/` (paths, screen, log, rng, tuning), debug HUD, sample test | — | Real first task per PROJECT.md. Everything else is cheaper with test+reload loop working. |
-| 1 | **Cross-cutting foundations:** `Input`→Intent (kb+mouse+pad), `UI::Focus` + `Layout` + minimal widgets, `SceneStack`, `Defs` registry + validation, attribute list, **Save envelope + serializer spike (round-trip test)** | 0 | Constraints say input abstraction and saves are cheaper early than retrofitted. Serialization format is the highest-regret early decision. |
-| 2 | **Brewing engine (pure) + a few real Defs:** attribute vector, staged pipeline, ledger, derived stats, style classification, rarity; golden tests | 1 (Defs, vec) | Beer attributes are the input to everything downstream; ledger shape must be right before UI. |
-| 3 | **Palate scoring + Statuses + Encounter state machine + Knowledge/Clues/PatronView (pure):** event log; ≈10 patrons; solvability + "two IPAs differ" tests; **balance harness** | 2 | The core design risk. Iterate it with no UI at all (text/console dump scenes). |
-| 4 | **Core-loop scenes — the vertical slice:** Brewing scene (live preview + explanation panel), Tap lineup (6), Encounter scene with event playback, result screen; BeerGlass + AttributeView widgets; placeholder art | 1-3 | First point where "brew → serve → learn → improve" is playable end-to-end and can be playtested. |
-| 5 | **Profile persistence of the loop:** Profile schema, recipes + **lineage (parent_id from day 1)**, beers snapshot, taps, knowledge, patron_stats, autosave at safe points, migrations v1 | 1(Save), 4 | Makes it a real game; lineage data must exist before lineage UI. |
-| 6 | **Collections:** Codex + generic CollectionBrowser, ingredient inventory/acquisition, Yeast Bank (instances + mutation + seeded RNG), Regulars Book + stage derivation + Perks, family-tree view | 5 | All are instances of Pattern 9 on top of persisted Profile; mutation needs RNG state in saves (Pattern 11). |
-| 7 | **World:** Location Defs, node-map travel, location scene with hotspots, acquisition sources, unlock gating, Progression/unlock rules, day counter | 5-6 | World content is *sources of collectibles and patrons* — needs the things they hand out to exist. |
-| 8 | **Boss encounters:** rule overrides (style conformance, commonness, trend palette, adjunct penalty), boss Defs + scene dressing | 3, 7 | Reuses the encounter engine; needs style/rarity metadata from step 2. |
-| 9 | **Commercial wrapper:** title/menus, onboarding/tutorial driven by Progression events, settings (volume, remap, fullscreen), save-slot UI, polish/juice, audio pass, Mac/Win/Linux builds, itch + Steam packaging | all | Cross-cutting; onboarding needs the whole loop to exist. Packaging smoke-test (itch build) should happen **early and repeatedly**, not only here. |
+| # | Build | Depends on | Why this position / exit gate |
+|---|-------|-----------|-------------------------------|
+| 0 | **Scaffold + spikes.** Xcode project (iPhone, portrait, iOS 18, Swift 6 mode), `BrewKit` package with empty targets, `scripts/test`, Swift Testing smoke test, `Bundle.module` JSON load smoke test, `package`-access hiding spike, TestFlight build of an empty app | none | Everything is cheaper once `swift test` on the Mac and a device build both work. Gate: package tests green; app launches; palate field hidden from app target (or lint fallback chosen). |
+| 1 | **Model + content pipeline.** `ID<Tag>`, `Attribute`/`AttributeVector`, Defs, `Rng`, `Profile`/`Recipe` *types* (with `parents`), `ContentLoader`/`Validator`, `Tuning`, prototype content (5 grains, 8 hops, 5 yeasts, 3 adjuncts, 10 patrons), `SaveEnvelope` round-trip test | 0 | The ledger/attribute/id shapes and Codable discipline are the highest-regret early decisions. Land the envelope + first fixture here (cheap, since types are Codable). Gate: validator passes; envelope round-trips floats/unicode/names. |
+| 2 | **Brewing engine (pure) + ledger + styles/rarity metadata.** Golden-brew tests | 1 | Beer attributes feed everything downstream. Gate: golden tests; determinism test. |
+| 3 | **Palate + Statuses + Encounter + Clues/Knowledge/`PatronView` + `brew-harness`.** Event log, transcript renderer, solvability and "two IPAs differ" suites | 2 | The core design risk. It is iterated with **no UI at all**. Gate: harness shows >= 70% solvability, best-in-class diversity, no pour-1 wins. |
+| 4 | **App skeleton + design system.** `BrewfighterApp`, `GameStore` (slices), `Router`, custom tab bar, Theme, chunky components, `BrewFixtures` previews, launch/load flow | 0-1 (can overlap 2-3) | Needs only Model types plus fixtures, so it can run in parallel with 2-3. Gate: hub navigates on device; one-handed reach checked. |
+| 5 | **Vertical slice.** Brew screen (live preview, ledger sheet), tap lineup (6), encounter cover with `EncounterSession`/`PlaybackDirector`/`BeatScript`, result screen, `BeerGlassView`, placeholder art, haptics | 3, 4 | First playable "brew -> serve -> learn -> improve". Playtest here. Gate: skip equals full-playback end state; Reduce Motion path; 60 fps on the oldest supported device. |
+| 6 | **Persistence of the loop.** `ProfileStore` actor, autosave policy (per pour, safe points, background), backup/recovery, migration chain v1 with fixtures, recipe journal + lineage index, rebrew | 1, 5 | Makes it a real game. Lineage data already exists from step 1; this adds the journal UI. Gate: kill-app tests; migration fixtures. |
+| 7 | **Collections.** Codex + generic `CollectionBrowser`, ingredient inventory/acquisition, Yeast Bank + mutation (seeded RNG), Regulars Book + derived stages + Perks, recipe family-tree view, beer-card export | 6 | All instances of Pattern 9 on persisted Profile. Tree layout is a research item. |
+| 8 | **World.** Location Defs, node map, location backdrops + hotspots, acquisition sources, unlock gating via Progression, day counter | 6-7 | World content is *sources of collectibles and patrons*; those must exist first. |
+| 9 | **Bosses.** Rule-override built-ins, boss Defs, scene dressing | 3, 8 | Reuses the encounter engine; needs style/rarity metadata from step 2. |
+| 10 | **Commercial wrapper.** Onboarding (Progression-event driven), Settings, accessibility pass (VoiceOver, Dynamic Type at AX sizes), audio pass, polish/juice, privacy manifest, age rating, monetization seam resolved, App Store packaging | all | Cross-cutting; onboarding needs the whole loop. TestFlight has been running since step 0. |
 
-**Parallel tracks:** (a) *Art pipeline* — procedural/AI asset generation + post-processing to a consistent pixel grid/palette, runs from step 1 with placeholders; (b) *Content authoring* — Defs grow continuously behind `Defs.validate!`; (c) *Audio* — placeholder SFX hooks from step 4.
+**Parallel tracks:** (a) *Art pipeline*: generate and normalize flat/cartoon assets from step 4 onward against placeholders, with the validator flagging gaps; (b) *Content authoring*: Defs grow continuously behind the validator and harness; (c) *Audio*: placeholder cues wired from step 5.
+
+### Requirement implications of the platform pivot (for roadmap rewrite)
+
+The existing `.planning/REQUIREMENTS.md` still describes a desktop build. Flag these for rewriting: **PLAT-01** (mouse/keyboard/controller intent model) becomes touch, accessibility and one-handed reach; **PLAT-02** is native; **PLAT-03** (JSON saves on 3 OSes, 3 slots) becomes the Codable envelope on iOS, likely a single profile with rolling backup; **PLAT-05** (Mac/Win/Linux packaging) becomes TestFlight/App Store pipeline; **PLAT-07** (headless harness) is satisfied by `swift test` + `brew-harness`; **ART-02/03/04** (pixel-art, locked palette) become flat/cartoon style consistency with a provenance manifest; **ART-05** (Sonic Pi audio) needs re-evaluation; **WORLD-03** (day counter) stays.
 
 ### Research flags for phases
 
 | Phase | Flag |
 |-------|------|
-| 1 | **Spike:** save serializer round-trip (JSON writer vs engine-native; string escaping; float fidelity); `controller.key_down.accept` behavior; `Main` vs top-level entry. |
-| 2-3 | **Deep design research:** scoring math, curve shapes, clue policy, status interaction balance. Not an engineering-pattern risk — a *game-design* risk; budget playtest iterations and the harness. |
-| 4 | **Spike:** resolution/scale/font decision with real AI-generated assets; BeerGlass render-target caching approach. |
-| 7 | **Design decision needed from user:** node-map+hotspots vs free-roam (scope lever); does brewing consume days? |
-| 9 | **Verify:** license tier; Steam Cloud path vs `write_save_data` location; codegen file-size limits at content scale. |
-| 5, 6, 8 | Standard patterns (versioned records, collection browsers, rule overrides) — unlikely to need separate research. |
+| 0 | **Spike:** `package` access across Xcode-project / local-package boundary; Xcode 27 + tools-version 6.2 package config; `Bundle.module` `.copy` resources reachable from app and from `swift test`/CLI. |
+| 2-3 | **Deep game-design research:** scoring math (fixed-point vs Double), curve shapes, clue policy, status interactions. A design risk, not an engineering-pattern risk; budget harness iterations. |
+| 4 | **Spike:** custom tab bar vs Liquid Glass chrome, safe areas, home indicator, one-handed reach on small and large iPhones. |
+| 5 | **Spike:** playback feel (beat timing), Canvas particle budget on oldest supported device (Instruments 26 SwiftUI template), `KeyframeAnimator` per-frame cost, Reduce Motion path. |
+| 6 | Standard patterns, but **fixture-driven migration testing** must be set up before the first schema change; decide the mid-encounter force-quit rule. |
+| 7 | Recipe family-tree layout (custom `Layout`) needs focused research when reached. |
+| 8 | **Design decision from user:** does brewing consume days; node-map + hotspots (recommended) vs anything richer. |
+| 10 | **Verify at submission:** TestFlight/beta-review limits, age-rating questionnaire answers for alcohol, privacy manifest, monetization decision (premium vs F2P+IAP) before economy work. |
 
 ---
 
 ## Sources
 
-- **Engine docs and source (HIGH), local build `0d709c3` / v7.18 (2026-09-11):** `/Users/charris/src/mechtech/dragonruby-macos/docs/api/{state,runtime,inputs,outputs,layout,geometry,audio}.md`; `docs/guides/{troubleshoot-performance,starting-a-new-project,deploying-to-steam}.md`; `docs/oss/dragon/runtime/{save_state_load_state,require}.rb`, `attr_dr.rb`, `string.rb`; `CHANGELOG-CURR.txt` (7.14 `read/write_save_data`, `aspect_mode`; 7.16 codegen-limit warning; 7.18).
-- **Engine samples (HIGH):** `samples/09_ui_controls/02_menu_navigation_advanced` (focus-or-hover), `09_ui_controls/06_input_remapping`, `06_save_load/01_save_load_game`, `99_genre_board_game/03_word_game` (`write_save_data`), `99_genre_jrpg/turn_based_battle` (phase-flag turn flow — shows the *minimum*, not a structure to adopt: one 168-line tick with `args.state.phase`), `99_genre_jrpg/cutscenes`.
-- **Sibling project (HIGH, same author, same engine build):** `/Users/charris/src/mechtech/` — `.claude/skills/dragonruby/SKILL.md`, `.planning/phases/01-engine-foundation-debug-spine/01-LEARNINGS.md`, `mygame/app/{main,boot,input,paths,world_state,game}.rb`, `run`, `test`. Source of the hot-reload traps, mruby-dialect divergences, test-runner exit-code finding, ordered-require convention, single-file tuning rule.
-- **Genre patterns (MEDIUM):** Pokémon Showdown simulator/protocol separation — https://github.com/smogon/pokemon-showdown/blob/master/sim/SIMULATOR.md ; scene/state-stack with overlay menus and `init/pause/resume/term` lifecycle — https://textbooks.cs.ksu.edu/cis580/07-game-architecture/04-game-screens , https://gamedev.net/forums/topic/337919-using-a-stack-for-the-gamestate/ ; Nystrom, *Game Programming Patterns* (State, Game Loop, Event Queue, Data Locality chapters).
-- **Not verified / needs spike:** mruby string-inspect escaping, codegen-limit threshold, Steam Cloud path, license-tier-gated Steam features, `controller.key_down.accept` (all tagged `[VERIFY]` above).
+**HIGH confidence (Apple documentation text, via a markdown mirror):**
+- PhaseAnimator, iOS 17.0+: https://sosumi.ai/documentation/swiftui/phaseanimator
+- KeyframeAnimator, iOS 17.0+ (content closure runs per frame): https://sosumi.ai/documentation/swiftui/keyframeanimator
+- `withAnimation(_:completionCriteria:_:completion:)`, iOS 17.0+: https://sosumi.ai/documentation/swiftui/withanimation(_:completioncriteria:_:completion:)
+- Migrating from ObservableObject to `@Observable` (`@State`, `@Environment`, `@Bindable`): https://sosumi.ai/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro
+- `Observations` async sequence (SE-0475), iOS 26+: https://developer.apple.com/documentation/observation/observations
+- Bundling resources with a Swift package (`process` vs `copy`, `Bundle.module`): https://developer.apple.com/documentation/xcode/bundling-resources-with-a-swift-package
+- WWDC25 session 306, Optimize SwiftUI performance with Instruments (new SwiftUI instrument; long body updates, unnecessary updates): https://developer.apple.com/videos/play/wwdc2025/306/
+
+**MEDIUM confidence (cross-checked secondary sources):**
+- Approachable Concurrency / `.defaultIsolation` in Swift packages (tools 6.2; packages default nonisolated; `Bundle.module` caveat): https://useyourloaf.com/blog/approachable-concurrency-in-swift-packages/ ; https://www.donnywals.com/should-you-opt-in-to-swift-6-2s-main-actor-isolation/
+- Xcode 27 `@State` macro (lazy once-only init for `@Observable`, back-deployed to iOS 17, build with Xcode 27): https://nilcoalescing.com/blog/InitializingObservableClassesWithTheStateMacroInXcode27 ; https://www.pointfree.co/blog/posts/223-beta-preview-lazystate
+- Xcode 27 release (Swift 6.4, Apple Silicon only, 2026-09-14): https://blakecrosley.com/fr/blog/xcode-27-release
+- iOS 27 launch and Xcode 27 SDK requirement from April 2027: https://www.mactech.com/2026/09/10/app-store-submissions-now-open-for-the-latest-os-releases/
+- `UIDesignRequiresCompatibility` ignored when built with iOS 27 SDK: https://developer.apple.com/forums/thread/832543
+- SwiftData in OS 27 (what improved, what did not): https://mjtsai.com/blog/2026/06/23/swiftdata-in-appleos-27/
+- GRDB vs SwiftData vs Core Data comparison: https://www.pistack.xyz/posts/2026-08-11-grdb-swiftdata-core-data-swift-persistence-comparison/ ; GRDB 7 Swift 6 support: https://forums.swift.org/t/grdb-7-is-out/77465
+- TCA guidance (Observation-based; start vanilla, adopt later): https://www.pointfree.co/blog/posts/141-composable-architecture-frequently-asked-questions
+- Swift dictionary hash-seed randomization (`SWIFT_DETERMINISTIC_HASHING`): https://forums.swift.org/t/psa-the-stdlib-now-uses-randomly-seeded-hash-values/10789
+- SwiftUI data-flow/performance guidance (list identity, equality, environment): https://nilcoalescing.com/blog/TheSwiftUIWayUpdateJuly2026/
+- Per-tab router, `Route`/`Modal` enum navigation patterns (community consensus): https://dev.to/sebastienlato/modern-navigation-in-swiftui-1c8g
+- App Store age rating tiers (13+/16+/18+): https://www.macobserver.com/news/apple-adds-new-app-store-age-ratings-13-16-and-18/
+
+**Carried forward (from the 2026-10-06 research, platform-independent ideas only):** Pokemon Showdown simulator/protocol separation (https://github.com/smogon/pokemon-showdown/blob/master/sim/SIMULATOR.md); Nystrom, *Game Programming Patterns* (State, Event Queue); the three-tier data model, ledger, `PatronView`, derived-not-stored and balance-harness ideas.
+
+**Not verified / needs spike (all tagged `[VERIFY]` above):** `package`-access hiding across the Xcode project boundary; custom tab bar vs Liquid Glass on iOS 27; Canvas particle performance on the oldest supported device; TestFlight limits; privacy-manifest requirements at submission time; exact Swift 6.4 feature set (a WWDC26 writeup found was not reliable enough to cite).
 
 ---
-*Architecture research for: collectible brewing RPG on DragonRuby GTK*
-*Researched: 2026-10-06*
+*Architecture research for: collectible brewing RPG, native Swift/SwiftUI on iPhone*
+*Researched: 2026-10-08*
