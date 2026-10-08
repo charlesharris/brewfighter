@@ -53,11 +53,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. A pseudo-localized run shows every on-screen string coming from the String Catalog, and every interactive control meets the 44pt minimum.
 
 **Research flags**: Xcode 27 / iOS 27 SDK project setup and deployment target; `package`-access spike to hide domain internals (true palates) from the app target; custom chrome vs Liquid Glass decision for game screens; confirm required screenshot sizes and Declared Age Range scope when creating the app record; start a names-cleared log. An optional art style-lock spike can settle name/icon direction early (the pipeline requirement itself lands in Phase 4).
-**Plans**: 10 plans
+**Plans**: 1/10 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 01-01-PLAN.md — Walking skeleton, engine half: BrewCore package, deterministic brew + ledger, reducer/day counter, v1 save envelope, style classifier, recipe rules
+- [x] 01-01-PLAN.md — Walking skeleton, engine half: BrewCore package, deterministic brew + ledger, reducer/day counter, v1 save envelope, style classifier, recipe rules
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-02-PLAN.md — Walking skeleton, app half: XcodeGen app, Cellar BREW → autosave → relaunch, backup/fallback saves, String Catalog checker, 44pt/pseudo-loc UI harness
@@ -180,7 +180,7 @@ Phases execute in numeric order: 1 → 2 → 3 → (fun-gate) → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Brew Your First Beer | 0/10 | Planned | - |
+| 1. Brew Your First Beer | 1/10 | In Progress | - |
 | 2. Serve & Deduce | 0/TBD | Not started | - |
 | 3. Iterate & Prove the Fun | 0/TBD | Not started | - |
 | 4. Collect & Evolve | 0/TBD | Not started | - |
