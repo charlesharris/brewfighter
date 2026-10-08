@@ -126,6 +126,7 @@ public struct ContentCatalog: Sendable {
     public let housePaleAle: Recipe
 
     package let baselineEffects: EffectMap
+    package let styles: StyleTable
     private let starters: [String: Recipe]
 
     // MARK: Loading
@@ -159,6 +160,11 @@ public struct ContentCatalog: Sendable {
         let grains = try decode(GrainsFile.self, "grains", in: bundle)
         let yeasts = try decode(YeastsFile.self, "yeasts", in: bundle)
         let starter = try decode(StarterFile.self, "starter_recipes", in: bundle)
+        let styles = try decode(StyleTable.self, "styles", in: bundle)
+
+        guard styles.fallbacks.last?.id == "experimental_ale", styles.fallbacks.last?.conditions.isEmpty == true else {
+            throw ContentError.invalid("styles.json must end its fallbacks with an unconditional experimental_ale")
+        }
 
         try validate(bands.strength, ids: StrengthBand.allCases.map(\.rawValue), group: "strength") {
             $0.ogPoints != nil && $0.grainLbsTenths != nil
@@ -189,6 +195,7 @@ public struct ContentCatalog: Sendable {
             durationBands: bands.fermentDuration,
             housePaleAle: house,
             baselineEffects: bands.baseline.effects,
+            styles: styles,
             starters: starters)
     }
 
@@ -208,7 +215,7 @@ public struct ContentCatalog: Sendable {
     private init(
         contentVersion: Int, fermentables: [FermentableInfo], yeasts: [YeastInfo],
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
-        housePaleAle: Recipe, baselineEffects: EffectMap, starters: [String: Recipe]
+        housePaleAle: Recipe, baselineEffects: EffectMap, styles: StyleTable, starters: [String: Recipe]
     ) {
         self.contentVersion = contentVersion
         self.fermentables = fermentables
@@ -219,12 +226,18 @@ public struct ContentCatalog: Sendable {
         self.durationBands = durationBands
         self.housePaleAle = housePaleAle
         self.baselineEffects = baselineEffects
+        self.styles = styles
         self.starters = starters
     }
 
     // MARK: Lookups
 
     public func starterRecipe(_ id: String) -> Recipe? { starters[id] }
+
+    /// String Catalog key for a style (or fallback) display name.
+    public func styleNameKey(_ id: String) -> String? {
+        (styles.styles + styles.fallbacks).first { $0.id == id }?.nameKey
+    }
 
     package func fermentable(_ id: String) -> FermentableInfo? { fermentables.first { $0.id == id } }
     package func yeast(_ id: String) -> YeastInfo? { yeasts.first { $0.id == id } }

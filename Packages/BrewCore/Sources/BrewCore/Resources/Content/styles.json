@@ -1,0 +1,32 @@
+{
+  "styles": [
+    {
+      "id": "american_pale_ale",
+      "nameKey": "style.american_pale_ale.name",
+      "threshold": 75,
+      "conditions": [
+        { "attribute": "bitterness", "min": 25, "max": 55, "weight": 3, "required": true },
+        { "attribute": "hopAroma", "min": 35, "max": 80, "weight": 3, "required": false },
+        { "attribute": "malt", "min": 15, "max": 45, "weight": 2, "required": false },
+        { "attribute": "roast", "min": 0, "max": 10, "weight": 2, "required": true },
+        { "attribute": "abv", "min": 0, "max": 100, "weight": 0, "required": false }
+      ]
+    }
+  ],
+  "fallbacks": [
+    {
+      "id": "amber_ale",
+      "nameKey": "style.amber_ale.name",
+      "conditions": [
+        { "attribute": "malt", "min": 30, "max": 100, "weight": 1, "required": true },
+        { "attribute": "sweetness", "min": 20, "max": 100, "weight": 1, "required": true },
+        { "attribute": "roast", "min": 0, "max": 30, "weight": 1, "required": true }
+      ]
+    },
+    {
+      "id": "experimental_ale",
+      "nameKey": "style.experimental_ale.name",
+      "conditions": []
+    }
+  ]
+}
