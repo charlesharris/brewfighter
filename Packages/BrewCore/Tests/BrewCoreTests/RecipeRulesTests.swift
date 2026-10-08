@@ -377,8 +377,9 @@ private func violation(_ bill: GrainBill, _ catalog: ContentCatalog) -> String? 
 
     // MARK: Day cost (D-10)
 
-    @Test func dayCostOfTheHousePaleAleIsFourteen() {
-        #expect(RecipeRules.dayCost(content.housePaleAle, content: content) == 14)
+    @Test func dayCostOfTheHousePaleAleIsSeventeen() {
+        // 14 fermentation days + 3 dry hop days.
+        #expect(RecipeRules.dayCost(content.housePaleAle, content: content) == 17)
     }
 
     @Test func dayCostSumsFermentationAndEveryConditioningStep() {

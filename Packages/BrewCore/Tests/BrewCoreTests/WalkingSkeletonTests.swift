@@ -100,10 +100,10 @@ private func minimalRecipe() -> Recipe {
         #expect(beer.batchNumber == 1)
         #expect(beer.brewDay == 1)
         #expect(beer.contentVersion == 1)
-        #expect(state.day == 15)
+        #expect(state.day == 18)
         #expect(state.nextBatchNumber == 2)
         #expect(events == [
-            .dayAdvanced(from: 1, to: 15),
+            .dayAdvanced(from: 1, to: 18),
             .beerBrewed(beerID: beerID1, batchNumber: 1),
             .styleAssigned(beerID: beerID1, styleID: beer.result.styleID),
         ])
@@ -114,8 +114,8 @@ private func minimalRecipe() -> Recipe {
         let (s1, _) = Reducer.apply(.brew(recipe: content.housePaleAle, beerID: beerID1), to: .new, content: content, rng: &rng)
         let (s2, _) = Reducer.apply(.brew(recipe: minimalRecipe(), beerID: beerID2), to: s1, content: content, rng: &rng)
         #expect(s2.beers.map(\.batchNumber) == [1, 2])
-        #expect(s2.beers[1].brewDay == 15)
-        #expect(s2.day == 29)
+        #expect(s2.beers[1].brewDay == 18)
+        #expect(s2.day == 32)
         #expect(s2.nextBatchNumber == 3)
     }
 

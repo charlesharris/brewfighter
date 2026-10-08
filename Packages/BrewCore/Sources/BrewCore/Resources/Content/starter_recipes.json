@@ -19,7 +19,9 @@
         "yeastID": "yeast.y01",
         "fermentTemp": "balanced",
         "fermentDuration": "standard",
-        "conditioning": []
+        "conditioning": [
+          { "kind": "dryHop", "ingredientID": "hop.h01", "amount": 4 }
+        ]
       }
     }
   ]

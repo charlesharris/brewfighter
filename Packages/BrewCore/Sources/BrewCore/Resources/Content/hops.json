@@ -5,7 +5,7 @@
       "nameKey": "content.hop.h01.name",
       "traitKeys": ["trait.citrus", "trait.tropical"],
       "alphaTenths": 120,
-      "effects": { "citrus": 30, "tropical": 20, "hopAroma": 25 }
+      "effects": { "citrus": 22, "tropical": 14, "hopAroma": 25 }
     },
     {
       "id": "hop.h02",

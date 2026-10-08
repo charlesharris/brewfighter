@@ -92,8 +92,8 @@ import Testing
     @Test func brewedBeerStyleIsInTheStyleTable() throws {
         let result = try Brewer.brew(content.housePaleAle, content: content)
         #expect(content.styleNameKey(result.styleID) != nil)
-        // The house recipe has no hops yet, so it is malty-sweet and lands on the amber fallback.
+        // The hopped house recipe (bitterness, hop aroma, low roast) matches the pale ale style.
         #expect(result.styleID == StyleClassifier.classify(result.attributes, styles: content.styles))
-        #expect(result.styleID == "amber_ale")
+        #expect(result.styleID == "american_pale_ale")
     }
 }

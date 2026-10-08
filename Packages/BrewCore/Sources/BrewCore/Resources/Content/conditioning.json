@@ -5,6 +5,7 @@
       "nameKey": "conditioning.dryHop.name",
       "blurbKey": "conditioning.dryHop.blurb",
       "days": 3,
+      "aromaWeightPercent": 130,
       "effects": {},
       "amountUnitKey": "unit.ounces"
     },
@@ -21,14 +22,14 @@
       "nameKey": "conditioning.lagering.name",
       "blurbKey": "conditioning.lagering.blurb",
       "days": 28,
-      "effects": {}
+      "effects": { "fruit": -10, "dryness": 10, "carbonation": 5, "sweetness": -5 }
     },
     {
       "kind": "bottleConditioning",
       "nameKey": "conditioning.bottleConditioning.name",
       "blurbKey": "conditioning.bottleConditioning.blurb",
       "days": 14,
-      "effects": {}
+      "effects": { "carbonation": 20, "dryness": 5 }
     }
   ]
 }

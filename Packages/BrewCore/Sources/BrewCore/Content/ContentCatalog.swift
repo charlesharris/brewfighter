@@ -202,17 +202,20 @@ package struct TinsethTable: Sendable, Equatable, Decodable {
     }
 }
 
-/// A conditioning menu entry (D-16). Effects are filled by the hop-content plan.
+/// A conditioning menu entry (D-16). Dry hop rows come from the chosen hop scaled by
+/// `aromaWeightPercent`; fruit rows come from the fruit adjunct per pound; lagering and
+/// bottle conditioning use their fixed `effects`. Effects are filled by the hop-content plan.
 public struct ConditioningInfo: Sendable, Equatable, Decodable {
     public let kind: ConditioningKind
     public let nameKey: String
     public let blurbKey: String
     public let days: Int
     public let amountUnitKey: String?
+    package let aromaWeightPercent: Int?
     package let effects: EffectMap
 
     enum CodingKeys: String, CodingKey {
-        case kind, nameKey, blurbKey, days, amountUnitKey, effects
+        case kind, nameKey, blurbKey, days, amountUnitKey, aromaWeightPercent, effects
     }
 }
 

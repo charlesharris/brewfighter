@@ -98,13 +98,25 @@ package enum Brewer {
                 into: &rows)
         }
 
-        // 8. Conditioning, in step order (effects are filled by the hop-content plan)
+        // 8. Conditioning, in step order (D-16). Dry hop adds aroma only (no IBU); fruit scales per pound.
         for step in recipe.conditioning {
             guard let info = content.conditioningInfo(for: step.kind) else { continue }
-            emit(
-                info.effects,
-                source: LedgerSource(kind: .conditioning, refID: step.ingredientID, detail: step.kind.rawValue),
-                into: &rows)
+            let source = LedgerSource(kind: .conditioning, refID: step.ingredientID, detail: step.kind.rawValue)
+            switch step.kind {
+            case .dryHop:
+                guard let hopID = step.ingredientID, let hop = content.hop(hopID), let amount = step.amount else {
+                    throw .invalidRecipe([.conditioningMissingIngredient(.dryHop)])
+                }
+                let weight = info.aromaWeightPercent ?? 100
+                emit(hop.effects, source: source, into: &rows) { divRound($0 * weight * amount, 400) }
+            case .fruit:
+                guard let fruitID = step.ingredientID, let fruit = content.adjunct(fruitID), let amount = step.amount else {
+                    throw .invalidRecipe([.conditioningMissingIngredient(.fruit)])
+                }
+                emit(fruit.effects, source: source, into: &rows) { $0 * amount }
+            case .lagering, .bottleConditioning:
+                emit(info.effects, source: source, into: &rows)
+            }
         }
 
         // 9. Cap rows last
