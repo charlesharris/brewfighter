@@ -152,13 +152,73 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| BREW-01 | Phase 1 | Pending |
+| BREW-02 | Phase 1 | Pending |
+| BREW-03 | Phase 3 | Pending |
+| BREW-04 | Phase 1 | Pending |
+| BREW-05 | Phase 3 | Pending |
+| BREW-06 | Phase 1 | Pending |
+| BREW-07 | Phase 1 | Pending |
+| ENC-01 | Phase 2 | Pending |
+| ENC-02 | Phase 2 | Pending |
+| ENC-03 | Phase 2 | Pending |
+| ENC-04 | Phase 2 | Pending |
+| ENC-05 | Phase 2 | Pending |
+| ENC-06 | Phase 2 | Pending |
+| ENC-07 | Phase 3 | Pending |
+| ENC-08 | Phase 2 | Pending |
+| ENC-09 | Phase 5 | Pending |
+| TAP-01 | Phase 2 | Pending |
+| TAP-02 | Phase 5 | Pending |
+| TAP-03 | Phase 2 | Pending |
+| TAP-04 | Phase 2 | Pending |
+| TAP-05 | Phase 3 | Pending |
+| COLL-01 | Phase 3 | Pending |
+| COLL-02 | Phase 3 | Pending |
+| COLL-03 | Phase 4 | Pending |
+| COLL-04 | Phase 3 | Pending |
+| COLL-05 | Phase 4 | Pending |
+| COLL-06 | Phase 4 | Pending |
+| COLL-07 | Phase 4 | Pending |
+| COLL-08 | Phase 4 | Pending |
+| COLL-09 | Phase 4 | Pending |
+| COLL-10 | Phase 4 | Pending |
+| COLL-11 | Phase 4 | Pending |
+| REG-01 | Phase 4 | Pending |
+| REG-02 | Phase 4 | Pending |
+| REG-03 | Phase 4 | Pending |
+| WORLD-01 | Phase 5 | Pending |
+| WORLD-02 | Phase 5 | Pending |
+| WORLD-03 | Phase 5 | Pending |
+| WORLD-04 | Phase 5 | Pending |
+| WORLD-05 | Phase 4 | Pending |
+| WORLD-06 | Phase 5 | Pending |
+| UX-01 | Phase 6 | Pending |
+| UX-02 | Phase 6 | Pending |
+| UX-03 | Phase 3 | Pending |
+| UX-04 | Phase 3 | Pending |
+| UX-05 | Phase 3 | Pending |
+| UX-06 | Phase 3 | Pending |
+| PLAT-01 | Phase 1 | Pending |
+| PLAT-02 | Phase 2 | Pending |
+| PLAT-03 | Phase 1 | Pending |
+| PLAT-04 | Phase 6 | Pending |
+| PLAT-05 | Phase 1 | Pending |
+| PLAT-06 | Phase 1 | Pending |
+| PLAT-07 | Phase 2 | Pending |
+| PLAT-08 | Phase 3 | Pending |
+| ART-01 | Phase 1 | Pending |
+| ART-02 | Phase 5 | Pending |
+| ART-03 | Phase 4 | Pending |
+| ART-04 | Phase 5 | Pending |
+| ART-05 | Phase 6 | Pending |
+| ART-06 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 60 total
-- Mapped to phases: 0
-- Unmapped: 60 ⚠️
+- v1 requirements: 61 total (earlier drafts said 60; a recount of requirement IDs on 2026-10-08 found 61)
+- Mapped to phases: 61
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-06*
-*Last updated: 2026-10-08 after iOS platform pivot*
+*Last updated: 2026-10-08 after roadmap creation (traceability populated)*
