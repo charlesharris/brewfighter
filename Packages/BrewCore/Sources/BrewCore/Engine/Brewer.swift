@@ -78,7 +78,8 @@ package enum Brewer {
         let stats = BeerStats(
             ogPoints: strength.ogPoints ?? 0, fgPoints: 0, abvTenths: 0, ibuTenths: 0, srmTenths: 0)
 
-        return BrewResult(attributes: attributes, ledger: ledger, stats: stats, styleID: "experimental_ale")
+        let styleID = StyleClassifier.classify(attributes, styles: content.styles)
+        return BrewResult(attributes: attributes, ledger: ledger, stats: stats, styleID: styleID)
     }
 
     /// Append one row per non-zero attribute effect, in AttributeID order.

@@ -30,7 +30,34 @@ package struct StyleTable: Decodable, Equatable, Sendable {
 /// no recipe, stats or ingredient IDs reach the classifier.
 package enum StyleClassifier {
     package static func classify(_ attributes: AttributeVector, styles: StyleTable) -> String {
-        // RED stub: real scoring lands in the GREEN commit.
-        "experimental_ale"
+        // A style qualifies when every `required` condition holds and its weighted match
+        // percent reaches the threshold. Highest percent wins; ties go to the earlier entry.
+        var best: (id: String, percent: Int)?
+        for style in styles.styles {
+            guard let percent = qualifyingPercent(style, attributes) else { continue }
+            if best == nil || percent > best!.percent { best = (style.id, percent) }
+        }
+        if let best { return best.id }
+
+        // Fallbacks apply only when nothing qualified: first one whose conditions all hold.
+        for fallback in styles.fallbacks where fallback.conditions.allSatisfy({ $0.isSatisfied(by: attributes) }) {
+            return fallback.id
+        }
+        // A well-formed table ends with an unconditional experimental_ale (the loader enforces it).
+        return "experimental_ale"
+    }
+
+    /// The style's match percent when it qualifies, otherwise nil.
+    private static func qualifyingPercent(_ style: StyleDefinition, _ attributes: AttributeVector) -> Int? {
+        var totalWeight = 0
+        var satisfiedWeight = 0
+        for condition in style.conditions {
+            let satisfied = condition.isSatisfied(by: attributes)
+            if condition.required && !satisfied { return nil }
+            totalWeight += condition.weight
+            if satisfied { satisfiedWeight += condition.weight }
+        }
+        let percent = totalWeight == 0 ? 100 : satisfiedWeight * 100 / totalWeight
+        return percent >= (style.threshold ?? 0) ? percent : nil
     }
 }
