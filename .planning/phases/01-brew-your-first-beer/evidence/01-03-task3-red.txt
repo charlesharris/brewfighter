@@ -1,0 +1,74 @@
+[0/1] Planning build
+Building for debugging...
+[0/4] Write sources
+[1/4] Write swift-version--58304C5D6DBC2206.txt
+[3/7] Compiling BrewCoreTests LedgerInvariantTests.swift
+[4/7] Emitting module BrewCoreTests
+[5/7] Compiling BrewCoreTests RecipeGrid.swift
+[5/7] Write Objects.LinkFileList
+[6/7] Linking BrewCorePackageTests
+Build complete! (1.42s)
+Test Suite 'Selected tests' started at 2026-10-08 17:26:12.220.
+Test Suite 'BrewCorePackageTests.xctest' started at 2026-10-08 17:26:12.221.
+Test Suite 'BrewCorePackageTests.xctest' passed at 2026-10-08 17:26:12.221.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-08 17:26:12.221.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 124.4
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite LedgerInvariantTests started.
+◇ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() started.
+◇ Test houseDryHopBrewAdvancesTheDayToEighteen() started.
+◇ Test gridSizesAndDeterminism() started.
+◇ Test brewingTwiceGivesEqualResults(which:) started.
+◇ Test lageringAndBottleConditioningHaveFixedEffects() started.
+◇ Test fruitAddsPerPoundRowsFromTheFruitAdjunct() started.
+◇ Test housePaleAleMeetsTheDesignProfile() started.
+◇ Test rowsSumToValuesAndStayInRange(which:) started.
+◇ Test reorderingHopsAndNonBaseGrainsLeavesTheBeerUnchanged(which:) started.
+◇ Test sameHopInTwoSlotsGivesTwoRowsDistinguishedBySlot() started.
+◇ Test capRowsAreUniqueAndLastPerAttribute(which:) started.
+◇ Passing 1 argument which → "structured" to rowsSumToValuesAndStayInRange(which:)
+◇ Passing 1 argument which → "sample" to reorderingHopsAndNonBaseGrainsLeavesTheBeerUnchanged(which:)
+◇ Passing 1 argument which → "structured" to brewingTwiceGivesEqualResults(which:)
+◇ Passing 1 argument which → "sample" to brewingTwiceGivesEqualResults(which:)
+◇ Passing 1 argument which → "structured" to reorderingHopsAndNonBaseGrainsLeavesTheBeerUnchanged(which:)
+◇ Passing 1 argument which → "sample" to rowsSumToValuesAndStayInRange(which:)
+✘ Test fruitAddsPerPoundRowsFromTheFruitAdjunct() recorded an issue at LedgerInvariantTests.swift:49:9: Expectation failed: (delta(.fruit) → nil) == 50
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:60:9: Expectation failed: (lager(.fruit) → nil) == -10
+✘ Test housePaleAleMeetsTheDesignProfile() recorded an issue at LedgerInvariantTests.swift:104:9: Expectation failed: ((50...70) → 50 ... 70).contains(a[.hopAroma] → 27)
+↳ hopAroma 27
+✘ Test fruitAddsPerPoundRowsFromTheFruitAdjunct() recorded an issue at LedgerInvariantTests.swift:50:9: Expectation failed: (delta(.sour) → nil) == 20
+✘ Test houseDryHopBrewAdvancesTheDayToEighteen() recorded an issue at LedgerInvariantTests.swift:80:9: Expectation failed: (content.housePaleAle.conditioning.map(\.kind) → []) == ([.dryHop] → [BrewCore.ConditioningKind.dryHop])
+± removed [BrewCore.ConditioningKind.dryHop]
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:61:9: Expectation failed: (lager(.dryness) → nil) == 10
+✘ Test housePaleAleMeetsTheDesignProfile() recorded an issue at LedgerInvariantTests.swift:105:9: Expectation failed: ((40...60) → 40 ... 60).contains(a[.citrus] → 32)
+↳ citrus 32
+✘ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() recorded an issue at LedgerInvariantTests.swift:33:9: Expectation failed: (rows.count → 0) == 1
+✘ Test houseDryHopBrewAdvancesTheDayToEighteen() recorded an issue at LedgerInvariantTests.swift:81:9: Expectation failed: (state.day → 15) == 18
+↳ 14 fermentation days + 3 dry hop days from day 1
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:62:9: Expectation failed: (lager(.carbonation) → nil) == 5
+✘ Test housePaleAleMeetsTheDesignProfile() recorded an issue at LedgerInvariantTests.swift:112:9: Expectation failed: (result.styleID → "amber_ale") == "american_pale_ale"
+✘ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() recorded an issue at LedgerInvariantTests.swift:34:9: Expectation failed: (rows.first?.delta → nil) == (divRound(25 * 130 * 4, 400) → 33)
+✘ Test fruitAddsPerPoundRowsFromTheFruitAdjunct() recorded an issue at LedgerInvariantTests.swift:51:9: Expectation failed: (delta(.sweetness) → nil) == 10
+◇ Passing 1 argument which → "structured" to capRowsAreUniqueAndLastPerAttribute(which:)
+✘ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() recorded an issue at LedgerInvariantTests.swift:35:9: Expectation failed: (rows.first?.delta → nil) == 33
+◇ Passing 1 argument which → "sample" to capRowsAreUniqueAndLastPerAttribute(which:)
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:63:9: Expectation failed: (lager(.sweetness) → nil) == -5
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:71:9: Expectation failed: (bottle(.carbonation) → nil) == 20
+✘ Test lageringAndBottleConditioningHaveFixedEffects() recorded an issue at LedgerInvariantTests.swift:72:9: Expectation failed: (bottle(.dryness) → nil) == 5
+✘ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() recorded an issue at LedgerInvariantTests.swift:36:9: Expectation failed: (rows.first?.source → nil) == (LedgerSource(kind: .conditioning, refID: "hop.h01", detail: "dryHop") → LedgerSource(kind: BrewCore.SourceKind.conditioning, refID: Optional("hop.h01"), detail: Optional("dryHop")))
+✘ Test houseDryHopBrewAdvancesTheDayToEighteen() failed after 0.010 seconds with 2 issues.
+✘ Test fruitAddsPerPoundRowsFromTheFruitAdjunct() failed after 0.009 seconds with 3 issues.
+✘ Test housePaleAleMeetsTheDesignProfile() failed after 0.010 seconds with 3 issues.
+✘ Test lageringAndBottleConditioningHaveFixedEffects() failed after 0.010 seconds with 6 issues.
+✘ Test dryHopAddsAromaRowsFromTheChosenHopAndNoIBU() failed after 0.010 seconds with 4 issues.
+✔ Test sameHopInTwoSlotsGivesTwoRowsDistinguishedBySlot() passed after 0.012 seconds.
+✔ Test gridSizesAndDeterminism() passed after 0.140 seconds.
+✔ Test capRowsAreUniqueAndLastPerAttribute(which:) passed after 0.205 seconds.
+✔ Test reorderingHopsAndNonBaseGrainsLeavesTheBeerUnchanged(which:) passed after 0.209 seconds.
+✔ Test brewingTwiceGivesEqualResults(which:) passed after 0.212 seconds.
+✔ Test rowsSumToValuesAndStayInRange(which:) passed after 0.220 seconds.
+✘ Suite LedgerInvariantTests failed after 0.220 seconds with 18 issues.
+✘ Test run with 11 tests failed after 0.220 seconds with 18 issues.
