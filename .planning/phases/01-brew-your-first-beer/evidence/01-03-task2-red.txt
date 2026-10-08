@@ -1,0 +1,68 @@
+[0/1] Planning build
+Building for debugging...
+[0/5] Write sources
+[2/5] Write swift-version--58304C5D6DBC2206.txt
+[4/7] Emitting module BrewCore
+[5/7] Compiling BrewCore ContentCatalog.swift
+[6/10] Compiling BrewCore Reducer.swift
+[7/10] Compiling BrewCore RecipeRules.swift
+[8/10] Compiling BrewCore Brewer.swift
+[9/16] Compiling BrewCoreTests WalkingSkeletonTests.swift
+[10/16] Compiling BrewCoreTests ContentValidationTests.swift
+[11/16] Compiling BrewCoreTests StyleClassifierTests.swift
+[12/16] Compiling BrewCoreTests HopContributionTests.swift
+[13/16] Compiling BrewCoreTests RecipeRulesTests.swift
+[14/16] Emitting module BrewCoreTests
+[14/16] Write Objects.LinkFileList
+[15/16] Linking BrewCorePackageTests
+Build complete! (2.89s)
+Test Suite 'Selected tests' started at 2026-10-08 17:23:30.264.
+Test Suite 'BrewCorePackageTests.xctest' started at 2026-10-08 17:23:30.265.
+Test Suite 'BrewCorePackageTests.xctest' passed at 2026-10-08 17:23:30.265.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-08 17:23:30.265.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 124.4
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite ContentValidationTests started.
+◇ Test yeastsWithoutDurationEffectsEmitNoDurationYeastRows() started.
+◇ Test namesAndTraitsFollowTheKeyShape() started.
+◇ Test rosterCountsMatchD13() started.
+◇ Test yeastsAreOrderedAndFullyDescribed() started.
+◇ Test everyHopAndConditioningIngredientResolves() started.
+◇ Test hopAlphaAndEverySourceEffectAreBounded() started.
+◇ Test wildYeastGetsFunkierWithTime() started.
+◇ Test percentsAreBoundedAndBaseCapableGrainsExist() started.
+◇ Test oatsInTheGrainBillBrewAndOwnTheBodyRow() started.
+◇ Test starterRecipesValidate() started.
+◇ Test idsAreNeutralAndUnique() started.
+✔ Test yeastsAreOrderedAndFullyDescribed() passed after 0.007 seconds.
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:31:9: Expectation failed: (grains.count → 2) == 5
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:33:9: Expectation failed: (content.yeasts.count → 1) == 5
+✘ Test wildYeastGetsFunkierWithTime() recorded an issue at ContentValidationTests.swift:137:6: Caught error: invalidRecipe([BrewCore.RecipeIssue.unknownIngredient("yeast.y05")])
+✘ Test percentsAreBoundedAndBaseCapableGrainsExist() recorded an issue at ContentValidationTests.swift:68:9: Expectation failed: (content.fermentables.filter(\.isBaseCapable).count → 1) >= 3
+✔ Test starterRecipesValidate() passed after 0.007 seconds.
+✘ Test oatsInTheGrainBillBrewAndOwnTheBodyRow() recorded an issue at ContentValidationTests.swift:130:9: Expectation failed: (RecipeRules.validate(r, content: content) → [BrewCore.RecipeIssue.unknownIngredient("adjunct.a01")]).isEmpty → false
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:34:9: Expectation failed: (content.adjuncts.count → 0) == 3
+✔ Test yeastsWithoutDurationEffectsEmitNoDurationYeastRows() passed after 0.007 seconds.
+✘ Test everyHopAndConditioningIngredientResolves() recorded an issue at ContentValidationTests.swift:121:9: Expectation failed: (issues → [BrewCore.RecipeIssue.unknownIngredient("hop.h99")]).contains(.unknownIngredient("adjunct.a01"))
+↳ oats are not a fruit
+✘ Test idsAreNeutralAndUnique() recorded an issue at ContentValidationTests.swift:45:9: Expectation failed: (allIDs.count → 11) == 21
+✘ Test oatsInTheGrainBillBrewAndOwnTheBodyRow() recorded an issue at ContentValidationTests.swift:126:6: Caught error: invalidRecipe([BrewCore.RecipeIssue.unknownIngredient("adjunct.a01")])
+✘ Test percentsAreBoundedAndBaseCapableGrainsExist() failed after 0.007 seconds with 1 issue.
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:36:9: Expectation failed: (content.fermentables.count → 2) == 7
+↳ // fermentables = 5 grains + the 2 grain-bill adjuncts; fruits = the 1 fruit adjunct
+✘ Test everyHopAndConditioningIngredientResolves() failed after 0.007 seconds with 1 issue.
+✔ Test namesAndTraitsFollowTheKeyShape() passed after 0.007 seconds.
+✘ Test wildYeastGetsFunkierWithTime() failed after 0.007 seconds with 1 issue.
+✘ Test oatsInTheGrainBillBrewAndOwnTheBodyRow() failed after 0.007 seconds with 2 issues.
+✘ Test idsAreNeutralAndUnique() failed after 0.007 seconds with 1 issue.
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:37:9: Expectation failed: (content.fruits.map(\.id) → []) == ["adjunct.a03"]
+± removed ["adjunct.a03"]
+✘ Test rosterCountsMatchD13() recorded an issue at ContentValidationTests.swift:38:9: Expectation failed: (content.fermentables.filter { $0.kind == .adjunct }.map(\.id) → []) == ["adjunct.a01", "adjunct.a02"]
+± removed ["adjunct.a01", "adjunct.a02"]
+✘ Test rosterCountsMatchD13() failed after 0.007 seconds with 6 issues.
+✔ Test hopAlphaAndEverySourceEffectAreBounded() passed after 0.008 seconds.
+✘ Suite ContentValidationTests failed after 0.008 seconds with 12 issues.
+✘ Test run with 11 tests failed after 0.008 seconds with 12 issues.

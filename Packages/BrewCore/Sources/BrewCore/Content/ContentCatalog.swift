@@ -114,6 +114,26 @@ public struct BandInfo: Sendable, Equatable, Decodable {
     }
 }
 
+public enum AdjunctUsage: String, Codable, Sendable, Hashable {
+    case grainBill, fruit
+}
+
+/// An adjunct (D-13): either part of the grain bill (percent) or fruit added in conditioning (pounds).
+public struct AdjunctInfo: Sendable, Equatable, Decodable {
+    public let id: String
+    public let nameKey: String
+    public let traitKeys: [String]
+    public let usage: AdjunctUsage
+    public let maxPercent: Int?
+    package let lovibondTenths: Int?
+    package let attenuationPermillePerPercent: Int?
+    package let effects: EffectMap
+
+    enum CodingKeys: String, CodingKey {
+        case id, nameKey, traitKeys, usage, maxPercent, lovibondTenths, attenuationPermillePerPercent, effects
+    }
+}
+
 /// A hop variety (D-13, D-15). IDs are neutral (`hop.hNN`); the display name is a catalog key.
 /// Effects are tenths per 1 oz at 100% aroma weight.
 public struct HopInfo: Sendable, Equatable, Decodable {
@@ -338,6 +358,10 @@ public struct ContentCatalog: Sendable {
     package func conditioningInfo(for kind: ConditioningKind) -> ConditioningInfo? {
         conditioning.first { $0.kind == kind }
     }
+
+    // RED stub: adjunct content arrives with the GREEN commit.
+    public var adjuncts: [AdjunctInfo] { [] }
+    public var fruits: [AdjunctInfo] { adjuncts.filter { $0.usage == .fruit } }
 
     package func hop(_ id: String) -> HopInfo? { hops.first { $0.id == id } }
     package func hopSlot(_ slot: HopSlot) -> HopSlotInfo? { hopSlots.first { $0.slot == slot } }
