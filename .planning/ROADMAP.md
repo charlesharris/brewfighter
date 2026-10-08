@@ -51,7 +51,19 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Brewed beers survive force-quit and relaunch. The player can export the save through the share sheet and import it back, and a frozen golden-save fixture for the first schema version round-trips in tests.
   5. A pseudo-localized run shows every on-screen string coming from the String Catalog, and every interactive control meets the 44pt minimum.
 **Research flags**: Xcode 27 / iOS 27 SDK project setup and deployment target; `package`-access spike to hide domain internals (true palates) from the app target; custom chrome vs Liquid Glass decision for game screens; confirm required screenshot sizes and Declared Age Range scope when creating the app record; start a names-cleared log. An optional art style-lock spike can settle name/icon direction early (the pipeline requirement itself lands in Phase 4).
-**Plans**: TBD
+**Plans**: 10 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Walking skeleton, engine half: BrewCore package, deterministic brew + ledger, reducer/day counter, v1 save envelope, style classifier, recipe rules
+- [ ] 01-02-PLAN.md — Walking skeleton, app half: XcodeGen app, Cellar BREW → autosave → relaunch, backup/fallback saves, String Catalog checker, 44pt/pseudo-loc UI harness
+- [ ] 01-03-PLAN.md — Full roster (5 grains, 8 hops, 5 yeasts, 3 adjuncts), Tinseth IBU, conditioning rows + day cost, ledger invariants, names-cleared log
+- [ ] 01-04-PLAN.md — Nerd stats (OG/FG/ABV/SRM), telescoping ABV ledger, GlassSpec, 13-style classifier with fallbacks
+- [ ] 01-05-PLAN.md — Save schema v1: validator, share-sheet export / file-picker import with confirmed backup, frozen golden fixture
+- [ ] 01-06-PLAN.md — Recipe wizard shell + Review (pre-seeded pale ale, Clear), Mash and Boil stages, UI kit controls
+- [ ] 01-07-PLAN.md — Ferment and Condition stages, day-cost display, Review validation with Fix jumps
+- [ ] 01-08-PLAN.md — Beer detail family bars, contribution ledger sheet, procedural glass, nerd stats, skippable brew reveal
+- [ ] 01-09-PLAN.md — Human toolchain upgrade gate, iOS 26.0 floor, full suite on iOS 26+ SDK, app icon, pseudo-loc sweep
+- [ ] 01-10-PLAN.md — Bundle ID decision, App Store Connect record + 18+ rating, archive/upload script, TestFlight install
 **UI hint**: yes
 
 ### Phase 2: Serve & Deduce
@@ -136,7 +148,7 @@ Phases execute in numeric order: 1 → 2 → 3 → (fun-gate) → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Brew Your First Beer | 0/TBD | Not started | - |
+| 1. Brew Your First Beer | 0/10 | Planned | - |
 | 2. Serve & Deduce | 0/TBD | Not started | - |
 | 3. Iterate & Prove the Fun | 0/TBD | Not started | - |
 | 4. Collect & Evolve | 0/TBD | Not started | - |
