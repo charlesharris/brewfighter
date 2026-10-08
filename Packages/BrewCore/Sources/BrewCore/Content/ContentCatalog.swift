@@ -59,9 +59,11 @@ public struct YeastInfo: Sendable, Equatable, Decodable {
     public let tempF: [FermentTempBand: Int]
     package let attenuationPermille: Int
     package let effectsByTempBand: [FermentTempBand: EffectMap]
+    /// Optional per-duration effects (for example wild cultures that keep changing). Empty when absent.
+    package let effectsByDuration: [FermentDurationBand: EffectMap]
 
     enum CodingKeys: String, CodingKey {
-        case id, nameKey, traitKeys, tempF, attenuationPermille, effectsByTempBand
+        case id, nameKey, traitKeys, tempF, attenuationPermille, effectsByTempBand, effectsByDuration
     }
 
     public init(from decoder: any Decoder) throws {
@@ -81,7 +83,12 @@ public struct YeastInfo: Sendable, Equatable, Decodable {
                     .init(codingPath: c.codingPath, debugDescription: "yeast \(id) missing tempF.\(band.rawValue)"))
             }
             temps[band] = t
-            effects[band] = rawEffects[band.rawValue] ?? .empty
+            guard let bandEffects = rawEffects[band.rawValue] else {
+                throw DecodingError.keyNotFound(
+                    CodingKeys.effectsByTempBand,
+                    .init(codingPath: c.codingPath, debugDescription: "yeast \(id) missing effectsByTempBand.\(band.rawValue)"))
+            }
+            effects[band] = bandEffects
         }
         for key in rawTemps.keys where FermentTempBand(rawValue: key) == nil {
             throw DecodingError.dataCorruptedError(
@@ -91,8 +98,18 @@ public struct YeastInfo: Sendable, Equatable, Decodable {
             throw DecodingError.dataCorruptedError(
                 forKey: .effectsByTempBand, in: c, debugDescription: "yeast \(id) has unknown effects band '\(key)'")
         }
+        let rawDurations = try c.decodeIfPresent([String: EffectMap].self, forKey: .effectsByDuration) ?? [:]
+        var durations: [FermentDurationBand: EffectMap] = [:]
+        for (key, value) in rawDurations {
+            guard let band = FermentDurationBand(rawValue: key) else {
+                throw DecodingError.dataCorruptedError(
+                    forKey: .effectsByDuration, in: c, debugDescription: "yeast \(id) has unknown duration band '\(key)'")
+            }
+            durations[band] = value
+        }
         tempF = temps
         effectsByTempBand = effects
+        effectsByDuration = durations
     }
 }
 
@@ -201,7 +218,9 @@ public struct ConditioningInfo: Sendable, Equatable, Decodable {
 
 public struct ContentCatalog: Sendable {
     public let contentVersion: Int
+    /// Grains plus the grain-bill adjuncts (kind `.adjunct`, never base-capable).
     public let fermentables: [FermentableInfo]
+    public let adjuncts: [AdjunctInfo]
     public let yeasts: [YeastInfo]
     public let hops: [HopInfo]
     public let hopSlots: [HopSlotInfo]
@@ -231,6 +250,7 @@ public struct ContentCatalog: Sendable {
         let hopSlots: [HopSlotInfo]
     }
     private struct GrainsFile: Decodable { let fermentables: [FermentableInfo] }
+    private struct AdjunctsFile: Decodable { let adjuncts: [AdjunctInfo] }
     private struct YeastsFile: Decodable { let yeasts: [YeastInfo] }
     private struct HopsFile: Decodable { let hops: [HopInfo] }
     private struct ConditioningFile: Decodable { let conditioning: [ConditioningInfo] }
@@ -250,6 +270,7 @@ public struct ContentCatalog: Sendable {
         let manifest = try decode(ManifestFile.self, "manifest", in: bundle)
         let bands = try decode(BandsFile.self, "bands", in: bundle)
         let grains = try decode(GrainsFile.self, "grains", in: bundle)
+        let adjuncts = try decode(AdjunctsFile.self, "adjuncts", in: bundle).adjuncts
         let yeasts = try decode(YeastsFile.self, "yeasts", in: bundle)
         let hops = try decode(HopsFile.self, "hops", in: bundle).hops
         let tinseth = try decode(TinsethTable.self, "tinseth", in: bundle).validated()
@@ -282,6 +303,22 @@ public struct ContentCatalog: Sendable {
             throw ContentError.invalid("bands.json hopSlots must define '\(slot.rawValue)' exactly once")
         }
 
+        var grainBillAdjuncts: [FermentableInfo] = []
+        for adjunct in adjuncts {
+            switch adjunct.usage {
+            case .grainBill:
+                guard let maxPercent = adjunct.maxPercent, let lovibond = adjunct.lovibondTenths else {
+                    throw ContentError.invalid("adjuncts.json \(adjunct.id) (grainBill) needs maxPercent and lovibondTenths")
+                }
+                grainBillAdjuncts.append(
+                    FermentableInfo(
+                        id: adjunct.id, nameKey: adjunct.nameKey, traitKeys: adjunct.traitKeys, kind: .adjunct,
+                        isBaseCapable: false, maxPercent: maxPercent, lovibondTenths: lovibond, effects: adjunct.effects))
+            case .fruit:
+                break
+            }
+        }
+
         var starters: [String: Recipe] = [:]
         for entry in starter.recipes { starters[entry.id] = entry.recipe }
         guard let house = starters["house_pale_ale"] else {
@@ -290,7 +327,8 @@ public struct ContentCatalog: Sendable {
 
         return ContentCatalog(
             contentVersion: manifest.contentVersion,
-            fermentables: grains.fermentables,
+            fermentables: grains.fermentables + grainBillAdjuncts,
+            adjuncts: adjuncts,
             yeasts: yeasts.yeasts,
             hops: hops,
             hopSlots: bands.hopSlots,
@@ -320,7 +358,7 @@ public struct ContentCatalog: Sendable {
     }
 
     private init(
-        contentVersion: Int, fermentables: [FermentableInfo], yeasts: [YeastInfo],
+        contentVersion: Int, fermentables: [FermentableInfo], adjuncts: [AdjunctInfo], yeasts: [YeastInfo],
         hops: [HopInfo], hopSlots: [HopSlotInfo],
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
         conditioning: [ConditioningInfo],
@@ -329,6 +367,7 @@ public struct ContentCatalog: Sendable {
     ) {
         self.contentVersion = contentVersion
         self.fermentables = fermentables
+        self.adjuncts = adjuncts
         self.yeasts = yeasts
         self.hops = hops
         self.hopSlots = hopSlots
@@ -359,9 +398,10 @@ public struct ContentCatalog: Sendable {
         conditioning.first { $0.kind == kind }
     }
 
-    // RED stub: adjunct content arrives with the GREEN commit.
-    public var adjuncts: [AdjunctInfo] { [] }
+    /// Fruit adjuncts, added in conditioning by the pound.
     public var fruits: [AdjunctInfo] { adjuncts.filter { $0.usage == .fruit } }
+    package func adjunct(_ id: String) -> AdjunctInfo? { adjuncts.first { $0.id == id } }
+    package func containsFruit(_ id: String) -> Bool { fruits.contains { $0.id == id } }
 
     package func hop(_ id: String) -> HopInfo? { hops.first { $0.id == id } }
     package func hopSlot(_ slot: HopSlot) -> HopSlotInfo? { hopSlots.first { $0.slot == slot } }
@@ -370,7 +410,7 @@ public struct ContentCatalog: Sendable {
     /// A copy with extra fermentables appended; lets tests exercise richer grain bills.
     package func appendingFermentables(_ extra: [FermentableInfo]) -> ContentCatalog {
         ContentCatalog(
-            contentVersion: contentVersion, fermentables: fermentables + extra, yeasts: yeasts,
+            contentVersion: contentVersion, fermentables: fermentables + extra, adjuncts: adjuncts, yeasts: yeasts,
             hops: hops, hopSlots: hopSlots,
             strengthBands: strengthBands, mashBands: mashBands, fermentTempBands: fermentTempBands,
             durationBands: durationBands, conditioning: conditioning, housePaleAle: housePaleAle,

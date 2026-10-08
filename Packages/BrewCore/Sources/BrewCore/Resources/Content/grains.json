@@ -11,6 +11,26 @@
       "effects": { "malt": 30, "body": 15, "sweetness": 5 }
     },
     {
+      "id": "grain.g02",
+      "nameKey": "content.grain.g02.name",
+      "traitKeys": ["trait.crisp", "trait.grainy"],
+      "kind": "base",
+      "isBaseCapable": true,
+      "maxPercent": 100,
+      "lovibondTenths": 16,
+      "effects": { "malt": 20, "body": 10, "dryness": 10 }
+    },
+    {
+      "id": "grain.g03",
+      "nameKey": "content.grain.g03.name",
+      "traitKeys": ["trait.bready", "trait.soft"],
+      "kind": "base",
+      "isBaseCapable": true,
+      "maxPercent": 100,
+      "lovibondTenths": 20,
+      "effects": { "body": 30, "malt": 15 }
+    },
+    {
       "id": "grain.g04",
       "nameKey": "content.grain.g04.name",
       "traitKeys": ["trait.caramel", "trait.sweet"],
@@ -19,6 +39,16 @@
       "maxPercent": 20,
       "lovibondTenths": 600,
       "effects": { "sweetness": 300, "malt": 150, "body": 150 }
+    },
+    {
+      "id": "grain.g05",
+      "nameKey": "content.grain.g05.name",
+      "traitKeys": ["trait.roast", "trait.coffee"],
+      "kind": "specialty",
+      "isBaseCapable": false,
+      "maxPercent": 15,
+      "lovibondTenths": 5000,
+      "effects": { "roast": 700, "bitterness": 150, "dryness": 100, "sweetness": -50 }
     }
   ]
 }

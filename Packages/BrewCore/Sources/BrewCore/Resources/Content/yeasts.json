@@ -11,6 +11,59 @@
         "balanced": {},
         "warm": { "fruit": 15 }
       }
+    },
+    {
+      "id": "yeast.y02",
+      "nameKey": "content.yeast.y02.name",
+      "traitKeys": ["trait.fruity", "trait.malty"],
+      "attenuationPermille": 700,
+      "tempF": { "cold": 62, "balanced": 66, "warm": 70 },
+      "effectsByTempBand": {
+        "cold": { "fruit": 10, "body": 5 },
+        "balanced": { "fruit": 20, "body": 10, "malt": 5 },
+        "warm": { "fruit": 35, "body": 10 }
+      }
+    },
+    {
+      "id": "yeast.y03",
+      "nameKey": "content.yeast.y03.name",
+      "traitKeys": ["trait.crisp", "trait.clean"],
+      "attenuationPermille": 780,
+      "tempF": { "cold": 48, "balanced": 52, "warm": 58 },
+      "effectsByTempBand": {
+        "cold": { "dryness": 15 },
+        "balanced": { "dryness": 10, "fruit": 5 },
+        "warm": { "fruit": 15 }
+      }
+    },
+    {
+      "id": "yeast.y04",
+      "nameKey": "content.yeast.y04.name",
+      "traitKeys": ["trait.peppery", "trait.fruity", "trait.dry"],
+      "attenuationPermille": 880,
+      "tempF": { "cold": 68, "balanced": 76, "warm": 86 },
+      "effectsByTempBand": {
+        "cold": { "spice": 20, "fruit": 10, "dryness": 25 },
+        "balanced": { "spice": 35, "fruit": 25, "dryness": 30 },
+        "warm": { "spice": 50, "fruit": 40, "dryness": 35 }
+      }
+    },
+    {
+      "id": "yeast.y05",
+      "nameKey": "content.yeast.y05.name",
+      "traitKeys": ["trait.funky", "trait.tart"],
+      "attenuationPermille": 900,
+      "tempF": { "cold": 64, "balanced": 70, "warm": 76 },
+      "effectsByTempBand": {
+        "cold": { "funk": 30, "sour": 15 },
+        "balanced": { "funk": 40, "sour": 20, "fruit": 10 },
+        "warm": { "funk": 50, "sour": 30, "fruit": 20 }
+      },
+      "effectsByDuration": {
+        "quick": { "funk": -15 },
+        "standard": {},
+        "extended": { "funk": 20, "sour": 10 }
+      }
     }
   ]
 }

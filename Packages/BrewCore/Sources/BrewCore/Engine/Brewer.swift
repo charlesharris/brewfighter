@@ -90,6 +90,14 @@ package enum Brewer {
         }
         emit(duration.effects, source: LedgerSource(kind: .fermentDuration, refID: duration.id), into: &rows)
 
+        // 7b. Yeast-specific duration effects (only yeasts that define effectsByDuration)
+        if let effects = yeast.effectsByDuration[recipe.fermentDuration] {
+            emit(
+                effects,
+                source: LedgerSource(kind: .fermentDuration, refID: yeastID, detail: recipe.fermentDuration.rawValue),
+                into: &rows)
+        }
+
         // 8. Conditioning, in step order (effects are filled by the hop-content plan)
         for step in recipe.conditioning {
             guard let info = content.conditioningInfo(for: step.kind) else { continue }

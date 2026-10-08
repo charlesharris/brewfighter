@@ -47,7 +47,7 @@ public enum RecipeRules {
             add(.noYeast)
         }
 
-        // Hops (IDs resolve against the catalog's hop list once plan 01-03 adds hops)
+        // Hops (IDs resolve against the catalog's hop list)
         if recipe.hops.count > maxHopAdditions { add(.tooManyHopAdditions) }
         var seenHops = Set<String>()
         for hop in recipe.hops {
@@ -64,6 +64,7 @@ public enum RecipeRules {
             guard let range = conditioningAmountRange(step.kind) else { continue }
             if let ingredient = step.ingredientID {
                 if step.kind == .dryHop && !content.containsHop(ingredient) { add(.unknownIngredient(ingredient)) }
+                if step.kind == .fruit && !content.containsFruit(ingredient) { add(.unknownIngredient(ingredient)) }
             } else {
                 add(.conditioningMissingIngredient(step.kind))
             }
@@ -196,8 +197,8 @@ public enum RecipeRules {
     // MARK: Hops (D-15)
 
     /// The same hop in the same slot merges (+4 quarter-ounces, capped at 16; refused once at 16).
-    /// A new addition enters at 4 and is refused past 8 additions. `content` is reserved for hop
-    /// catalog checks once plan 01-03 adds hops; `validate` already rejects unknown IDs at brew time.
+    /// A new addition enters at 4 and is refused past 8 additions. `content` is kept in the
+    /// signature for catalog checks; `validate` already rejects unknown IDs at brew time.
     public static func addingHop(
         _ hopID: String, slot: HopSlot, to hops: [HopAddition], content: ContentCatalog
     ) -> [HopAddition]? {

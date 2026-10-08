@@ -1,0 +1,30 @@
+{
+  "adjuncts": [
+    {
+      "id": "adjunct.a01",
+      "nameKey": "content.adjunct.a01.name",
+      "traitKeys": ["trait.silky"],
+      "usage": "grainBill",
+      "maxPercent": 30,
+      "lovibondTenths": 10,
+      "effects": { "body": 200, "sweetness": 20 }
+    },
+    {
+      "id": "adjunct.a02",
+      "nameKey": "content.adjunct.a02.name",
+      "traitKeys": ["trait.dry", "trait.light"],
+      "usage": "grainBill",
+      "maxPercent": 20,
+      "lovibondTenths": 0,
+      "attenuationPermillePerPercent": 3,
+      "effects": { "dryness": 150, "body": -150, "malt": -50 }
+    },
+    {
+      "id": "adjunct.a03",
+      "nameKey": "content.adjunct.a03.name",
+      "traitKeys": ["trait.berry", "trait.tart"],
+      "usage": "fruit",
+      "effects": { "fruit": 25, "sour": 10, "sweetness": 5 }
+    }
+  ]
+}

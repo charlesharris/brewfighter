@@ -661,6 +661,39 @@
         }
       }
     },
+    "content.adjunct.a01.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flaked Oats"
+          }
+        }
+      }
+    },
+    "content.adjunct.a02.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Candi Sugar"
+          }
+        }
+      }
+    },
+    "content.adjunct.a03.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raspberry Puree"
+          }
+        }
+      }
+    },
     "content.grain.g01.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -672,6 +705,28 @@
         }
       }
     },
+    "content.grain.g02.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilsner Malt"
+          }
+        }
+      }
+    },
+    "content.grain.g03.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wheat Malt"
+          }
+        }
+      }
+    },
     "content.grain.g04.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -679,6 +734,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Crystal 60"
+          }
+        }
+      }
+    },
+    "content.grain.g05.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roasted Barley"
           }
         }
       }
@@ -778,6 +844,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clean American Ale"
+          }
+        }
+      }
+    },
+    "content.yeast.y02.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "English Ale"
+          }
+        }
+      }
+    },
+    "content.yeast.y03.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lager"
+          }
+        }
+      }
+    },
+    "content.yeast.y04.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farmhouse"
+          }
+        }
+      }
+    },
+    "content.yeast.y05.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wild Cellar Blend"
           }
         }
       }
@@ -947,6 +1057,17 @@
         }
       }
     },
+    "trait.berry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berry"
+          }
+        }
+      }
+    },
     "trait.bitter" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1002,6 +1123,39 @@
         }
       }
     },
+    "trait.coffee" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coffee"
+          }
+        }
+      }
+    },
+    "trait.crisp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crisp"
+          }
+        }
+      }
+    },
+    "trait.dry" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry"
+          }
+        }
+      }
+    },
     "trait.earthy" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1020,6 +1174,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Floral"
+          }
+        }
+      }
+    },
+    "trait.fruity" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fruity"
+          }
+        }
+      }
+    },
+    "trait.funky" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funky"
+          }
+        }
+      }
+    },
+    "trait.grainy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grainy"
           }
         }
       }
@@ -1046,6 +1233,17 @@
         }
       }
     },
+    "trait.light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light"
+          }
+        }
+      }
+    },
     "trait.malty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1053,6 +1251,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Malty"
+          }
+        }
+      }
+    },
+    "trait.peppery" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peppery"
           }
         }
       }
@@ -1075,6 +1284,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Resinous"
+          }
+        }
+      }
+    },
+    "trait.roast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roasty"
+          }
+        }
+      }
+    },
+    "trait.silky" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Silky"
+          }
+        }
+      }
+    },
+    "trait.soft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soft"
           }
         }
       }
@@ -1108,6 +1350,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sweet"
+          }
+        }
+      }
+    },
+    "trait.tart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tart"
           }
         }
       }
