@@ -1,0 +1,34 @@
+{
+  "conditioning": [
+    {
+      "kind": "dryHop",
+      "nameKey": "conditioning.dryHop.name",
+      "blurbKey": "conditioning.dryHop.blurb",
+      "days": 3,
+      "effects": {},
+      "amountUnitKey": "unit.ounces"
+    },
+    {
+      "kind": "fruit",
+      "nameKey": "conditioning.fruit.name",
+      "blurbKey": "conditioning.fruit.blurb",
+      "days": 7,
+      "effects": {},
+      "amountUnitKey": "unit.pounds"
+    },
+    {
+      "kind": "lagering",
+      "nameKey": "conditioning.lagering.name",
+      "blurbKey": "conditioning.lagering.blurb",
+      "days": 28,
+      "effects": {}
+    },
+    {
+      "kind": "bottleConditioning",
+      "nameKey": "conditioning.bottleConditioning.name",
+      "blurbKey": "conditioning.bottleConditioning.blurb",
+      "days": 14,
+      "effects": {}
+    }
+  ]
+}

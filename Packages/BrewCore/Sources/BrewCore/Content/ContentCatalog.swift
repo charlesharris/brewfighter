@@ -114,6 +114,20 @@ public struct BandInfo: Sendable, Equatable, Decodable {
     }
 }
 
+/// A conditioning menu entry (D-16). Effects are filled by the hop-content plan.
+public struct ConditioningInfo: Sendable, Equatable, Decodable {
+    public let kind: ConditioningKind
+    public let nameKey: String
+    public let blurbKey: String
+    public let days: Int
+    public let amountUnitKey: String?
+    package let effects: EffectMap
+
+    enum CodingKeys: String, CodingKey {
+        case kind, nameKey, blurbKey, days, amountUnitKey, effects
+    }
+}
+
 public struct ContentCatalog: Sendable {
     public let contentVersion: Int
     public let fermentables: [FermentableInfo]
@@ -122,6 +136,7 @@ public struct ContentCatalog: Sendable {
     public let mashBands: [BandInfo]
     public let fermentTempBands: [BandInfo]
     public let durationBands: [BandInfo]
+    public let conditioning: [ConditioningInfo]
     /// The first-run starter (D-06).
     public let housePaleAle: Recipe
 
@@ -142,6 +157,7 @@ public struct ContentCatalog: Sendable {
     }
     private struct GrainsFile: Decodable { let fermentables: [FermentableInfo] }
     private struct YeastsFile: Decodable { let yeasts: [YeastInfo] }
+    private struct ConditioningFile: Decodable { let conditioning: [ConditioningInfo] }
     private struct StarterEntry: Decodable { let id: String; let recipe: Recipe }
     private struct StarterFile: Decodable { let recipes: [StarterEntry] }
 
@@ -161,6 +177,11 @@ public struct ContentCatalog: Sendable {
         let yeasts = try decode(YeastsFile.self, "yeasts", in: bundle)
         let starter = try decode(StarterFile.self, "starter_recipes", in: bundle)
         let styles = try decode(StyleTable.self, "styles", in: bundle)
+        let conditioning = try decode(ConditioningFile.self, "conditioning", in: bundle).conditioning
+
+        for kind in ConditioningKind.allCases where conditioning.filter({ $0.kind == kind }).count != 1 {
+            throw ContentError.invalid("conditioning.json must define '\(kind.rawValue)' exactly once")
+        }
 
         guard styles.fallbacks.last?.id == "experimental_ale", styles.fallbacks.last?.conditions.isEmpty == true else {
             throw ContentError.invalid("styles.json must end its fallbacks with an unconditional experimental_ale")
@@ -193,6 +214,7 @@ public struct ContentCatalog: Sendable {
             mashBands: bands.mashTemp,
             fermentTempBands: bands.fermentTemp,
             durationBands: bands.fermentDuration,
+            conditioning: conditioning,
             housePaleAle: house,
             baselineEffects: bands.baseline.effects,
             styles: styles,
@@ -215,6 +237,7 @@ public struct ContentCatalog: Sendable {
     private init(
         contentVersion: Int, fermentables: [FermentableInfo], yeasts: [YeastInfo],
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
+        conditioning: [ConditioningInfo],
         housePaleAle: Recipe, baselineEffects: EffectMap, styles: StyleTable, starters: [String: Recipe]
     ) {
         self.contentVersion = contentVersion
@@ -224,6 +247,7 @@ public struct ContentCatalog: Sendable {
         self.mashBands = mashBands
         self.fermentTempBands = fermentTempBands
         self.durationBands = durationBands
+        self.conditioning = conditioning
         self.housePaleAle = housePaleAle
         self.baselineEffects = baselineEffects
         self.styles = styles
@@ -241,6 +265,21 @@ public struct ContentCatalog: Sendable {
 
     package func fermentable(_ id: String) -> FermentableInfo? { fermentables.first { $0.id == id } }
     package func yeast(_ id: String) -> YeastInfo? { yeasts.first { $0.id == id } }
+    package func conditioningInfo(for kind: ConditioningKind) -> ConditioningInfo? {
+        conditioning.first { $0.kind == kind }
+    }
+
+    /// Hop content arrives in plan 01-03; until then no hop ID resolves.
+    package func containsHop(_ id: String) -> Bool { false }
+
+    /// A copy with extra fermentables appended; lets tests exercise richer grain bills.
+    package func appendingFermentables(_ extra: [FermentableInfo]) -> ContentCatalog {
+        ContentCatalog(
+            contentVersion: contentVersion, fermentables: fermentables + extra, yeasts: yeasts,
+            strengthBands: strengthBands, mashBands: mashBands, fermentTempBands: fermentTempBands,
+            durationBands: durationBands, conditioning: conditioning, housePaleAle: housePaleAle,
+            baselineEffects: baselineEffects, styles: styles, starters: starters)
+    }
 
     package func band(for strength: StrengthBand) -> BandInfo? { strengthBands.first { $0.id == strength.rawValue } }
     package func band(for mash: MashTempBand) -> BandInfo? { mashBands.first { $0.id == mash.rawValue } }
