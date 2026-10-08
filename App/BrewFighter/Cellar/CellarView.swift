@@ -11,6 +11,9 @@ struct CellarView: View {
 
         VStack(spacing: 0) {
             header(day: day)
+            if let failure = store.persistenceError {
+                banner(for: failure)
+            }
             if beers.isEmpty {
                 emptyState
             } else {
@@ -50,6 +53,24 @@ struct CellarView: View {
         }
         .foregroundStyle(Palette.ink)
         .padding(16)
+    }
+
+    @ViewBuilder
+    private func banner(for failure: PersistenceFailure) -> some View {
+        Group {
+            switch failure {
+            case .recoveredFromBackup: Text("cellar.save.recovered")
+            case .writeFailed: Text("cellar.save.writeFailed")
+            case .unrecoverable: Text("cellar.save.unrecoverable")
+            }
+        }
+        .font(.subheadline)
+        .foregroundStyle(Palette.ink)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Palette.amber.opacity(0.35)))
+        .padding(.horizontal, 16)
+        .accessibilityIdentifier("cellar.saveBanner")
     }
 
     private var emptyState: some View {

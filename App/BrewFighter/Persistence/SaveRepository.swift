@@ -34,27 +34,59 @@ struct SaveRepository: Sendable {
     }
 
     var primaryURL: URL { directory.appendingPathComponent(Self.primaryName) }
+    var backupURL: URL { directory.appendingPathComponent(Self.backupName) }
 
+    /// Atomic write with a one-deep backup. The previous save.json is copied to
+    /// save.backup.json first (as plain Data, no item-copy APIs), then save.json is
+    /// replaced atomically. An interruption at any point leaves save.json as either the
+    /// complete old or the complete new file, and the backup always a complete earlier save.
     func write(_ data: Data) throws {
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let fm = FileManager.default
+        try fm.createDirectory(at: directory, withIntermediateDirectories: true)
+        if fm.fileExists(atPath: primaryURL.path), let previous = try? Data(contentsOf: primaryURL) {
+            // A failed backup never blocks saving the new beer; atomic writes cannot damage the old backup.
+            try? previous.write(to: backupURL, options: [.atomic])
+        }
         try data.write(to: primaryURL, options: [.atomic])
     }
 
+    /// Primary first, then backup. Never writes or deletes anything.
     func load() -> SaveLoadOutcome {
-        guard let data = try? Data(contentsOf: primaryURL) else { return .fresh }
-        do {
-            return .loaded(try SaveCodec.decode(data), source: .primary)
-        } catch let error as SaveError {
-            return .unrecoverable(primary: error, backup: nil)
-        } catch {
-            return .unrecoverable(primary: .unreadable, backup: nil)
-        }
+        let primary = attempt(primaryURL)
+        if case let .state(state) = primary { return .loaded(state, source: .primary) }
+        let backup = attempt(backupURL)
+        if case let .state(state) = backup { return .loaded(state, source: .backup) }
+        if case .missing = primary, case .missing = backup { return .fresh }
+        return .unrecoverable(primary: primary.error, backup: backup.error)
     }
 
     func removeAllSaves() throws {
         let fm = FileManager.default
-        if fm.fileExists(atPath: primaryURL.path) {
-            try fm.removeItem(at: primaryURL)
+        for url in [primaryURL, backupURL] where fm.fileExists(atPath: url.path) {
+            try fm.removeItem(at: url)
+        }
+    }
+
+    private enum Attempt {
+        case state(GameState)
+        case missing
+        case failed(SaveError)
+
+        var error: SaveError? {
+            if case let .failed(error) = self { return error }
+            return nil
+        }
+    }
+
+    private func attempt(_ url: URL) -> Attempt {
+        guard FileManager.default.fileExists(atPath: url.path) else { return .missing }
+        guard let data = try? Data(contentsOf: url) else { return .failed(.unreadable) }
+        do {
+            return .state(try SaveCodec.decode(data))
+        } catch let error as SaveError {
+            return .failed(error)
+        } catch {
+            return .failed(.unreadable)
         }
     }
 }

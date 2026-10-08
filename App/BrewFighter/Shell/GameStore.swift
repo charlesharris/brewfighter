@@ -24,8 +24,9 @@ final class GameStore {
         self.repository = repository
         self.content = content
         switch repository.load() {
-        case let .loaded(loaded, source: _):
+        case let .loaded(loaded, source):
             state = loaded
+            if source == .backup { persistenceError = .recoveredFromBackup }
         case .fresh:
             state = .new
         case .unrecoverable:

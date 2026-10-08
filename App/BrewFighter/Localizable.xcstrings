@@ -67,6 +67,39 @@
         }
       }
     },
+    "cellar.save.recovered" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restored your cellar from the backup save."
+          }
+        }
+      }
+    },
+    "cellar.save.unrecoverable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your save couldn't be read, so a fresh cellar was started. The old file was kept."
+          }
+        }
+      }
+    },
+    "cellar.save.writeFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't save just now. Your beers are safe until you close the app."
+          }
+        }
+      }
+    },
     "cellar.title" : {
       "extractionState" : "manual",
       "localizations" : {
