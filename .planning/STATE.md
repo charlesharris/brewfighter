@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-10-08T22:06:16.813Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-10-08T22:18:58.181Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 01 execution started
-state_head: 9e92ba53347e2236a3ec2d4a4c50df4f04012e7f
+state_head: 73d343401e310b59551515b455f4167281c1021d
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 2 of 10
+Plan: 3 of 10
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 01 execution started
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01 P01 | 11 min | 3 tasks | 22 files |
+| Phase 01 P02 | 8 min | 3 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Ledger rows emit in fixed brewing-stage order with zero deltas skipped and explicit cap rows last, so rows always sum to the attribute value
 - [Phase 01]: Day cost = ferment days (7/14/21) + conditioning days (dryHop 3, fruit 7, bottleConditioning 14, lagering 28); lagering excludes bottle conditioning; batch strength dial adopted (OG 1036/1050/1066/1085)
 - [Phase 01]: Brewer validates through RecipeRules before any arithmetic so hostile percents are rejected instead of trapping (T-1-01)
+- [Phase 01]: Generated BrewFighter.xcodeproj is committed; project.yml (XcodeGen syncedFolder) is its source; regeneration yields no diff
+- [Phase 01]: SaveRepository backup-copy failure is non-fatal; GameStore is the single save writer; -UITestResetSave honored only under DEBUG
+- [Phase 01]: -NSDoubleLocalizedStrings mangles composite format strings; pseudo-localization asserts only plain strings; positional specifiers still enforced by check-strings
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T22:06:16.793Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-10-08T22:18:58.161Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
