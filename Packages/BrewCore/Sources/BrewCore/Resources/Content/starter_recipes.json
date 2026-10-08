@@ -1,0 +1,23 @@
+{
+  "recipes": [
+    {
+      "id": "house_pale_ale",
+      "recipe": {
+        "grainBill": {
+          "baseID": "grain.g01",
+          "entries": [
+            { "fermentableID": "grain.g01", "percent": 90 },
+            { "fermentableID": "grain.g04", "percent": 10 }
+          ]
+        },
+        "strength": "standard",
+        "mashTemp": "medium",
+        "hops": [],
+        "yeastID": "yeast.y01",
+        "fermentTemp": "balanced",
+        "fermentDuration": "standard",
+        "conditioning": []
+      }
+    }
+  ]
+}

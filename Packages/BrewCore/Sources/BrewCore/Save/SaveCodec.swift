@@ -1,0 +1,65 @@
+import Foundation
+
+public enum SaveError: Error, Equatable, Sendable {
+    case tooLarge
+    case unreadable
+    case newerThanApp(Int)
+    case invalid(String)
+}
+
+/// On-disk shape of a save. `schemaVersion` describes this wrapper plus the payload layout.
+struct SaveEnvelope: Codable, Equatable {
+    var schemaVersion: Int
+    var contentVersion: Int
+    var payload: GameState
+
+    enum CodingKeys: String, CodingKey {
+        case schemaVersion, contentVersion, payload
+    }
+}
+
+private struct SaveHeader: Decodable {
+    var schemaVersion: Int
+}
+
+public enum SaveCodec {
+    public static let currentSchemaVersion = 1
+    public static let maxSaveBytes = 5_000_000
+
+    /// Deterministic bytes: sorted keys, no pretty printing.
+    public static func encode(_ state: GameState) throws -> Data {
+        let envelope = SaveEnvelope(
+            schemaVersion: currentSchemaVersion,
+            contentVersion: state.beers.map(\.contentVersion).max() ?? 1,
+            payload: state)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return try encoder.encode(envelope)
+    }
+
+    /// Size cap and version gate run before the payload is decoded (T-1-03, T-1-04).
+    /// Plan 01-05 inserts the migrator chain and validator between (c) and (d).
+    public static func decode(_ data: Data) throws -> GameState {
+        // (a) size cap, before any parsing
+        guard data.count <= maxSaveBytes else { throw SaveError.tooLarge }
+
+        // (b) header only
+        let header: SaveHeader
+        do {
+            header = try JSONDecoder().decode(SaveHeader.self, from: data)
+        } catch {
+            throw SaveError.unreadable
+        }
+
+        // (c) version gate
+        if header.schemaVersion > currentSchemaVersion { throw SaveError.newerThanApp(header.schemaVersion) }
+        if header.schemaVersion < 1 { throw SaveError.invalid("schemaVersion") }
+
+        // (d) full envelope
+        do {
+            return try JSONDecoder().decode(SaveEnvelope.self, from: data).payload
+        } catch {
+            throw SaveError.unreadable
+        }
+    }
+}

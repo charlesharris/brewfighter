@@ -1,0 +1,16 @@
+{
+  "yeasts": [
+    {
+      "id": "yeast.y01",
+      "nameKey": "content.yeast.y01.name",
+      "traitKeys": ["trait.clean"],
+      "attenuationPermille": 770,
+      "tempF": { "cold": 60, "balanced": 66, "warm": 72 },
+      "effectsByTempBand": {
+        "cold": { "dryness": 5 },
+        "balanced": {},
+        "warm": { "fruit": 15 }
+      }
+    }
+  ]
+}

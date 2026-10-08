@@ -1,0 +1,24 @@
+{
+  "fermentables": [
+    {
+      "id": "grain.g01",
+      "nameKey": "content.grain.g01.name",
+      "traitKeys": ["trait.malty", "trait.bready"],
+      "kind": "base",
+      "isBaseCapable": true,
+      "maxPercent": 100,
+      "lovibondTenths": 20,
+      "effects": { "malt": 30, "body": 15, "sweetness": 5 }
+    },
+    {
+      "id": "grain.g04",
+      "nameKey": "content.grain.g04.name",
+      "traitKeys": ["trait.caramel", "trait.sweet"],
+      "kind": "specialty",
+      "isBaseCapable": false,
+      "maxPercent": 20,
+      "lovibondTenths": 600,
+      "effects": { "sweetness": 300, "malt": 150, "body": 150 }
+    }
+  ]
+}

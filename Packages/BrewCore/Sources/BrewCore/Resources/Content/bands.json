@@ -1,0 +1,114 @@
+{
+  "baseline": {
+    "effects": { "carbonation": 50 }
+  },
+  "strength": [
+    {
+      "id": "session",
+      "nameKey": "band.strength.session.name",
+      "blurbKey": "band.strength.session.blurb",
+      "ogPoints": 1036,
+      "grainLbsTenths": 70,
+      "effects": { "malt": -10, "body": -10 }
+    },
+    {
+      "id": "standard",
+      "nameKey": "band.strength.standard.name",
+      "blurbKey": "band.strength.standard.blurb",
+      "ogPoints": 1050,
+      "grainLbsTenths": 100,
+      "effects": {}
+    },
+    {
+      "id": "strong",
+      "nameKey": "band.strength.strong.name",
+      "blurbKey": "band.strength.strong.blurb",
+      "ogPoints": 1066,
+      "grainLbsTenths": 130,
+      "effects": { "malt": 10, "body": 10 }
+    },
+    {
+      "id": "imperial",
+      "nameKey": "band.strength.imperial.name",
+      "blurbKey": "band.strength.imperial.blurb",
+      "ogPoints": 1085,
+      "grainLbsTenths": 170,
+      "effects": { "malt": 20, "body": 20, "sweetness": 10 }
+    }
+  ],
+  "mashTemp": [
+    {
+      "id": "low",
+      "nameKey": "band.mashTemp.low.name",
+      "blurbKey": "band.mashTemp.low.blurb",
+      "tempF": 148,
+      "attenuationDeltaPermille": 40,
+      "effects": { "dryness": 15, "body": -10, "sweetness": -10 }
+    },
+    {
+      "id": "medium",
+      "nameKey": "band.mashTemp.medium.name",
+      "blurbKey": "band.mashTemp.medium.blurb",
+      "tempF": 152,
+      "attenuationDeltaPermille": 0,
+      "effects": {}
+    },
+    {
+      "id": "high",
+      "nameKey": "band.mashTemp.high.name",
+      "blurbKey": "band.mashTemp.high.blurb",
+      "tempF": 158,
+      "attenuationDeltaPermille": -60,
+      "effects": { "body": 15, "sweetness": 15, "dryness": -15 }
+    }
+  ],
+  "fermentTemp": [
+    {
+      "id": "cold",
+      "nameKey": "band.fermentTemp.cold.name",
+      "blurbKey": "band.fermentTemp.cold.blurb",
+      "attenuationDeltaPermille": -10,
+      "effects": {}
+    },
+    {
+      "id": "balanced",
+      "nameKey": "band.fermentTemp.balanced.name",
+      "blurbKey": "band.fermentTemp.balanced.blurb",
+      "attenuationDeltaPermille": 0,
+      "effects": {}
+    },
+    {
+      "id": "warm",
+      "nameKey": "band.fermentTemp.warm.name",
+      "blurbKey": "band.fermentTemp.warm.blurb",
+      "attenuationDeltaPermille": 10,
+      "effects": {}
+    }
+  ],
+  "fermentDuration": [
+    {
+      "id": "quick",
+      "nameKey": "band.fermentDuration.quick.name",
+      "blurbKey": "band.fermentDuration.quick.blurb",
+      "days": 7,
+      "attenuationDeltaPermille": -20,
+      "effects": { "dryness": -5 }
+    },
+    {
+      "id": "standard",
+      "nameKey": "band.fermentDuration.standard.name",
+      "blurbKey": "band.fermentDuration.standard.blurb",
+      "days": 14,
+      "attenuationDeltaPermille": 0,
+      "effects": {}
+    },
+    {
+      "id": "extended",
+      "nameKey": "band.fermentDuration.extended.name",
+      "blurbKey": "band.fermentDuration.extended.blurb",
+      "days": 21,
+      "attenuationDeltaPermille": 15,
+      "effects": { "dryness": 5 }
+    }
+  ]
+}
