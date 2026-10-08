@@ -1,0 +1,116 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "cellar.batchLabel %lld %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batch #%1$lld · %2$@"
+          }
+        }
+      }
+    },
+    "cellar.brewButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brew"
+          }
+        }
+      }
+    },
+    "cellar.brewDayLabel %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brewed on day %1$lld"
+          }
+        }
+      }
+    },
+    "cellar.dayCounter %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day %1$lld"
+          }
+        }
+      }
+    },
+    "cellar.empty.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brew a beer and it will wait for you here."
+          }
+        }
+      }
+    },
+    "cellar.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your cellar is empty"
+          }
+        }
+      }
+    },
+    "cellar.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Cellar"
+          }
+        }
+      }
+    },
+    "style.amber_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amber Ale"
+          }
+        }
+      }
+    },
+    "style.american_pale_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "American Pale Ale"
+          }
+        }
+      }
+    },
+    "style.experimental_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experimental Ale"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

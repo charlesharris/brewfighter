@@ -1,0 +1,55 @@
+name: BrewFighter
+options:
+  bundleIdPrefix: com.example
+  developmentLanguage: en
+  deploymentTarget: { iOS: "18.0" }
+  createIntermediateGroups: true
+packages:
+  BrewCore:
+    path: Packages/BrewCore
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    GENERATE_INFOPLIST_FILE: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: 1
+targets:
+  BrewFighter:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/BrewFighter
+        type: syncedFolder
+    dependencies:
+      - package: BrewCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.brewfighter
+        TARGETED_DEVICE_FAMILY: "1"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_CFBundleDisplayName: "Brew Fighter"
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    scheme:
+      testTargets:
+        - BrewFighterTests
+        - BrewFighterUITests
+  BrewFighterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: App/BrewFighterTests
+        type: syncedFolder
+    dependencies:
+      - target: BrewFighter
+  BrewFighterUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/BrewFighterUITests
+        type: syncedFolder
+    dependencies:
+      - target: BrewFighter

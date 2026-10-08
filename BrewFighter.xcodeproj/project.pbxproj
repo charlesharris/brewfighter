@@ -1,0 +1,578 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BADF534990219FC1A1B08FCF /* BrewCore in Frameworks */ = {isa = PBXBuildFile; productRef = DB368BE192EF628D4B5E8AB9 /* BrewCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5BB007FBF04E09B2A517B5EB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F0237F2FA20829FBFFDDD5E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2CE5828272E88731A1866F8;
+			remoteInfo = BrewFighter;
+		};
+		B823322278D5E2C822EA6B99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F0237F2FA20829FBFFDDD5E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2CE5828272E88731A1866F8;
+			remoteInfo = BrewFighter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4CCBF57DEAB1F6150C3F3EEA /* BrewFighter.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BrewFighter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A1EFA46906E5D33DCE5A16B /* BrewFighterUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BrewFighterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5B6276A94E7F7E3ADE8FA46 /* BrewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BrewCore; path = Packages/BrewCore; sourceTree = SOURCE_ROOT; };
+		EA677D6CE7A5BFD13B1D8B58 /* BrewFighterTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BrewFighterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		868DF2FCEA07D0DBA8123A89 /* BrewFighterTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			name = BrewFighterTests;
+			path = BrewFighterTests;
+			sourceTree = "<group>";
+		};
+		9F056B5D4B81C631E6541959 /* BrewFighterUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			name = BrewFighterUITests;
+			path = BrewFighterUITests;
+			sourceTree = "<group>";
+		};
+		EDD9AC0DAE6E70DD66AF468E /* BrewFighter */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			name = BrewFighter;
+			path = BrewFighter;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D08E3C8BAA4A96DFC06D7A9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BADF534990219FC1A1B08FCF /* BrewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		681BB52CE8A5EB8498FDF654 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				A5B6276A94E7F7E3ADE8FA46 /* BrewCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		985780DCE9C60B8977D82594 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4CCBF57DEAB1F6150C3F3EEA /* BrewFighter.app */,
+				EA677D6CE7A5BFD13B1D8B58 /* BrewFighterTests.xctest */,
+				5A1EFA46906E5D33DCE5A16B /* BrewFighterUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9B69CAF337ADF95BE5B451C2 = {
+			isa = PBXGroup;
+			children = (
+				A0D8599374AD7077E5052B7E /* App */,
+				681BB52CE8A5EB8498FDF654 /* Packages */,
+				985780DCE9C60B8977D82594 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A0D8599374AD7077E5052B7E /* App */ = {
+			isa = PBXGroup;
+			children = (
+				EDD9AC0DAE6E70DD66AF468E /* BrewFighter */,
+				868DF2FCEA07D0DBA8123A89 /* BrewFighterTests */,
+				9F056B5D4B81C631E6541959 /* BrewFighterUITests */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		191A452FF1CAB8ED10D11972 /* BrewFighterUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09D70F1DDC67C3B0F0488755 /* Build configuration list for PBXNativeTarget "BrewFighterUITests" */;
+			buildPhases = (
+				EF326C49F4BA0C6FA30E3F7B /* Sources */,
+				A414196893BD0CE3E66F8C9D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EFC562D9329D9BC055879058 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				9F056B5D4B81C631E6541959 /* BrewFighterUITests */,
+			);
+			name = BrewFighterUITests;
+			packageProductDependencies = (
+			);
+			productName = BrewFighterUITests;
+			productReference = 5A1EFA46906E5D33DCE5A16B /* BrewFighterUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		9C42E2E3B746B207D71EC42D /* BrewFighterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2C06BF71DDF3BB60B7E59953 /* Build configuration list for PBXNativeTarget "BrewFighterTests" */;
+			buildPhases = (
+				26FA60264D2975F12DE5EAF7 /* Sources */,
+				BF5D7FEE17A7C7A1758795F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0BC1AB126B131DA102DC4B17 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				868DF2FCEA07D0DBA8123A89 /* BrewFighterTests */,
+			);
+			name = BrewFighterTests;
+			packageProductDependencies = (
+			);
+			productName = BrewFighterTests;
+			productReference = EA677D6CE7A5BFD13B1D8B58 /* BrewFighterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E2CE5828272E88731A1866F8 /* BrewFighter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A170856BF690226D376E724 /* Build configuration list for PBXNativeTarget "BrewFighter" */;
+			buildPhases = (
+				8A475378A3B77279241ACD40 /* Sources */,
+				6E4F6F2A562210B1A20F75EF /* Resources */,
+				1D08E3C8BAA4A96DFC06D7A9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				EDD9AC0DAE6E70DD66AF468E /* BrewFighter */,
+			);
+			name = BrewFighter;
+			packageProductDependencies = (
+				DB368BE192EF628D4B5E8AB9 /* BrewCore */,
+			);
+			productName = BrewFighter;
+			productReference = 4CCBF57DEAB1F6150C3F3EEA /* BrewFighter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4F0237F2FA20829FBFFDDD5E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					191A452FF1CAB8ED10D11972 = {
+						TestTargetID = E2CE5828272E88731A1866F8;
+					};
+				};
+			};
+			buildConfigurationList = A59EB1D8797ABCCE0C2B6B4D /* Build configuration list for PBXProject "BrewFighter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 9B69CAF337ADF95BE5B451C2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8D21D1653DED20F57C92ECE5 /* XCLocalSwiftPackageReference "Packages/BrewCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 985780DCE9C60B8977D82594 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E2CE5828272E88731A1866F8 /* BrewFighter */,
+				9C42E2E3B746B207D71EC42D /* BrewFighterTests */,
+				191A452FF1CAB8ED10D11972 /* BrewFighterUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6E4F6F2A562210B1A20F75EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A414196893BD0CE3E66F8C9D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF5D7FEE17A7C7A1758795F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		26FA60264D2975F12DE5EAF7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8A475378A3B77279241ACD40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EF326C49F4BA0C6FA30E3F7B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0BC1AB126B131DA102DC4B17 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2CE5828272E88731A1866F8 /* BrewFighter */;
+			targetProxy = 5BB007FBF04E09B2A517B5EB /* PBXContainerItemProxy */;
+		};
+		EFC562D9329D9BC055879058 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2CE5828272E88731A1866F8 /* BrewFighter */;
+			targetProxy = B823322278D5E2C822EA6B99 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		19BA564A5D533479ECE74B2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		4DDA00525CAE4D05C7040474 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BrewFighter;
+			};
+			name = Release;
+		};
+		70AC9657660D46E8AA169A9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewFighter.app/BrewFighter";
+			};
+			name = Debug;
+		};
+		77D49EC96BAD0AA439475F64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewFighter.app/BrewFighter";
+			};
+			name = Release;
+		};
+		878AD37F63D3AC355AE69A7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		9CC1BFE5CE968F5E18126C7C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = "Brew Fighter";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.brewfighter;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D456203B8BE22FA5569EDB93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = BrewFighter;
+			};
+			name = Debug;
+		};
+		FBFEA232A79FFCEE93C1E563 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_CFBundleDisplayName = "Brew Fighter";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.brewfighter;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		09D70F1DDC67C3B0F0488755 /* Build configuration list for PBXNativeTarget "BrewFighterUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D456203B8BE22FA5569EDB93 /* Debug */,
+				4DDA00525CAE4D05C7040474 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		2C06BF71DDF3BB60B7E59953 /* Build configuration list for PBXNativeTarget "BrewFighterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70AC9657660D46E8AA169A9B /* Debug */,
+				77D49EC96BAD0AA439475F64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4A170856BF690226D376E724 /* Build configuration list for PBXNativeTarget "BrewFighter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FBFEA232A79FFCEE93C1E563 /* Debug */,
+				9CC1BFE5CE968F5E18126C7C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A59EB1D8797ABCCE0C2B6B4D /* Build configuration list for PBXProject "BrewFighter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				19BA564A5D533479ECE74B2B /* Debug */,
+				878AD37F63D3AC355AE69A7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		8D21D1653DED20F57C92ECE5 /* XCLocalSwiftPackageReference "Packages/BrewCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/BrewCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DB368BE192EF628D4B5E8AB9 /* BrewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BrewCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 4F0237F2FA20829FBFFDDD5E /* Project object */;
+}
