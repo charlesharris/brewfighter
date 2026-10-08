@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Brew Fighter is a collectible brewing RPG — Pokémon-style collection and matchup strategy, except the creatures are beers you personally design and evolve. The player collects ingredients, yeast cultures, recipes, and techniques; brews beers with real (but approachable) brewing decisions; and wins tactical encounters by serving the right beer to bar patrons whose palates they must deduce. Built in DragonRuby GTK with a cozy pixel-art JRPG aesthetic, targeting a commercial v1 release on Steam and itch.io.
+Brew Fighter is a collectible brewing RPG for iPhone — Pokémon-style collection and matchup strategy, except the creatures are beers you personally design and evolve. The player collects ingredients, yeast cultures, recipes, and techniques; brews beers with real (but approachable) brewing decisions; and wins tactical encounters by serving the right beer to bar patrons whose palates they must deduce. Built natively in Swift/SwiftUI, portrait-orientation, with an Adventure Capitalist-style UI feel (bright, button-heavy, satisfying) wrapped around Pokémon-style "battles," targeting a commercial App Store release.
 
 ## Core Value
 
@@ -10,9 +10,9 @@ Players create beers, develop them over time, learn which people they work again
 
 ## Business Context
 
-- **Customer**: Craft beer enthusiasts and cozy/JRPG game players — overlap of Dave the Diver / Stardew / Pokémon audiences
-- **Revenue model**: Paid game on Steam and itch.io
-- **Success metric**: Shippable commercial-quality v1; players describe their beers as if they were RPG characters (design doc success criterion #7)
+- **Customer**: Craft beer enthusiasts and mobile collection/idle-game players — overlap of Adventure Capitalist / Pokémon / cozy-sim audiences
+- **Revenue model**: TBD — premium vs F2P+IAP decided before the economy phase (economy design depends on it)
+- **Success metric**: Shippable commercial-quality v1 on the App Store; players describe their beers as if they were RPG characters (design doc success criterion #7)
 - **Strategy notes**: Full design vision in `brewfighter-design-v1.md` (repo root)
 
 ## Requirements
@@ -32,10 +32,10 @@ Players create beers, develop them over time, learn which people they work again
 - [ ] Ingredient collection with gameplay identities and synergies (hops, grains, adjuncts)
 - [ ] Regulars Book: patron encyclopedia with Seen → Served → Impressed → Regular → Friend progression; regulars grant passive benefits
 - [ ] One-city world: multiple locations (neighborhood bar, taproom, dive bar, festival, homebrew club, etc.) with explore → acquire → brew → serve loop
-- [ ] Boss encounters (The Beer Judge, The Untappd Guy, The Dive Bar Regular, etc.)
-- [ ] Pixel-art presentation from day one: patron portraits, beer visuals (color/head/glassware), JRPG-style menus
-- [ ] Full input abstraction: mouse + keyboard + controller from day one
-- [ ] Commercial-release essentials: save system, onboarding, menus, settings, Mac/Windows/Linux builds
+- [ ] Boss encounters (The Beer Judge, The Untappd Guy, The Dive Bar Regular, etc.) — 8 in v1
+- [ ] AdCap-style flat/cartoon presentation: expressive patron portraits, procedurally rendered beer visuals, chunky satisfying mobile UI
+- [ ] Touch-first iPhone portrait UI, one-handed friendly
+- [ ] Commercial-release essentials: save system, onboarding, settings, App Store packaging
 
 ### Out of Scope
 
@@ -43,25 +43,29 @@ Players create beers, develop them over time, learn which people they work again
 - Brewery construction / taproom management / staff — design doc explicitly defers management-game systems
 - Multiplayer, recipe trading, rival breweries — long-term direction only
 - Ingredient farming, hop breeding, barrel programs, aging cellars, competitions/festivals as systems — long-term direction only
+- Desktop builds (Mac/Win/Linux) and Steam — superseded by the iOS-native pivot; revisit post-launch if ever
+- Android port — iOS-first; native Swift makes Android a separate effort, v2+ at earliest
 - Hand-drawn commissioned art — art is AI-generated/procedural; accept the aesthetic tradeoffs
-- Mobile/web ports — desktop (Mac/Win/Linux) first; DragonRuby makes ports possible later
+- Real idle/incremental mechanics — Adventure Capitalist is a UI/feel reference only, not a gameplay model
 
 ## Context
 
-- Complete design document exists at `brewfighter-design-v1.md` covering concept, core pillars, all systems, tone, art direction, prototype spec, and success criteria. It is the source of truth for design intent.
+- Complete design document exists at `brewfighter-design-v1.md` covering concept, core pillars, all systems, tone, art direction, prototype spec, and success criteria. It is the source of truth for design intent (mechanics and tone; its pixel-art direction is superseded by the AdCap-style pivot).
 - **Tone target**: ~70% genuine beer culture and brewing knowledge, 30% absurd character comedy. Brewing accurate enough that players accidentally learn real brewing concepts; comedy comes from recognizable personalities (Kyle, Level 34 Finance Bro), not random jokes.
 - **Critical design constraint**: never reduce encounters to "patron likes IPA → serve IPA." Style names are clues; the sensory attribute profile is the real matchup layer. Two IPAs should perform very differently.
 - **Design success criteria** (from doc): players intentionally craft beers for specific patrons, understand why pours succeed/fail, iterate recipes, develop favorites, care about serving order, experience deduction not frustration, and talk about beers like RPG characters.
-- Engine: DragonRuby GTK (Ruby). User owns a license but it is not yet set up in this repo — engine setup is a real first task.
+- **UI/feel reference**: Adventure Capitalist — bright, chunky, button-heavy, numbers that feel good to tap — mixed with Pokémon-style battle presentation for encounters.
+- Prior research round (2026-10-06, committed under `.planning/research/`) targeted a DragonRuby desktop build; its game-design findings (deduction legibility, balance harness, clue notebook, gated vertical slice) remain valid, its stack/platform findings are superseded.
 - Greenfield repo: no existing code.
 
 ## Constraints
 
-- **Tech stack**: DragonRuby GTK (Ruby) — user's choice; owns license, not yet installed in repo
-- **Art**: AI-generated/procedural pixel art — no artist budget assumed; asset pipeline must accommodate regeneration
-- **Input**: Mouse + keyboard + controller supported from day one — requires input abstraction layer early
-- **Platforms**: Mac/Windows/Linux desktop builds for commercial release
-- **Quality bar**: Commercial (Steam/itch.io paid release) — store-page quality polish expected
+- **Tech stack**: Native iOS — Swift + SwiftUI-first (encounters included; Canvas/animations for juice) — user's choice after pivoting from DragonRuby
+- **Devices**: iPhone, portrait orientation, one-handed friendly; iPad runs scaled (no native iPad layouts in v1)
+- **Art**: AI-generated AdCap-style flat/cartoon art — no artist budget assumed; pipeline must accommodate regeneration
+- **Input**: Touch-first; standard iOS gestures and accessibility
+- **Quality bar**: Commercial App Store release — store-page quality polish expected
+- **Monetization**: Undecided (premium vs F2P+IAP) — must be decided before the economy phase; economy design keeps both doors open until then
 - **Design fidelity**: `brewfighter-design-v1.md` is authoritative for mechanics and tone
 
 ## Key Decisions
@@ -70,11 +74,13 @@ Players create beers, develop them over time, learn which people they work again
 |----------|-----------|---------|
 | Full v1 game, not just Phase 1 prototype | User wants the complete core-loop game; prototype scope too small | — Pending |
 | One city, all systems; regions deferred to v2 | One region validates every system; regions are content, not mechanics | — Pending |
-| DragonRuby GTK as engine | User preference; Ruby, 2D-focused, cross-platform exports, license owned | — Pending |
-| Pixel art from day one | The cozy JRPG look is part of what's being tested | — Pending |
+| ~~DragonRuby GTK as engine~~ → superseded 2026-10-08 | Original pick; replaced by iOS-native pivot | ⚠️ Superseded |
+| Native iOS: Swift + SwiftUI-first | Game is menu/panel-heavy with staged battles; phone is the real target; SwiftUI is fastest for AdCap-style UI | — Pending |
+| iPhone portrait, touch-first, one-handed | AdCap-feel reference; one layout to design and QA | — Pending |
+| AdCap-style flat/cartoon art (was: pixel art) | Matches the UI/feel reference; AI generation + SwiftUI rendering handle flat styles well | — Pending |
 | AI-generated/procedural art | No artist; accept aesthetic tradeoffs for velocity | — Pending |
-| Mouse + KB + controller from day one | Commercial reach; cheaper to abstract input early than retrofit | — Pending |
-| Commercial target (Steam/itch) | Sets quality bar: saves, onboarding, settings, polish are requirements | — Pending |
+| Monetization decided later, before economy phase | Keep premium and F2P doors open; economy design is the dependency | — Pending |
+| Commercial target (App Store) | Sets quality bar: saves, onboarding, settings, polish are requirements | — Pending |
 
 ## Evolution
 
@@ -94,4 +100,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-06 after initialization*
+*Last updated: 2026-10-08 after platform pivot to native iOS*
