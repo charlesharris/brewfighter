@@ -110,5 +110,31 @@
       "attenuationDeltaPermille": 15,
       "effects": { "dryness": 5 }
     }
+  ],
+  "hopSlots": [
+    {
+      "slot": "bittering",
+      "nameKey": "slot.bittering.name",
+      "detailKey": "slot.bittering.detail",
+      "aromaWeightPercent": 10
+    },
+    {
+      "slot": "flavor",
+      "nameKey": "slot.flavor.name",
+      "detailKey": "slot.flavor.detail",
+      "aromaWeightPercent": 50
+    },
+    {
+      "slot": "aroma",
+      "nameKey": "slot.aroma.name",
+      "detailKey": "slot.aroma.detail",
+      "aromaWeightPercent": 100
+    },
+    {
+      "slot": "whirlpool",
+      "nameKey": "slot.whirlpool.name",
+      "detailKey": "slot.whirlpool.detail",
+      "aromaWeightPercent": 80
+    }
   ]
 }

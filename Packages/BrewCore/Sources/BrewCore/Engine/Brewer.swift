@@ -49,6 +49,25 @@ package enum Brewer {
         }
         emit(mash.effects, source: LedgerSource(kind: .mashTemp, refID: mash.id), into: &rows)
 
+        // 4b. Hop additions in recipe order: bitterness from Tinseth IBU, aroma-family rows by slot weight.
+        var ibuTenths = 0
+        for addition in recipe.hops {
+            guard let hop = content.hop(addition.hopID), let slot = content.hopSlot(addition.slot) else {
+                throw .invalidRecipe([.unknownIngredient(addition.hopID)])
+            }
+            let utilization = content.tinseth.utilizationPer100k(slot: addition.slot, ogPoints: strength.ogPoints ?? 0)
+            // Tinseth mg/L for a fixed 5-gallon batch, in tenths of an IBU. Operands are bounded by
+            // validation (alpha <= 1000, quarter-ounces <= 16), so the product stays far below Int.max.
+            let additionIBU = divRound(utilization * hop.alphaTenths * addition.quarterOunces * 74_900, 2_000_000_000)
+            ibuTenths += additionIBU
+            let source = LedgerSource(kind: .hop, refID: addition.hopID, detail: addition.slot.rawValue)
+            let bitterness = divRound(additionIBU, 10)
+            if bitterness != 0 { rows.append(LedgerRow(attribute: .bitterness, source: source, delta: bitterness)) }
+            emit(hop.effects, source: source, into: &rows) {
+                divRound($0 * slot.aromaWeightPercent * addition.quarterOunces, 400)
+            }
+        }
+
         // 5. Yeast (effects depend on the ferment temperature band)
         guard let yeastID = recipe.yeastID, let yeast = content.yeast(yeastID) else {
             throw .invalidRecipe([.unknownIngredient(recipe.yeastID ?? "")])
@@ -84,7 +103,7 @@ package enum Brewer {
         let (attributes, ledger) = finalize(rows)
 
         let stats = BeerStats(
-            ogPoints: strength.ogPoints ?? 0, fgPoints: 0, abvTenths: 0, ibuTenths: 0, srmTenths: 0)
+            ogPoints: strength.ogPoints ?? 0, fgPoints: 0, abvTenths: 0, ibuTenths: ibuTenths, srmTenths: 0)
 
         let styleID = StyleClassifier.classify(attributes, styles: content.styles)
         return BrewResult(attributes: attributes, ledger: ledger, stats: stats, styleID: styleID)

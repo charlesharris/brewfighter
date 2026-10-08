@@ -12,7 +12,10 @@
         },
         "strength": "standard",
         "mashTemp": "medium",
-        "hops": [],
+        "hops": [
+          { "hopID": "hop.h01", "slot": "bittering", "quarterOunces": 3 },
+          { "hopID": "hop.h01", "slot": "aroma", "quarterOunces": 4 }
+        ],
         "yeastID": "yeast.y01",
         "fermentTemp": "balanced",
         "fermentDuration": "standard",

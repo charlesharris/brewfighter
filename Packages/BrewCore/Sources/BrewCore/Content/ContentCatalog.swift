@@ -114,6 +114,57 @@ public struct BandInfo: Sendable, Equatable, Decodable {
     }
 }
 
+/// A hop variety (D-13, D-15). IDs are neutral (`hop.hNN`); the display name is a catalog key.
+/// Effects are tenths per 1 oz at 100% aroma weight.
+public struct HopInfo: Sendable, Equatable, Decodable {
+    public let id: String
+    public let nameKey: String
+    public let traitKeys: [String]
+    package let alphaTenths: Int
+    package let effects: EffectMap
+
+    enum CodingKeys: String, CodingKey {
+        case id, nameKey, traitKeys, alphaTenths, effects
+    }
+}
+
+/// A named hop slot (D-15): real minutes live in the detail text, the weight scales aroma.
+public struct HopSlotInfo: Sendable, Equatable, Decodable {
+    public let slot: HopSlot
+    public let nameKey: String
+    public let detailKey: String
+    package let aromaWeightPercent: Int
+
+    enum CodingKeys: String, CodingKey {
+        case slot, nameKey, detailKey, aromaWeightPercent
+    }
+}
+
+/// Generated Tinseth utilization (Int per 100,000) per slot per OG point. The generator
+/// (`scripts/gen-brew-tables.swift`) is the only place floating point happens.
+package struct TinsethTable: Sendable, Equatable, Decodable {
+    package let ogMin: Int
+    package let ogMax: Int
+    private let slots: [String: [Int]]
+
+    /// Clamps `ogPoints` into `ogMin...ogMax` before indexing, so no input can index out of range.
+    package func utilizationPer100k(slot: HopSlot, ogPoints: Int) -> Int {
+        let clamped = min(max(ogPoints, ogMin), ogMax)
+        guard let row = slots[slot.rawValue], row.indices.contains(clamped - ogMin) else { return 0 }
+        return row[clamped - ogMin]
+    }
+
+    fileprivate func validated() throws -> TinsethTable {
+        guard ogMin <= ogMax else { throw ContentError.invalid("tinseth.json ogMin exceeds ogMax") }
+        for slot in HopSlot.allCases {
+            guard let row = slots[slot.rawValue], row.count == ogMax - ogMin + 1, row.allSatisfy({ $0 >= 0 }) else {
+                throw ContentError.invalid("tinseth.json slot '\(slot.rawValue)' is missing or the wrong length")
+            }
+        }
+        return self
+    }
+}
+
 /// A conditioning menu entry (D-16). Effects are filled by the hop-content plan.
 public struct ConditioningInfo: Sendable, Equatable, Decodable {
     public let kind: ConditioningKind
@@ -132,6 +183,8 @@ public struct ContentCatalog: Sendable {
     public let contentVersion: Int
     public let fermentables: [FermentableInfo]
     public let yeasts: [YeastInfo]
+    public let hops: [HopInfo]
+    public let hopSlots: [HopSlotInfo]
     public let strengthBands: [BandInfo]
     public let mashBands: [BandInfo]
     public let fermentTempBands: [BandInfo]
@@ -141,6 +194,7 @@ public struct ContentCatalog: Sendable {
     public let housePaleAle: Recipe
 
     package let baselineEffects: EffectMap
+    package let tinseth: TinsethTable
     package let styles: StyleTable
     private let starters: [String: Recipe]
 
@@ -154,9 +208,11 @@ public struct ContentCatalog: Sendable {
         let mashTemp: [BandInfo]
         let fermentTemp: [BandInfo]
         let fermentDuration: [BandInfo]
+        let hopSlots: [HopSlotInfo]
     }
     private struct GrainsFile: Decodable { let fermentables: [FermentableInfo] }
     private struct YeastsFile: Decodable { let yeasts: [YeastInfo] }
+    private struct HopsFile: Decodable { let hops: [HopInfo] }
     private struct ConditioningFile: Decodable { let conditioning: [ConditioningInfo] }
     private struct StarterEntry: Decodable { let id: String; let recipe: Recipe }
     private struct StarterFile: Decodable { let recipes: [StarterEntry] }
@@ -175,6 +231,8 @@ public struct ContentCatalog: Sendable {
         let bands = try decode(BandsFile.self, "bands", in: bundle)
         let grains = try decode(GrainsFile.self, "grains", in: bundle)
         let yeasts = try decode(YeastsFile.self, "yeasts", in: bundle)
+        let hops = try decode(HopsFile.self, "hops", in: bundle).hops
+        let tinseth = try decode(TinsethTable.self, "tinseth", in: bundle).validated()
         let starter = try decode(StarterFile.self, "starter_recipes", in: bundle)
         let styles = try decode(StyleTable.self, "styles", in: bundle)
         let conditioning = try decode(ConditioningFile.self, "conditioning", in: bundle).conditioning
@@ -200,6 +258,10 @@ public struct ContentCatalog: Sendable {
             $0.days != nil && $0.attenuationDeltaPermille != nil
         }
 
+        for slot in HopSlot.allCases where bands.hopSlots.filter({ $0.slot == slot }).count != 1 {
+            throw ContentError.invalid("bands.json hopSlots must define '\(slot.rawValue)' exactly once")
+        }
+
         var starters: [String: Recipe] = [:]
         for entry in starter.recipes { starters[entry.id] = entry.recipe }
         guard let house = starters["house_pale_ale"] else {
@@ -210,6 +272,8 @@ public struct ContentCatalog: Sendable {
             contentVersion: manifest.contentVersion,
             fermentables: grains.fermentables,
             yeasts: yeasts.yeasts,
+            hops: hops,
+            hopSlots: bands.hopSlots,
             strengthBands: bands.strength,
             mashBands: bands.mashTemp,
             fermentTempBands: bands.fermentTemp,
@@ -217,6 +281,7 @@ public struct ContentCatalog: Sendable {
             conditioning: conditioning,
             housePaleAle: house,
             baselineEffects: bands.baseline.effects,
+            tinseth: tinseth,
             styles: styles,
             starters: starters)
     }
@@ -236,13 +301,17 @@ public struct ContentCatalog: Sendable {
 
     private init(
         contentVersion: Int, fermentables: [FermentableInfo], yeasts: [YeastInfo],
+        hops: [HopInfo], hopSlots: [HopSlotInfo],
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
         conditioning: [ConditioningInfo],
-        housePaleAle: Recipe, baselineEffects: EffectMap, styles: StyleTable, starters: [String: Recipe]
+        housePaleAle: Recipe, baselineEffects: EffectMap, tinseth: TinsethTable, styles: StyleTable,
+        starters: [String: Recipe]
     ) {
         self.contentVersion = contentVersion
         self.fermentables = fermentables
         self.yeasts = yeasts
+        self.hops = hops
+        self.hopSlots = hopSlots
         self.strengthBands = strengthBands
         self.mashBands = mashBands
         self.fermentTempBands = fermentTempBands
@@ -250,6 +319,7 @@ public struct ContentCatalog: Sendable {
         self.conditioning = conditioning
         self.housePaleAle = housePaleAle
         self.baselineEffects = baselineEffects
+        self.tinseth = tinseth
         self.styles = styles
         self.starters = starters
     }
@@ -269,16 +339,18 @@ public struct ContentCatalog: Sendable {
         conditioning.first { $0.kind == kind }
     }
 
-    /// Hop content arrives in plan 01-03; until then no hop ID resolves.
-    package func containsHop(_ id: String) -> Bool { false }
+    package func hop(_ id: String) -> HopInfo? { hops.first { $0.id == id } }
+    package func hopSlot(_ slot: HopSlot) -> HopSlotInfo? { hopSlots.first { $0.slot == slot } }
+    package func containsHop(_ id: String) -> Bool { hop(id) != nil }
 
     /// A copy with extra fermentables appended; lets tests exercise richer grain bills.
     package func appendingFermentables(_ extra: [FermentableInfo]) -> ContentCatalog {
         ContentCatalog(
             contentVersion: contentVersion, fermentables: fermentables + extra, yeasts: yeasts,
+            hops: hops, hopSlots: hopSlots,
             strengthBands: strengthBands, mashBands: mashBands, fermentTempBands: fermentTempBands,
             durationBands: durationBands, conditioning: conditioning, housePaleAle: housePaleAle,
-            baselineEffects: baselineEffects, styles: styles, starters: starters)
+            baselineEffects: baselineEffects, tinseth: tinseth, styles: styles, starters: starters)
     }
 
     package func band(for strength: StrengthBand) -> BandInfo? { strengthBands.first { $0.id == strength.rawValue } }

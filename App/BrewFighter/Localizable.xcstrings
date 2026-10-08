@@ -683,6 +683,94 @@
         }
       }
     },
+    "content.hop.h01.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solstice"
+          }
+        }
+      }
+    },
+    "content.hop.h02.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Old Meadow"
+          }
+        }
+      }
+    },
+    "content.hop.h03.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timberline"
+          }
+        }
+      }
+    },
+    "content.hop.h04.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Island Haze"
+          }
+        }
+      }
+    },
+    "content.hop.h05.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garden Gate"
+          }
+        }
+      }
+    },
+    "content.hop.h06.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bright Peel"
+          }
+        }
+      }
+    },
+    "content.hop.h07.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workhorse"
+          }
+        }
+      }
+    },
+    "content.hop.h08.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orchard Gold"
+          }
+        }
+      }
+    },
     "content.yeast.y01.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -738,6 +826,94 @@
         }
       }
     },
+    "slot.aroma.detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flameout"
+          }
+        }
+      }
+    },
+    "slot.aroma.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aroma"
+          }
+        }
+      }
+    },
+    "slot.bittering.detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "60 min"
+          }
+        }
+      }
+    },
+    "slot.bittering.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bittering"
+          }
+        }
+      }
+    },
+    "slot.flavor.detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "15 min"
+          }
+        }
+      }
+    },
+    "slot.flavor.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flavor"
+          }
+        }
+      }
+    },
+    "slot.whirlpool.detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "20 min hot-side"
+          }
+        }
+      }
+    },
+    "slot.whirlpool.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whirlpool"
+          }
+        }
+      }
+    },
     "style.amber_ale.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -771,6 +947,17 @@
         }
       }
     },
+    "trait.bitter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitter"
+          }
+        }
+      }
+    },
     "trait.bready" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -793,6 +980,17 @@
         }
       }
     },
+    "trait.citrus" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Citrus"
+          }
+        }
+      }
+    },
     "trait.clean" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -800,6 +998,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Clean"
+          }
+        }
+      }
+    },
+    "trait.earthy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earthy"
+          }
+        }
+      }
+    },
+    "trait.floral" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Floral"
+          }
+        }
+      }
+    },
+    "trait.herbal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herbal"
+          }
+        }
+      }
+    },
+    "trait.juicy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Juicy"
           }
         }
       }
@@ -815,6 +1057,50 @@
         }
       }
     },
+    "trait.pine" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pine"
+          }
+        }
+      }
+    },
+    "trait.resinous" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resinous"
+          }
+        }
+      }
+    },
+    "trait.spicy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spicy"
+          }
+        }
+      }
+    },
+    "trait.stoneFruit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stone fruit"
+          }
+        }
+      }
+    },
     "trait.sweet" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -822,6 +1108,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sweet"
+          }
+        }
+      }
+    },
+    "trait.tropical" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tropical"
           }
         }
       }

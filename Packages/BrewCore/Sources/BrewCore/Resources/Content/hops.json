@@ -1,0 +1,60 @@
+{
+  "hops": [
+    {
+      "id": "hop.h01",
+      "nameKey": "content.hop.h01.name",
+      "traitKeys": ["trait.citrus", "trait.tropical"],
+      "alphaTenths": 120,
+      "effects": { "citrus": 30, "tropical": 20, "hopAroma": 25 }
+    },
+    {
+      "id": "hop.h02",
+      "nameKey": "content.hop.h02.name",
+      "traitKeys": ["trait.herbal", "trait.spicy"],
+      "alphaTenths": 35,
+      "effects": { "herbal": 25, "spice": 20, "hopAroma": 15 }
+    },
+    {
+      "id": "hop.h03",
+      "nameKey": "content.hop.h03.name",
+      "traitKeys": ["trait.pine", "trait.resinous"],
+      "alphaTenths": 130,
+      "effects": { "herbal": 25, "citrus": 15, "hopAroma": 20 }
+    },
+    {
+      "id": "hop.h04",
+      "nameKey": "content.hop.h04.name",
+      "traitKeys": ["trait.tropical", "trait.juicy"],
+      "alphaTenths": 110,
+      "effects": { "tropical": 35, "fruit": 15, "hopAroma": 25 }
+    },
+    {
+      "id": "hop.h05",
+      "nameKey": "content.hop.h05.name",
+      "traitKeys": ["trait.earthy", "trait.floral"],
+      "alphaTenths": 50,
+      "effects": { "herbal": 20, "spice": 10, "hopAroma": 10, "fruit": 5 }
+    },
+    {
+      "id": "hop.h06",
+      "nameKey": "content.hop.h06.name",
+      "traitKeys": ["trait.citrus", "trait.floral"],
+      "alphaTenths": 70,
+      "effects": { "citrus": 30, "herbal": 5, "hopAroma": 20 }
+    },
+    {
+      "id": "hop.h07",
+      "nameKey": "content.hop.h07.name",
+      "traitKeys": ["trait.clean", "trait.bitter"],
+      "alphaTenths": 150,
+      "effects": { "hopAroma": 5, "herbal": 5 }
+    },
+    {
+      "id": "hop.h08",
+      "nameKey": "content.hop.h08.name",
+      "traitKeys": ["trait.stoneFruit", "trait.tropical"],
+      "alphaTenths": 80,
+      "effects": { "fruit": 30, "tropical": 15, "hopAroma": 20 }
+    }
+  ]
+}
