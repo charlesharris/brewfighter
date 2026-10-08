@@ -81,6 +81,10 @@ Players create beers, develop them over time, learn which people they work again
 | AI-generated/procedural art | No artist; accept aesthetic tradeoffs for velocity | — Pending |
 | Monetization decided later, before economy phase | Keep premium and F2P doors open; economy design is the dependency | — Pending |
 | Commercial target (App Store) | Sets quality bar: saves, onboarding, settings, polish are requirements | — Pending |
+| Custom chrome on all game screens; system chrome only for sheets, share sheet, file importer and alerts | One visual regime under the iOS 27 SDK, where Liquid Glass restyles standard controls on iOS 26+; AdCap buttons are custom ButtonStyles | — Pending |
+| Generated BrewFighter.xcodeproj is committed; project.yml (XcodeGen, syncedFolder) is its source | Xcode Cloud and IDE edits need a checked-in project; regeneration must produce no diff; deliberate deviation from the generic scaffold reference | — Pending |
+| Engine numbers are Int fixed-point (attributes in tenths 0-10.0); attribute families malt/hop/yeast/mouthfeel | Exact ledger sums and cross-platform determinism; Phase 2 encounter breakdowns inherit the families | — Pending |
+| String Catalog keys are semantic dotted identifiers with positional format specifiers | Missing keys render visibly and are testable (check-strings, raw-key UI test); positional specifiers let translators reorder arguments. Note: -NSDoubleLocalizedStrings mangles the first copy of composite format strings, so pseudo-localization checks cover plain strings only | — Pending |
 
 ## Evolution
 

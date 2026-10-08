@@ -1,6 +1,468 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "attribute.abv.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ABV"
+          }
+        }
+      }
+    },
+    "attribute.bitterness.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitterness"
+          }
+        }
+      }
+    },
+    "attribute.body.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Body"
+          }
+        }
+      }
+    },
+    "attribute.carbonation.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carbonation"
+          }
+        }
+      }
+    },
+    "attribute.citrus.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Citrus"
+          }
+        }
+      }
+    },
+    "attribute.dryness.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dryness"
+          }
+        }
+      }
+    },
+    "attribute.fruit.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fruit"
+          }
+        }
+      }
+    },
+    "attribute.funk.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Funk"
+          }
+        }
+      }
+    },
+    "attribute.herbal.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herbal"
+          }
+        }
+      }
+    },
+    "attribute.hopAroma.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hop Aroma"
+          }
+        }
+      }
+    },
+    "attribute.malt.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Malt"
+          }
+        }
+      }
+    },
+    "attribute.roast.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Roast"
+          }
+        }
+      }
+    },
+    "attribute.sour.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sour"
+          }
+        }
+      }
+    },
+    "attribute.spice.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spice"
+          }
+        }
+      }
+    },
+    "attribute.sweetness.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sweetness"
+          }
+        }
+      }
+    },
+    "attribute.tropical.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tropical"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.extended.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "21 days"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.extended.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extended"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.quick.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 days"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.quick.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quick"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.standard.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "14 days"
+          }
+        }
+      }
+    },
+    "band.fermentDuration.standard.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.balanced.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The yeast shows its usual character"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.balanced.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.cold.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quiet yeast, crisp finish"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.cold.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cold & clean"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.warm.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Livelier yeast, more fruity notes"
+          }
+        }
+      }
+    },
+    "band.fermentTemp.warm.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Warm & fruity"
+          }
+        }
+      }
+    },
+    "band.mashTemp.high.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leaves more body and sweetness behind"
+          }
+        }
+      }
+    },
+    "band.mashTemp.high.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full & sweet"
+          }
+        }
+      }
+    },
+    "band.mashTemp.low.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ferments out dry with a lighter body"
+          }
+        }
+      }
+    },
+    "band.mashTemp.low.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry & crisp"
+          }
+        }
+      }
+    },
+    "band.mashTemp.medium.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Middle of the road"
+          }
+        }
+      }
+    },
+    "band.mashTemp.medium.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced"
+          }
+        }
+      }
+    },
+    "band.strength.imperial.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rich, heavy and sweet"
+          }
+        }
+      }
+    },
+    "band.strength.imperial.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imperial"
+          }
+        }
+      }
+    },
+    "band.strength.session.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light and easy-drinking"
+          }
+        }
+      }
+    },
+    "band.strength.session.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session"
+          }
+        }
+      }
+    },
+    "band.strength.standard.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A solid everyday strength"
+          }
+        }
+      }
+    },
+    "band.strength.standard.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        }
+      }
+    },
+    "band.strength.strong.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bigger malt and body"
+          }
+        }
+      }
+    },
+    "band.strength.strong.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strong"
+          }
+        }
+      }
+    },
     "cellar.batchLabel %lld %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -111,6 +573,171 @@
         }
       }
     },
+    "conditioning.bottleConditioning.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Natural carbonation in the bottle"
+          }
+        }
+      }
+    },
+    "conditioning.bottleConditioning.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bottle conditioning"
+          }
+        }
+      }
+    },
+    "conditioning.dryHop.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steep hops in the fermenter for big aroma"
+          }
+        }
+      }
+    },
+    "conditioning.dryHop.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry hop"
+          }
+        }
+      }
+    },
+    "conditioning.fruit.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add fruit for juicy flavor"
+          }
+        }
+      }
+    },
+    "conditioning.fruit.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fruit"
+          }
+        }
+      }
+    },
+    "conditioning.lagering.blurb" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cold rest for a smooth, clean finish"
+          }
+        }
+      }
+    },
+    "conditioning.lagering.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lagering"
+          }
+        }
+      }
+    },
+    "content.grain.g01.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pale Malt"
+          }
+        }
+      }
+    },
+    "content.grain.g04.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crystal 60"
+          }
+        }
+      }
+    },
+    "content.yeast.y01.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clean American Ale"
+          }
+        }
+      }
+    },
+    "family.hop.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hops"
+          }
+        }
+      }
+    },
+    "family.malt.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Malt"
+          }
+        }
+      }
+    },
+    "family.mouthfeel.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mouthfeel"
+          }
+        }
+      }
+    },
+    "family.yeast.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeast"
+          }
+        }
+      }
+    },
     "style.amber_ale.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -140,6 +767,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Experimental Ale"
+          }
+        }
+      }
+    },
+    "trait.bready" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bready"
+          }
+        }
+      }
+    },
+    "trait.caramel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caramel"
+          }
+        }
+      }
+    },
+    "trait.clean" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clean"
+          }
+        }
+      }
+    },
+    "trait.malty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Malty"
+          }
+        }
+      }
+    },
+    "trait.sweet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sweet"
+          }
+        }
+      }
+    },
+    "unit.ounces" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "oz"
+          }
+        }
+      }
+    },
+    "unit.pounds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "lb"
           }
         }
       }
