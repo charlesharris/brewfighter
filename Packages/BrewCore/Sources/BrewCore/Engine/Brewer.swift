@@ -18,10 +18,9 @@ package func divRound(_ n: Int, _ d: Int) -> Int {
 /// zero-delta rows are never emitted; every attribute value is the sum of its rows.
 package enum Brewer {
     package static func brew(_ recipe: Recipe, content: ContentCatalog) throws(BrewError) -> BrewResult {
-        // D-07 validation floor. (Task 3 moves this into RecipeRules.validate.)
-        var issues: [RecipeIssue] = []
-        if recipe.grainBill.baseID == nil || recipe.grainBill.entries.isEmpty { issues.append(.noGrain) }
-        if recipe.yeastID == nil { issues.append(.noYeast) }
+        // Validation runs before any arithmetic: percents are bounded 0...100 and amounts are in
+        // range by the time anything is multiplied (T-1-01 / Pitfall 12).
+        let issues = RecipeRules.validate(recipe, content: content)
         if !issues.isEmpty { throw .invalidRecipe(issues) }
 
         var rows: [LedgerRow] = []
@@ -72,7 +71,16 @@ package enum Brewer {
         }
         emit(duration.effects, source: LedgerSource(kind: .fermentDuration, refID: duration.id), into: &rows)
 
-        // 8. Cap rows last
+        // 8. Conditioning, in step order (effects are filled by the hop-content plan)
+        for step in recipe.conditioning {
+            guard let info = content.conditioningInfo(for: step.kind) else { continue }
+            emit(
+                info.effects,
+                source: LedgerSource(kind: .conditioning, refID: step.ingredientID, detail: step.kind.rawValue),
+                into: &rows)
+        }
+
+        // 9. Cap rows last
         let (attributes, ledger) = finalize(rows)
 
         let stats = BeerStats(

@@ -45,7 +45,7 @@ public enum Reducer {
             var next = state
             let from = state.day
             // D-10: days advance by the recipe-driven cost. No timers, no wall clock (BREW-07).
-            let cost = content.band(for: recipe.fermentDuration)?.days ?? 0
+            let cost = RecipeRules.dayCost(recipe, content: content)
             next.day = from + cost
             next.beers.append(beer)
             next.nextBatchNumber = state.nextBatchNumber + 1

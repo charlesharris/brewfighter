@@ -408,10 +408,11 @@ private func violation(_ bill: GrainBill, _ catalog: ContentCatalog) -> String? 
 
     // MARK: Brewer safety (T-1-01)
 
-    @Test func brewerRefusesOutOfRangeAmountsBeforeAnyArithmetic() {
+    @Test(arguments: [1_000, Int.max / 2, Int.max, Int.min, -1])
+    func brewerRefusesOutOfRangeAmountsBeforeAnyArithmetic(percent: Int) {
         var rng = SeededRNG(seed: 1)
         var recipe = content.housePaleAle
-        recipe.grainBill.entries[0].percent = 1_000
+        recipe.grainBill.entries[0].percent = percent
         let (state, events) = Reducer.apply(.brew(recipe: recipe, beerID: UUID()), to: .new, content: content, rng: &rng)
         #expect(state == .new)
         guard case let .brewRejected(issues)? = events.first else {
