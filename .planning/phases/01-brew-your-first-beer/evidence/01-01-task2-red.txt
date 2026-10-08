@@ -1,0 +1,54 @@
+[0/1] Planning build
+Building for debugging...
+[0/6] Write sources
+[2/6] Copying Content
+[3/6] Write swift-version--58304C5D6DBC2206.txt
+[5/9] Compiling BrewCore StyleClassifier.swift
+[6/9] Emitting module BrewCore
+[7/9] Compiling BrewCore ContentCatalog.swift
+[8/11] Compiling BrewCore Reducer.swift
+[9/11] Compiling BrewCore Brewer.swift
+[10/14] Emitting module BrewCoreTests
+[11/14] Compiling BrewCoreTests WalkingSkeletonTests.swift
+[12/14] Compiling BrewCoreTests StyleClassifierTests.swift
+[12/14] Write Objects.LinkFileList
+[13/14] Linking BrewCorePackageTests
+Build complete! (2.74s)
+Test Suite 'Selected tests' started at 2026-10-08 16:59:09.768.
+Test Suite 'BrewCorePackageTests.xctest' started at 2026-10-08 16:59:09.769.
+Test Suite 'BrewCorePackageTests.xctest' passed at 2026-10-08 16:59:09.769.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-08 16:59:09.769.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 124.4
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite StyleClassifierTests started.
+◇ Test brewedBeerStyleIsInTheStyleTable() started.
+◇ Test higherMatchPercentBeatsEarlierPosition() started.
+◇ Test styleNameKeysResolveForStylesAndFallbacks() started.
+◇ Test zeroVectorFallsBackToExperimentalAle() started.
+◇ Test fullAmericanPaleAleMatchWins() started.
+◇ Test unqualifiedMaltySweetBeerFallsBackToAmberAle() started.
+◇ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() started.
+◇ Test failingARequiredConditionBlocksAStyleDespiteHighMatch() started.
+◇ Test belowThresholdMatchDoesNotQualify() started.
+◇ Test recipeJSONNeverContainsAStyleKey() started.
+✔ Test zeroVectorFallsBackToExperimentalAle() passed after 0.005 seconds.
+✔ Test styleNameKeysResolveForStylesAndFallbacks() passed after 0.005 seconds.
+✔ Test belowThresholdMatchDoesNotQualify() passed after 0.005 seconds.
+✔ Test failingARequiredConditionBlocksAStyleDespiteHighMatch() passed after 0.005 seconds.
+✔ Test recipeJSONNeverContainsAStyleKey() passed after 0.005 seconds.
+✘ Test unqualifiedMaltySweetBeerFallsBackToAmberAle() recorded an issue at StyleClassifierTests.swift:26:9: Expectation failed: (StyleClassifier.classify(v, styles: content.styles) → "experimental_ale") == "amber_ale"
+✘ Test brewedBeerStyleIsInTheStyleTable() recorded an issue at StyleClassifierTests.swift:97:9: Expectation failed: (result.styleID → "experimental_ale") == "amber_ale"
+✘ Test fullAmericanPaleAleMatchWins() recorded an issue at StyleClassifierTests.swift:21:9: Expectation failed: (StyleClassifier.classify(v, styles: content.styles) → "experimental_ale") == "american_pale_ale"
+✘ Test higherMatchPercentBeatsEarlierPosition() recorded an issue at StyleClassifierTests.swift:66:9: Expectation failed: (StyleClassifier.classify(vector([.malt: 50]), styles: table) → "experimental_ale") == "perfect"
+✘ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() recorded an issue at StyleClassifierTests.swift:49:9: Expectation failed: (StyleClassifier.classify(v, styles: forward) → "experimental_ale") == "first"
+✘ Test unqualifiedMaltySweetBeerFallsBackToAmberAle() failed after 0.006 seconds with 1 issue.
+✘ Test brewedBeerStyleIsInTheStyleTable() failed after 0.006 seconds with 1 issue.
+✘ Test fullAmericanPaleAleMatchWins() failed after 0.006 seconds with 1 issue.
+✘ Test higherMatchPercentBeatsEarlierPosition() failed after 0.006 seconds with 1 issue.
+✘ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() recorded an issue at StyleClassifierTests.swift:51:9: Expectation failed: (StyleClassifier.classify(v, styles: reversed) → "experimental_ale") == "second"
+✘ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() failed after 0.006 seconds with 2 issues.
+✘ Suite StyleClassifierTests failed after 0.006 seconds with 6 issues.
+✘ Test run with 10 tests failed after 0.006 seconds with 6 issues.
