@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-10-08T22:18:58.181Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-10-08T22:28:21.692Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 01 execution started
-state_head: 73d343401e310b59551515b455f4167281c1021d
+state_head: 5c00ffa159fb55c267371c775a7afda609d1bf76
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 3 of 10
+Plan: 4 of 10
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 01 execution started
 
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 |------|----------|-------|-------|
 | Phase 01 P01 | 11 min | 3 tasks | 22 files |
 | Phase 01 P02 | 8 min | 3 tasks | 21 files |
+| Phase 01 P03 | 6 min | 3 tasks | 25 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Generated BrewFighter.xcodeproj is committed; project.yml (XcodeGen syncedFolder) is its source; regeneration yields no diff
 - [Phase 01]: SaveRepository backup-copy failure is non-fatal; GameStore is the single save writer; -UITestResetSave honored only under DEBUG
 - [Phase 01]: -NSDoubleLocalizedStrings mangles composite format strings; pseudo-localization asserts only plain strings; positional specifiers still enforced by check-strings
+- [Phase 01]: House pale ale is dry-hopped (hop.h01) with day cost 17, so the first brew ends on day 18 — Content tuning changes JSON values only; engine formulas stay fixed
+- [Phase 01]: Yeast effectsByTempBand must define all three bands; a missing band is a decode error — A content typo cannot silently ship a flavorless yeast
 
 ### Pending Todos
 
@@ -101,6 +104,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T22:18:58.161Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-10-08T22:28:21.671Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
