@@ -1,1 +1,923 @@
-{}
+{
+  "contentVersion" : 1,
+  "payload" : {
+    "beers" : [
+      {
+        "batchNumber" : 1,
+        "brewDay" : 1,
+        "contentVersion" : 1,
+        "id" : "00000000-0000-0000-0000-000000000001",
+        "recipe" : {
+          "conditioning" : [
+            {
+              "amount" : 4,
+              "ingredientID" : "hop.h01",
+              "kind" : "dryHop"
+            }
+          ],
+          "fermentDuration" : "standard",
+          "fermentTemp" : "balanced",
+          "grainBill" : {
+            "baseID" : "grain.g01",
+            "entries" : [
+              {
+                "fermentableID" : "grain.g01",
+                "percent" : 90
+              },
+              {
+                "fermentableID" : "grain.g04",
+                "percent" : 10
+              }
+            ]
+          },
+          "hops" : [
+            {
+              "hopID" : "hop.h01",
+              "quarterOunces" : 3,
+              "slot" : "bittering"
+            },
+            {
+              "hopID" : "hop.h01",
+              "quarterOunces" : 4,
+              "slot" : "aroma"
+            }
+          ],
+          "mashTemp" : "medium",
+          "strength" : "standard",
+          "yeastID" : "yeast.y01"
+        },
+        "result" : {
+          "attributes" : {
+            "abv" : 51,
+            "bitterness" : 39,
+            "body" : 29,
+            "carbonation" : 50,
+            "citrus" : 53,
+            "dryness" : 0,
+            "fruit" : 0,
+            "funk" : 0,
+            "herbal" : 0,
+            "hopAroma" : 60,
+            "malt" : 42,
+            "roast" : 0,
+            "sour" : 0,
+            "spice" : 0,
+            "sweetness" : 35,
+            "tropical" : 33
+          },
+          "ledger" : [
+            {
+              "attribute" : "carbonation",
+              "delta" : 50,
+              "source" : {
+                "kind" : "baseline"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 27,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 5,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 14,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 30,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 50,
+              "source" : {
+                "kind" : "strength",
+                "refID" : "standard"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 31,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 2,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "citrus",
+              "delta" : 2,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "tropical",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 8,
+              "source" : {
+                "detail" : "aroma",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 25,
+              "source" : {
+                "detail" : "aroma",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "citrus",
+              "delta" : 22,
+              "source" : {
+                "detail" : "aroma",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "tropical",
+              "delta" : 14,
+              "source" : {
+                "detail" : "aroma",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 1,
+              "source" : {
+                "detail" : "attenuation",
+                "kind" : "yeast",
+                "refID" : "yeast.y01"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 33,
+              "source" : {
+                "detail" : "dryHop",
+                "kind" : "conditioning",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "citrus",
+              "delta" : 29,
+              "source" : {
+                "detail" : "dryHop",
+                "kind" : "conditioning",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "tropical",
+              "delta" : 18,
+              "source" : {
+                "detail" : "dryHop",
+                "kind" : "conditioning",
+                "refID" : "hop.h01"
+              }
+            }
+          ],
+          "stats" : {
+            "abvTenths" : 51,
+            "fgPoints" : 1011,
+            "ibuTenths" : 394,
+            "ogPoints" : 1050,
+            "srmTenths" : 98
+          },
+          "styleID" : "american_pale_ale"
+        }
+      },
+      {
+        "batchNumber" : 2,
+        "brewDay" : 18,
+        "contentVersion" : 1,
+        "id" : "00000000-0000-0000-0000-000000000002",
+        "recipe" : {
+          "conditioning" : [
+            {
+              "kind" : "bottleConditioning"
+            }
+          ],
+          "fermentDuration" : "standard",
+          "fermentTemp" : "balanced",
+          "grainBill" : {
+            "baseID" : "grain.g01",
+            "entries" : [
+              {
+                "fermentableID" : "grain.g01",
+                "percent" : 85
+              },
+              {
+                "fermentableID" : "grain.g05",
+                "percent" : 10
+              },
+              {
+                "fermentableID" : "grain.g04",
+                "percent" : 5
+              }
+            ]
+          },
+          "hops" : [
+            {
+              "hopID" : "hop.h07",
+              "quarterOunces" : 4,
+              "slot" : "bittering"
+            },
+            {
+              "hopID" : "hop.h05",
+              "quarterOunces" : 4,
+              "slot" : "flavor"
+            },
+            {
+              "hopID" : "hop.h01",
+              "quarterOunces" : 4,
+              "slot" : "whirlpool"
+            }
+          ],
+          "mashTemp" : "medium",
+          "strength" : "standard",
+          "yeastID" : "yeast.y02"
+        },
+        "result" : {
+          "attributes" : {
+            "abv" : 46,
+            "bitterness" : 89,
+            "body" : 31,
+            "carbonation" : 70,
+            "citrus" : 18,
+            "dryness" : 15,
+            "fruit" : 23,
+            "funk" : 0,
+            "herbal" : 11,
+            "hopAroma" : 26,
+            "malt" : 39,
+            "roast" : 70,
+            "sour" : 0,
+            "spice" : 5,
+            "sweetness" : 14,
+            "tropical" : 11
+          },
+          "ledger" : [
+            {
+              "attribute" : "carbonation",
+              "delta" : 50,
+              "source" : {
+                "kind" : "baseline"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 26,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 4,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 13,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g01"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : -5,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g05"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 10,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g05"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g05"
+              }
+            },
+            {
+              "attribute" : "roast",
+              "delta" : 70,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g05"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 8,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 8,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g04"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 50,
+              "source" : {
+                "kind" : "strength",
+                "refID" : "standard"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 52,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h07"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h07"
+              }
+            },
+            {
+              "attribute" : "herbal",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h07"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 9,
+              "source" : {
+                "detail" : "flavor",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 5,
+              "source" : {
+                "detail" : "flavor",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "herbal",
+              "delta" : 10,
+              "source" : {
+                "detail" : "flavor",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "spice",
+              "delta" : 5,
+              "source" : {
+                "detail" : "flavor",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : 3,
+              "source" : {
+                "detail" : "flavor",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 13,
+              "source" : {
+                "detail" : "whirlpool",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 20,
+              "source" : {
+                "detail" : "whirlpool",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "citrus",
+              "delta" : 18,
+              "source" : {
+                "detail" : "whirlpool",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "tropical",
+              "delta" : 11,
+              "source" : {
+                "detail" : "whirlpool",
+                "kind" : "hop",
+                "refID" : "hop.h01"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 5,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y02"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 10,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y02"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : 20,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y02"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : -4,
+              "source" : {
+                "detail" : "attenuation",
+                "kind" : "yeast",
+                "refID" : "yeast.y02"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 5,
+              "source" : {
+                "detail" : "bottleConditioning",
+                "kind" : "conditioning"
+              }
+            },
+            {
+              "attribute" : "carbonation",
+              "delta" : 20,
+              "source" : {
+                "detail" : "bottleConditioning",
+                "kind" : "conditioning"
+              }
+            }
+          ],
+          "stats" : {
+            "abvTenths" : 46,
+            "fgPoints" : 1015,
+            "ibuTenths" : 730,
+            "ogPoints" : 1050,
+            "srmTenths" : 374
+          },
+          "styleID" : "stout"
+        }
+      },
+      {
+        "batchNumber" : 3,
+        "brewDay" : 46,
+        "contentVersion" : 1,
+        "id" : "00000000-0000-0000-0000-000000000003",
+        "recipe" : {
+          "conditioning" : [
+            {
+              "amount" : 2,
+              "ingredientID" : "adjunct.a03",
+              "kind" : "fruit"
+            },
+            {
+              "kind" : "lagering"
+            }
+          ],
+          "fermentDuration" : "extended",
+          "fermentTemp" : "balanced",
+          "grainBill" : {
+            "baseID" : "grain.g02",
+            "entries" : [
+              {
+                "fermentableID" : "grain.g02",
+                "percent" : 80
+              },
+              {
+                "fermentableID" : "adjunct.a01",
+                "percent" : 10
+              },
+              {
+                "fermentableID" : "adjunct.a02",
+                "percent" : 10
+              }
+            ]
+          },
+          "hops" : [
+            {
+              "hopID" : "hop.h05",
+              "quarterOunces" : 4,
+              "slot" : "bittering"
+            }
+          ],
+          "mashTemp" : "medium",
+          "strength" : "standard",
+          "yeastID" : "yeast.y05"
+        },
+        "result" : {
+          "attributes" : {
+            "abv" : 62,
+            "bitterness" : 17,
+            "body" : 13,
+            "carbonation" : 55,
+            "citrus" : 0,
+            "dryness" : 38,
+            "fruit" : 51,
+            "funk" : 60,
+            "herbal" : 2,
+            "hopAroma" : 1,
+            "malt" : 11,
+            "roast" : 0,
+            "sour" : 50,
+            "spice" : 1,
+            "sweetness" : 7,
+            "tropical" : 0
+          },
+          "ledger" : [
+            {
+              "attribute" : "carbonation",
+              "delta" : 50,
+              "source" : {
+                "kind" : "baseline"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : 16,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g02"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 8,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g02"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 8,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "grain.g02"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 2,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a01"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : 20,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a01"
+              }
+            },
+            {
+              "attribute" : "malt",
+              "delta" : -5,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a02"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a02"
+              }
+            },
+            {
+              "attribute" : "body",
+              "delta" : -15,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a02"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 1,
+              "source" : {
+                "kind" : "fermentable",
+                "refID" : "adjunct.a02"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 50,
+              "source" : {
+                "kind" : "strength",
+                "refID" : "standard"
+              }
+            },
+            {
+              "attribute" : "bitterness",
+              "delta" : 17,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "hopAroma",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "herbal",
+              "delta" : 2,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "spice",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : 1,
+              "source" : {
+                "detail" : "bittering",
+                "kind" : "hop",
+                "refID" : "hop.h05"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : 10,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "funk",
+              "delta" : 40,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "sour",
+              "delta" : 20,
+              "source" : {
+                "detail" : "balanced",
+                "kind" : "yeast",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "abv",
+              "delta" : 11,
+              "source" : {
+                "detail" : "attenuation",
+                "kind" : "yeast",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 5,
+              "source" : {
+                "kind" : "fermentDuration",
+                "refID" : "extended"
+              }
+            },
+            {
+              "attribute" : "funk",
+              "delta" : 20,
+              "source" : {
+                "detail" : "extended",
+                "kind" : "fermentDuration",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "sour",
+              "delta" : 10,
+              "source" : {
+                "detail" : "extended",
+                "kind" : "fermentDuration",
+                "refID" : "yeast.y05"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : 10,
+              "source" : {
+                "detail" : "fruit",
+                "kind" : "conditioning",
+                "refID" : "adjunct.a03"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : 50,
+              "source" : {
+                "detail" : "fruit",
+                "kind" : "conditioning",
+                "refID" : "adjunct.a03"
+              }
+            },
+            {
+              "attribute" : "sour",
+              "delta" : 20,
+              "source" : {
+                "detail" : "fruit",
+                "kind" : "conditioning",
+                "refID" : "adjunct.a03"
+              }
+            },
+            {
+              "attribute" : "sweetness",
+              "delta" : -5,
+              "source" : {
+                "detail" : "lagering",
+                "kind" : "conditioning"
+              }
+            },
+            {
+              "attribute" : "dryness",
+              "delta" : 10,
+              "source" : {
+                "detail" : "lagering",
+                "kind" : "conditioning"
+              }
+            },
+            {
+              "attribute" : "fruit",
+              "delta" : -10,
+              "source" : {
+                "detail" : "lagering",
+                "kind" : "conditioning"
+              }
+            },
+            {
+              "attribute" : "carbonation",
+              "delta" : 5,
+              "source" : {
+                "detail" : "lagering",
+                "kind" : "conditioning"
+              }
+            }
+          ],
+          "stats" : {
+            "abvTenths" : 62,
+            "fgPoints" : 1003,
+            "ibuTenths" : 173,
+            "ogPoints" : 1050,
+            "srmTenths" : 30
+          },
+          "styleID" : "wild_ale"
+        }
+      }
+    ],
+    "day" : 102,
+    "nextBatchNumber" : 4
+  },
+  "schemaVersion" : 1
+}

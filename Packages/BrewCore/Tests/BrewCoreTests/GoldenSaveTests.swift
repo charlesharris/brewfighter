@@ -16,7 +16,7 @@ private func fnv1a64(_ data: Data) -> UInt64 {
 /// The recorded checksum of `Fixtures/save_v1.json`. The fixture is frozen: schema version 1 is a
 /// published contract once a TestFlight build ships. Any change to the on-disk shape needs a
 /// SaveMigrator step and a NEW fixture (`save_v2.json`); this file and this constant stay as they are.
-private let goldenChecksum: UInt64 = 0
+private let goldenChecksum: UInt64 = 0x1505d50a292b09fc
 
 private func fixtureURL() -> URL? {
     Bundle.module.url(forResource: "save_v1", withExtension: "json", subdirectory: "Fixtures")

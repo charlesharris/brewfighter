@@ -55,7 +55,7 @@ public enum SaveCodec {
         // (c) version gate, then bring older saves up to the current schema
         if header.schemaVersion > currentSchemaVersion { throw SaveError.newerThanApp(header.schemaVersion) }
         if header.schemaVersion < 1 { throw SaveError.invalid("schemaVersion") }
-        let current = try migrateToCurrent(data, from: header.schemaVersion)
+        let current = try SaveMigrator.migrate(data, from: header.schemaVersion)
 
         // (d) full envelope
         let state: GameState
@@ -68,10 +68,5 @@ public enum SaveCodec {
         // (e) bounds and referential validation
         try SaveValidator.validate(state, content: content)
         return state
-    }
-
-    /// Temporary identity step: version 1 is current, so nothing to migrate yet.
-    private static func migrateToCurrent(_ data: Data, from version: Int) throws -> Data {
-        data
     }
 }
