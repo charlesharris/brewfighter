@@ -226,10 +226,53 @@ package struct MoreyTable: Sendable, Equatable, Decodable {
     }
 }
 
-/// SRM color stops (RED stub: replaced by the real table).
-package struct SRMColorTable: Sendable, Equatable {
-    package static let stub = SRMColorTable()
-    package func rgb(srmTenths: Int) -> RGB { RGB(r: 0, g: 0, b: 0) }
+/// SRM 1...40 color stops from srm_colors.json (the `source` field cites the chart). Colors between
+/// stops are interpolated per channel with integer math.
+package struct SRMColorTable: Sendable, Equatable, Decodable {
+    package static let minSRM = 1
+    package static let maxSRM = 40
+
+    private struct Stop: Sendable, Equatable, Decodable {
+        let srm: Int
+        let hex: String
+    }
+
+    package let source: String
+    private let stops: [Stop]
+    /// Parsed once at load; index 0 is SRM 1.
+    private let colors: [RGB]
+
+    enum CodingKeys: String, CodingKey { case source, stops }
+
+    package init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        source = try c.decode(String.self, forKey: .source)
+        stops = try c.decode([Stop].self, forKey: .stops)
+        guard source.hasPrefix("https://") else {
+            throw ContentError.invalid("srm_colors.json source must be an https:// URL")
+        }
+        guard stops.map(\.srm) == Array(Self.minSRM...Self.maxSRM) else {
+            throw ContentError.invalid("srm_colors.json must define stops for SRM 1...40 in order")
+        }
+        colors = try stops.map { stop in
+            guard stop.hex.count == 6, let value = Int(stop.hex, radix: 16) else {
+                throw ContentError.invalid("srm_colors.json stop \(stop.srm) has a bad hex value '\(stop.hex)'")
+            }
+            return RGB(r: (value >> 16) & 0xFF, g: (value >> 8) & 0xFF, b: value & 0xFF)
+        }
+    }
+
+    /// Color for an SRM value in tenths. Below SRM 1 and above SRM 40 clamp to the end stops.
+    package func rgb(srmTenths: Int) -> RGB {
+        let clamped = min(max(srmTenths, Self.minSRM * 10), Self.maxSRM * 10)
+        let lowerIndex = clamped / 10 - Self.minSRM
+        let fraction = clamped % 10
+        let lower = colors[lowerIndex]
+        guard fraction != 0, lowerIndex + 1 < colors.count else { return lower }
+        let upper = colors[lowerIndex + 1]
+        func mix(_ a: Int, _ b: Int) -> Int { a + divRound((b - a) * fraction, 10) }
+        return RGB(r: mix(lower.r, upper.r), g: mix(lower.g, upper.g), b: mix(lower.b, upper.b))
+    }
 }
 
 /// A conditioning menu entry (D-16). Dry hop rows come from the chosen hop scaled by
@@ -268,6 +311,7 @@ public struct ContentCatalog: Sendable {
     package let baselineEffects: EffectMap
     package let tinseth: TinsethTable
     package let morey: MoreyTable
+    package let srmColors: SRMColorTable
     package let styles: StyleTable
     private let starters: [String: Recipe]
 
@@ -309,6 +353,7 @@ public struct ContentCatalog: Sendable {
         let hops = try decode(HopsFile.self, "hops", in: bundle).hops
         let tinseth = try decode(TinsethTable.self, "tinseth", in: bundle).validated()
         let morey = try decode(MoreyTable.self, "morey", in: bundle).validated()
+        let srmColors = try decode(SRMColorTable.self, "srm_colors", in: bundle)
         let starter = try decode(StarterFile.self, "starter_recipes", in: bundle)
         let styles = try decode(StyleTable.self, "styles", in: bundle)
         let conditioning = try decode(ConditioningFile.self, "conditioning", in: bundle).conditioning
@@ -376,6 +421,7 @@ public struct ContentCatalog: Sendable {
             baselineEffects: bands.baseline.effects,
             tinseth: tinseth,
             morey: morey,
+            srmColors: srmColors,
             styles: styles,
             starters: starters)
     }
@@ -399,7 +445,7 @@ public struct ContentCatalog: Sendable {
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
         conditioning: [ConditioningInfo],
         housePaleAle: Recipe, baselineEffects: EffectMap, tinseth: TinsethTable, morey: MoreyTable,
-        styles: StyleTable, starters: [String: Recipe]
+        srmColors: SRMColorTable, styles: StyleTable, starters: [String: Recipe]
     ) {
         self.contentVersion = contentVersion
         self.fermentables = fermentables
@@ -416,6 +462,7 @@ public struct ContentCatalog: Sendable {
         self.baselineEffects = baselineEffects
         self.tinseth = tinseth
         self.morey = morey
+        self.srmColors = srmColors
         self.styles = styles
         self.starters = starters
     }
@@ -425,8 +472,6 @@ public struct ContentCatalog: Sendable {
     public func starterRecipe(_ id: String) -> Recipe? { starters[id] }
 
     /// String Catalog key for a style (or fallback) display name.
-    package var srmColors: SRMColorTable { .stub }
-
     /// The glass shape a style is served in; unknown IDs get the plain shaker (never a crash).
     package func glassShape(forStyle id: String) -> GlassShape {
         (styles.styles + styles.fallbacks).first { $0.id == id }?.glass ?? .shaker
@@ -458,7 +503,8 @@ public struct ContentCatalog: Sendable {
             hops: hops, hopSlots: hopSlots,
             strengthBands: strengthBands, mashBands: mashBands, fermentTempBands: fermentTempBands,
             durationBands: durationBands, conditioning: conditioning, housePaleAle: housePaleAle,
-            baselineEffects: baselineEffects, tinseth: tinseth, morey: morey, styles: styles, starters: starters)
+            baselineEffects: baselineEffects, tinseth: tinseth, morey: morey, srmColors: srmColors, styles: styles,
+            starters: starters)
     }
 
     package func band(for strength: StrengthBand) -> BandInfo? { strengthBands.first { $0.id == strength.rawValue } }

@@ -15,7 +15,7 @@ enum Archetypes {
         case "stout":
             return build(
                 base: "grain.g01", others: [("grain.g05", 10), ("grain.g04", 5)],
-                hops: [("hop.h07", .bittering, 8)], yeast: "yeast.y02", content: content)
+                hops: [("hop.h07", .bittering, 2)], yeast: "yeast.y02", content: content)
         case "pilsner":
             return build(
                 base: "grain.g02", hops: [("hop.h02", .bittering, 8), ("hop.h02", .aroma, 4)],
@@ -29,14 +29,15 @@ enum Archetypes {
                 yeast: "yeast.y02", conditioning: [(.dryHop, "hop.h04", 8)], content: content)
         case "saison":
             return build(
-                base: "grain.g02", others: [("grain.g03", 15)],
+                base: "grain.g02", others: [("grain.g03", 15), ("grain.g04", 5)],
                 hops: [("hop.h05", .bittering, 6), ("hop.h05", .aroma, 4)],
                 yeast: "yeast.y04", fermentTemp: .warm,
                 conditioning: [(.bottleConditioning, nil, nil)], content: content)
         case "wheat_beer":
             return build(
-                base: "grain.g03", others: [("grain.g01", 50)],
-                hops: [("hop.h06", .bittering, 2)], yeast: "yeast.y01", content: content)
+                base: "grain.g03", others: [("grain.g01", 40), ("adjunct.a01", 10)],
+                hops: [("hop.h06", .bittering, 2)], yeast: "yeast.y01",
+                conditioning: [(.bottleConditioning, nil, nil)], content: content)
         default:
             fatalError("No archetype recipe for style '\(styleID)'")
         }

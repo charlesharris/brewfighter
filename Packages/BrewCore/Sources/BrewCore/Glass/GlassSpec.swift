@@ -30,11 +30,46 @@ public struct GlassSpec: Equatable, Sendable {
     public var hazePercent: Int
     public var seed: UInt64
 
+    /// Derives the glass from the finished beer alone: attributes and stats, the style's glass field
+    /// and the batch number. All math is Int; carbonation, body, roast, tropical and fruit are
+    /// attribute tenths.
     public static func make(for beer: Beer, content: ContentCatalog) -> GlassSpec {
-        // RED stub: replaced by the real derivation.
-        GlassSpec(
-            shape: .tulip, liquid: RGB(r: 0, g: 0, b: 0), head: RGB(r: 0, g: 0, b: 0), headHeightPercent: 6,
-            bubbleCount: 4, bubbleSpeedPermille: 400, hazePercent: 0, seed: 0)
+        let attributes = beer.result.attributes
+        let stats = beer.result.stats
+        let carbonation = attributes[.carbonation]
+        let body = attributes[.body]
+        let roast = attributes[.roast]
+        let tropical = attributes[.tropical]
+        let fruit = attributes[.fruit]
+
+        // Cream foam turns tan as roast rises, fully tan at 8.0.
+        let roastWeight = min(roast, 80)
+        func tint(_ cream: Int, _ tan: Int) -> Int { cream + divRound((tan - cream) * roastWeight, 80) }
+        let head = RGB(r: tint(255, 196), g: tint(248, 160), b: tint(230, 112))
+
+        let shape: GlassShape =
+            stats.abvTenths >= snifterAbvTenths ? .snifter : content.glassShape(forStyle: beer.result.styleID)
+
+        return GlassSpec(
+            shape: shape,
+            liquid: content.srmColors.rgb(srmTenths: stats.srmTenths),
+            head: head,
+            headHeightPercent: min(max(8 + carbonation / 4 + body / 8, 6), 35),
+            bubbleCount: min(max(carbonation * 6 / 10, 4), 60),
+            bubbleSpeedPermille: 400 + carbonation * 6,
+            hazePercent: min(max(max(0, body - 25) * 2 + max(0, tropical - 30) + max(0, fruit - 30), 0), 80),
+            seed: splitMix64(UInt64(max(beer.batchNumber, 0))))
+    }
+
+    /// 8.0% ABV and up is served in a snifter, whatever the style says.
+    package static let snifterAbvTenths = 80
+
+    /// One SplitMix64 step, so neighbouring batch numbers give unrelated seeds.
+    private static func splitMix64(_ x: UInt64) -> UInt64 {
+        var z = x &+ 0x9E37_79B9_7F4A_7C15
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+        return z ^ (z >> 31)
     }
 
     /// How different two glasses look: color distance plus head, bubbles, haze and a shape penalty.
