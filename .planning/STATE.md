@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-10-14T19:05:52.767Z"
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-10-14T19:17:14.713Z"
 last_activity: 2026-10-14
 last_activity_desc: Phase 01 execution started
-state_head: 1dc627563e8236754528f8416a40e6e68df4a027
+state_head: 980093e186546a8e43582983e2e9eb181ceacb39
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 4
-  percent: 0
+  completed_plans: 5
+  percent: 50
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 4 of 10
+Plan: 5 of 10
 Status: Ready to execute
 Last activity: 2026-10-14 — Phase 01 execution started
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -60,6 +60,7 @@ Progress: [████░░░░░░] 40%
 | Phase 01 P02 | 8 min | 3 tasks | 21 files |
 | Phase 01 P03 | 6 min | 3 tasks | 25 files |
 | Phase 01 P04 | 11min | 3 tasks | 19 files |
+| Phase 01 P05 | 7min | 3 tasks | 18 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Yeast effectsByTempBand must define all three bands; a missing band is a decode error — A content typo cannot silently ship a flavorless yeast
 - [Phase 01]: Porter and brown ale are defined by thresholds, not ingredient effects: roasted barley moves in 5 percent steps (roast 35 or 70), so porter roast is 25-55 and brown ale is a low-roast malty style with bitterness required — Plan's porter window 40-65 is unreachable; signature conditions are required so unhopped or empty recipes fall back instead of claiming a style
 - [Phase 01]: ABV attribute rows are stage-attributed marginal ABV deltas of one attenuation chain; the clamp is its own yeast row with detail attenuationLimit — Telescoping needs no remainder rule and keeps the ABV bar and nerd-stats ABV in agreement
+- [Phase 01]: confirmImport writes the new save before swapping in-memory state, after a pre-import backup that aborts the replace on failure — A failed, invalid, newer, oversized or cancelled import can never lose the player's beers
+- [Phase 01]: Save schema changes need a version bump, one SaveMigrator step and a new frozen save_vN.json; save_v1.json is frozen at FNV-1a 64 0x1505d50a292b09fc — GoldenSaveTests turns a forgotten migration into a failing test
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-14T19:05:47.867Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-10-14T19:17:10.410Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None
