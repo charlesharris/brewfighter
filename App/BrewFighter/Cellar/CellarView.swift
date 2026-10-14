@@ -4,6 +4,7 @@ import SwiftUI
 /// The Cellar: root screen of the app (D-08).
 struct CellarView: View {
     @Environment(GameStore.self) private var store
+    @State private var showSaveTransfer = false
 
     var body: some View {
         let day = store.state.day
@@ -29,6 +30,11 @@ struct CellarView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.foamCream.ignoresSafeArea())
+        .sheet(isPresented: $showSaveTransfer) {
+            SaveTransferSheet()
+                .presentationBackground(Palette.foamCream)
+                .presentationDetents([.medium])
+        }
         .safeAreaInset(edge: .bottom) {
             Button("cellar.brewButton") {
                 store.brew(store.content.housePaleAle)
@@ -41,15 +47,25 @@ struct CellarView: View {
     }
 
     private func header(day: Int) -> some View {
-        HStack {
-            Text("cellar.title")
-                .font(.title2.bold())
-                .accessibilityIdentifier("cellar.title")
-            Spacer()
-            Text("cellar.dayCounter \(day)")
-                .font(.headline)
-                .contentTransition(.numericText())
-                .accessibilityIdentifier("cellar.day")
+        VStack(spacing: 12) {
+            HStack {
+                Text("cellar.title")
+                    .font(.title2.bold())
+                    .accessibilityIdentifier("cellar.title")
+                Spacer()
+                Text("cellar.dayCounter \(day)")
+                    .font(.headline)
+                    .contentTransition(.numericText())
+                    .accessibilityIdentifier("cellar.day")
+            }
+            HStack {
+                Spacer()
+                Button("cellar.saveTransferButton") {
+                    showSaveTransfer = true
+                }
+                .buttonStyle(GameButtonStyle(.secondary))
+                .accessibilityIdentifier("cellar.saveTransfer")
+            }
         }
         .foregroundStyle(Palette.ink)
         .padding(16)

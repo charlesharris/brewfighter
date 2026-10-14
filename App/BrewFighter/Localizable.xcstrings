@@ -562,6 +562,17 @@
         }
       }
     },
+    "cellar.saveTransferButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save file"
+          }
+        }
+      }
+    },
     "cellar.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -932,6 +943,171 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Yeast"
+          }
+        }
+      }
+    },
+    "saveTransfer.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move your cellar to another device or keep a copy in Files."
+          }
+        }
+      }
+    },
+    "saveTransfer.confirm.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep my cellar"
+          }
+        }
+      }
+    },
+    "saveTransfer.confirm.message %lld %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This save has %1$lld beers and is on day %2$lld. Your current cellar is backed up first."
+          }
+        }
+      }
+    },
+    "saveTransfer.confirm.replace" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace"
+          }
+        }
+      }
+    },
+    "saveTransfer.confirm.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace your cellar?"
+          }
+        }
+      }
+    },
+    "saveTransfer.error.newer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That save is from a newer version of Brew Fighter. Update the app to open it."
+          }
+        }
+      }
+    },
+    "saveTransfer.error.notASave" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That file isn't a Brew Fighter save."
+          }
+        }
+      }
+    },
+    "saveTransfer.error.ok" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "saveTransfer.error.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't open that file"
+          }
+        }
+      }
+    },
+    "saveTransfer.error.tooLarge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That file is too large to be a Brew Fighter save."
+          }
+        }
+      }
+    },
+    "saveTransfer.error.writeFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong, so nothing was changed. Your current cellar is safe."
+          }
+        }
+      }
+    },
+    "saveTransfer.exportButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export save"
+          }
+        }
+      }
+    },
+    "saveTransfer.importButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import save"
+          }
+        }
+      }
+    },
+    "saveTransfer.shareButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share BrewFighter-Save.json"
+          }
+        }
+      }
+    },
+    "saveTransfer.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save file"
           }
         }
       }
