@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Phase 1 paused after Wave 3/10 (plans 01-01..01-03 complete); resume at Wave 4 (01-04)
-last_updated: "2026-10-08T22:31:17.931Z"
-last_activity: 2026-10-08
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-10-14T19:05:52.767Z"
+last_activity: 2026-10-14
 last_activity_desc: Phase 01 execution started
-state_head: 4ec69ff896e3e4e089a20517e21e10558c1dc65a
+state_head: 1dc627563e8236754528f8416a40e6e68df4a027
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 4 of 10
+Plan: 2 of 10
 Status: Ready to execute
-Last activity: 2026-10-08 — Phase 01 execution started
+Last activity: 2026-10-14 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P01 | 11 min | 3 tasks | 22 files |
 | Phase 01 P02 | 8 min | 3 tasks | 21 files |
 | Phase 01 P03 | 6 min | 3 tasks | 25 files |
+| Phase 01 P04 | 11min | 3 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 01]: -NSDoubleLocalizedStrings mangles composite format strings; pseudo-localization asserts only plain strings; positional specifiers still enforced by check-strings
 - [Phase 01]: House pale ale is dry-hopped (hop.h01) with day cost 17, so the first brew ends on day 18 — Content tuning changes JSON values only; engine formulas stay fixed
 - [Phase 01]: Yeast effectsByTempBand must define all three bands; a missing band is a decode error — A content typo cannot silently ship a flavorless yeast
+- [Phase 01]: Porter and brown ale are defined by thresholds, not ingredient effects: roasted barley moves in 5 percent steps (roast 35 or 70), so porter roast is 25-55 and brown ale is a low-roast malty style with bitterness required — Plan's porter window 40-65 is unreachable; signature conditions are required so unhopped or empty recipes fall back instead of claiming a style
+- [Phase 01]: ABV attribute rows are stage-attributed marginal ABV deltas of one attenuation chain; the clamp is its own yeast row with detail attenuationLimit — Telescoping needs no remainder rule and keeps the ABV bar and nerd-stats ABV in agreement
 
 ### Pending Todos
 
@@ -104,6 +107,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-08T22:31:17.910Z
-Stopped at: Phase 1 paused after Wave 3/10 (plans 01-01..01-03 complete); resume at Wave 4 (01-04)
-Resume file: .planning/phases/01-brew-your-first-beer/.continue-here.md
+Last session: 2026-10-14T19:05:47.867Z
+Stopped at: Completed 01-04-PLAN.md
+Resume file: None

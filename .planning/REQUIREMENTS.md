@@ -10,7 +10,7 @@ Requirements for initial release (native iOS: Swift/SwiftUI, iPhone portrait, Ap
 ### Brewing
 
 - [ ] **BREW-01**: Player can compose a recipe from grain bill, hop choices with timing, yeast, fermentation temperature, and conditioning options
-- [ ] **BREW-02**: Brewing choices deterministically produce a beer with the locked set of ~16 sensory attributes (malt, sweetness, dryness, body, bitterness, hop aroma, citrus, tropical, herbal, spice, roast, fruit, funk, sour, carbonation, ABV)
+- [x] **BREW-02**: Brewing choices deterministically produce a beer with the locked set of ~16 sensory attributes (malt, sweetness, dryness, body, bitterness, hop aroma, citrus, tropical, herbal, spice, roast, fruit, funk, sour, carbonation, ABV)
 - [ ] **BREW-03**: Player sees a live attribute preview that updates as recipe choices change, with "?" shown for undiscovered ingredient traits
 - [ ] **BREW-04**: Every attribute value carries a per-source contribution ledger the player can inspect (which ingredient/choice contributed what)
 - [ ] **BREW-05**: Player can rebrew any saved recipe in one action from the recipe journal
@@ -153,7 +153,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | BREW-01 | Phase 1 | Pending |
-| BREW-02 | Phase 1 | Pending |
+| BREW-02 | Phase 1 | Complete |
 | BREW-03 | Phase 3 | Pending |
 | BREW-04 | Phase 1 | Pending |
 | BREW-05 | Phase 3 | Pending |
