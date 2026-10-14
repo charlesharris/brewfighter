@@ -151,7 +151,7 @@ private func grains(base: String = "grain.g01", _ entries: [(String, Int)]) -> G
             id: UUID(uuidString: "00000000-0000-0000-0000-0000000000B1")!, batchNumber: 1, brewDay: 1,
             recipe: content.housePaleAle, result: result, contentVersion: content.contentVersion)
         let state = GameState(day: 18, nextBatchNumber: 2, beers: [beer])
-        let decoded = try SaveCodec.decode(SaveCodec.encode(state))
+        let decoded = try SaveCodec.decode(SaveCodec.encode(state), content: content)
         #expect(decoded.beers.first?.result.stats == result.stats)
         #expect(decoded == state)
     }

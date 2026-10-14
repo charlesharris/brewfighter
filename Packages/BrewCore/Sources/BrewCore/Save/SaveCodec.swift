@@ -37,9 +37,10 @@ public enum SaveCodec {
         return try encoder.encode(envelope)
     }
 
-    /// Size cap and version gate run before the payload is decoded (T-1-03, T-1-04).
-    /// Plan 01-05 inserts the migrator chain and validator between (c) and (d).
-    public static func decode(_ data: Data) throws -> GameState {
+    /// The only decode entry point. Order: size cap, header-only version gate, migrator chain,
+    /// full envelope decode, then `SaveValidator` against the catalog (T-1-03, T-1-04, T-1-13).
+    /// There is no decode path that skips validation.
+    public static func decode(_ data: Data, content: ContentCatalog) throws -> GameState {
         // (a) size cap, before any parsing
         guard data.count <= maxSaveBytes else { throw SaveError.tooLarge }
 
@@ -51,15 +52,26 @@ public enum SaveCodec {
             throw SaveError.unreadable
         }
 
-        // (c) version gate
+        // (c) version gate, then bring older saves up to the current schema
         if header.schemaVersion > currentSchemaVersion { throw SaveError.newerThanApp(header.schemaVersion) }
         if header.schemaVersion < 1 { throw SaveError.invalid("schemaVersion") }
+        let current = try migrateToCurrent(data, from: header.schemaVersion)
 
         // (d) full envelope
+        let state: GameState
         do {
-            return try JSONDecoder().decode(SaveEnvelope.self, from: data).payload
+            state = try JSONDecoder().decode(SaveEnvelope.self, from: current).payload
         } catch {
             throw SaveError.unreadable
         }
+
+        // (e) bounds and referential validation
+        try SaveValidator.validate(state, content: content)
+        return state
+    }
+
+    /// Temporary identity step: version 1 is current, so nothing to migrate yet.
+    private static func migrateToCurrent(_ data: Data, from version: Int) throws -> Data {
+        data
     }
 }

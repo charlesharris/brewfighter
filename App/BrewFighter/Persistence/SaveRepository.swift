@@ -20,6 +20,7 @@ struct SaveRepository: Sendable {
 
     static let primaryName = "save.json"
     static let backupName = "save.backup.json"
+    static let preImportName = "save.pre-import.json"
 
     init(directory: URL) {
         self.directory = directory
@@ -35,6 +36,7 @@ struct SaveRepository: Sendable {
 
     var primaryURL: URL { directory.appendingPathComponent(Self.primaryName) }
     var backupURL: URL { directory.appendingPathComponent(Self.backupName) }
+    var preImportURL: URL { directory.appendingPathComponent(Self.preImportName) }
 
     /// Atomic write with a one-deep backup. The previous save.json is copied to
     /// save.backup.json first (as plain Data, no item-copy APIs), then save.json is
@@ -50,11 +52,19 @@ struct SaveRepository: Sendable {
         try data.write(to: primaryURL, options: [.atomic])
     }
 
-    /// Primary first, then backup. Never writes or deletes anything.
-    func load() -> SaveLoadOutcome {
-        let primary = attempt(primaryURL)
+    /// The cellar as it was just before an import replaced it. Throws on failure so the
+    /// caller can abort the replacement (T-1-14).
+    func writePreImportBackup(_ data: Data) throws {
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try data.write(to: preImportURL, options: [.atomic])
+    }
+
+    /// Primary first, then backup. Never writes or deletes anything. Every decode is validated
+    /// against `content`.
+    func load(content: ContentCatalog) -> SaveLoadOutcome {
+        let primary = attempt(primaryURL, content: content)
         if case let .state(state) = primary { return .loaded(state, source: .primary) }
-        let backup = attempt(backupURL)
+        let backup = attempt(backupURL, content: content)
         if case let .state(state) = backup { return .loaded(state, source: .backup) }
         if case .missing = primary, case .missing = backup { return .fresh }
         return .unrecoverable(primary: primary.error, backup: backup.error)
@@ -62,7 +72,7 @@ struct SaveRepository: Sendable {
 
     func removeAllSaves() throws {
         let fm = FileManager.default
-        for url in [primaryURL, backupURL] where fm.fileExists(atPath: url.path) {
+        for url in [primaryURL, backupURL, preImportURL] where fm.fileExists(atPath: url.path) {
             try fm.removeItem(at: url)
         }
     }
@@ -78,11 +88,11 @@ struct SaveRepository: Sendable {
         }
     }
 
-    private func attempt(_ url: URL) -> Attempt {
+    private func attempt(_ url: URL, content: ContentCatalog) -> Attempt {
         guard FileManager.default.fileExists(atPath: url.path) else { return .missing }
         guard let data = try? Data(contentsOf: url) else { return .failed(.unreadable) }
         do {
-            return .state(try SaveCodec.decode(data))
+            return .state(try SaveCodec.decode(data, content: content))
         } catch let error as SaveError {
             return .failed(error)
         } catch {

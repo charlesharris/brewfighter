@@ -163,29 +163,29 @@ private func minimalRecipe() -> Recipe {
         let (s1, _) = Reducer.apply(.brew(recipe: content.housePaleAle, beerID: beerID1), to: .new, content: content, rng: &rng)
         let (s2, _) = Reducer.apply(.brew(recipe: minimalRecipe(), beerID: beerID2), to: s1, content: content, rng: &rng)
         let data = try SaveCodec.encode(s2)
-        #expect(try SaveCodec.decode(data) == s2)
+        #expect(try SaveCodec.decode(data, content: content) == s2)
         #expect(try SaveCodec.encode(s2) == data)
-        #expect(try SaveCodec.decode(SaveCodec.encode(.new)) == .new)
+        #expect(try SaveCodec.decode(SaveCodec.encode(.new), content: content) == .new)
     }
 
     @Test func newerSchemaIsRejectedBeforePayloadDecode() {
         let data = Data(#"{"schemaVersion":2,"payload":"not a game state"}"#.utf8)
-        #expect(throws: SaveError.newerThanApp(2)) { try SaveCodec.decode(data) }
+        #expect(throws: SaveError.newerThanApp(2)) { try SaveCodec.decode(data, content: content) }
     }
 
     @Test func oversizedInputIsRejected() {
         let data = Data(count: SaveCodec.maxSaveBytes + 1)
-        #expect(throws: SaveError.tooLarge) { try SaveCodec.decode(data) }
+        #expect(throws: SaveError.tooLarge) { try SaveCodec.decode(data, content: content) }
     }
 
     @Test func garbageBytesAreUnreadable() {
-        #expect(throws: SaveError.unreadable) { try SaveCodec.decode(Data([0xDE, 0xAD, 0xBE, 0xEF])) }
-        #expect(throws: SaveError.unreadable) { try SaveCodec.decode(Data(#"{"schemaVersion":1}"#.utf8)) }
+        #expect(throws: SaveError.unreadable) { try SaveCodec.decode(Data([0xDE, 0xAD, 0xBE, 0xEF]), content: content) }
+        #expect(throws: SaveError.unreadable) { try SaveCodec.decode(Data(#"{"schemaVersion":1}"#.utf8), content: content) }
     }
 
     @Test func zeroSchemaVersionIsInvalid() {
         #expect(throws: SaveError.invalid("schemaVersion")) {
-            try SaveCodec.decode(Data(#"{"schemaVersion":0}"#.utf8))
+            try SaveCodec.decode(Data(#"{"schemaVersion":0}"#.utf8), content: content)
         }
     }
 
