@@ -202,6 +202,30 @@ package struct TinsethTable: Sendable, Equatable, Decodable {
     }
 }
 
+/// Generated Morey MCU -> SRM table (Int tenths to Int tenths). Index `i` is the SRM tenths for
+/// `i` tenths of MCU. The generator is the only place floating point happens.
+package struct MoreyTable: Sendable, Equatable, Decodable {
+    package let mcuTenthsMax: Int
+    private let srmTenthsTable: [Int]
+
+    enum CodingKeys: String, CodingKey {
+        case mcuTenthsMax
+        case srmTenthsTable = "srmTenths"
+    }
+
+    /// Clamps the index into `0...mcuTenthsMax`, so no recipe can index out of range (T-1-11).
+    package func srmTenths(mcuTenths: Int) -> Int {
+        srmTenthsTable[min(max(mcuTenths, 0), mcuTenthsMax)]
+    }
+
+    fileprivate func validated() throws -> MoreyTable {
+        guard mcuTenthsMax > 0, srmTenthsTable.count == mcuTenthsMax + 1, srmTenthsTable.allSatisfy({ $0 >= 0 }) else {
+            throw ContentError.invalid("morey.json srmTenths must have mcuTenthsMax + 1 non-negative entries")
+        }
+        return self
+    }
+}
+
 /// A conditioning menu entry (D-16). Dry hop rows come from the chosen hop scaled by
 /// `aromaWeightPercent`; fruit rows come from the fruit adjunct per pound; lagering and
 /// bottle conditioning use their fixed `effects`. Effects are filled by the hop-content plan.
@@ -237,6 +261,7 @@ public struct ContentCatalog: Sendable {
 
     package let baselineEffects: EffectMap
     package let tinseth: TinsethTable
+    package let morey: MoreyTable
     package let styles: StyleTable
     private let starters: [String: Recipe]
 
@@ -277,6 +302,7 @@ public struct ContentCatalog: Sendable {
         let yeasts = try decode(YeastsFile.self, "yeasts", in: bundle)
         let hops = try decode(HopsFile.self, "hops", in: bundle).hops
         let tinseth = try decode(TinsethTable.self, "tinseth", in: bundle).validated()
+        let morey = try decode(MoreyTable.self, "morey", in: bundle).validated()
         let starter = try decode(StarterFile.self, "starter_recipes", in: bundle)
         let styles = try decode(StyleTable.self, "styles", in: bundle)
         let conditioning = try decode(ConditioningFile.self, "conditioning", in: bundle).conditioning
@@ -343,6 +369,7 @@ public struct ContentCatalog: Sendable {
             housePaleAle: house,
             baselineEffects: bands.baseline.effects,
             tinseth: tinseth,
+            morey: morey,
             styles: styles,
             starters: starters)
     }
@@ -365,8 +392,8 @@ public struct ContentCatalog: Sendable {
         hops: [HopInfo], hopSlots: [HopSlotInfo],
         strengthBands: [BandInfo], mashBands: [BandInfo], fermentTempBands: [BandInfo], durationBands: [BandInfo],
         conditioning: [ConditioningInfo],
-        housePaleAle: Recipe, baselineEffects: EffectMap, tinseth: TinsethTable, styles: StyleTable,
-        starters: [String: Recipe]
+        housePaleAle: Recipe, baselineEffects: EffectMap, tinseth: TinsethTable, morey: MoreyTable,
+        styles: StyleTable, starters: [String: Recipe]
     ) {
         self.contentVersion = contentVersion
         self.fermentables = fermentables
@@ -382,6 +409,7 @@ public struct ContentCatalog: Sendable {
         self.housePaleAle = housePaleAle
         self.baselineEffects = baselineEffects
         self.tinseth = tinseth
+        self.morey = morey
         self.styles = styles
         self.starters = starters
     }
@@ -417,7 +445,7 @@ public struct ContentCatalog: Sendable {
             hops: hops, hopSlots: hopSlots,
             strengthBands: strengthBands, mashBands: mashBands, fermentTempBands: fermentTempBands,
             durationBands: durationBands, conditioning: conditioning, housePaleAle: housePaleAle,
-            baselineEffects: baselineEffects, tinseth: tinseth, styles: styles, starters: starters)
+            baselineEffects: baselineEffects, tinseth: tinseth, morey: morey, styles: styles, starters: starters)
     }
 
     package func band(for strength: StrengthBand) -> BandInfo? { strengthBands.first { $0.id == strength.rawValue } }

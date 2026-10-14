@@ -8,8 +8,7 @@
 //
 // Tables:
 //   tinseth.json  Tinseth hop utilization per slot per OG point (Int per 100,000).
-//
-// Plan 01-04 extends this script with the SRM color table.
+//   morey.json    Morey MCU -> SRM table (Int tenths of MCU to Int tenths of SRM).
 
 import Foundation
 
@@ -50,6 +49,22 @@ struct TinsethFile: Encodable {
     let slots: [String: [Int]]
 }
 
+// MARK: - Morey SRM
+
+/// The darkest legal recipe (imperial strength, 15% roasted barley, 20% crystal) reaches about
+/// 3,050 MCU tenths; 4,000 leaves headroom. The engine clamps the index to this range.
+let mcuTenthsMax = 4000
+
+/// Morey: SRM = 1.4922 * MCU^0.6859. Entry i is the SRM tenths for i tenths of MCU; entry 0 is 0.
+let moreyTable: [Int] = (0...mcuTenthsMax).map { i in
+    i == 0 ? 0 : Int((1.4922 * pow(Double(i) / 10.0, 0.6859) * 10.0).rounded())
+}
+
+struct MoreyFile: Encodable {
+    let mcuTenthsMax: Int
+    let srmTenths: [Int]
+}
+
 func write<T: Encodable>(_ value: T, to name: String) {
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -70,3 +85,4 @@ guard FileManager.default.fileExists(atPath: outputDir) else {
 }
 
 write(TinsethFile(ogMin: ogMin, ogMax: ogMax, slots: slots), to: "tinseth.json")
+write(MoreyFile(mcuTenthsMax: mcuTenthsMax, srmTenths: moreyTable), to: "morey.json")
