@@ -81,7 +81,7 @@ enum RecipeGrid {
     }
 
     /// Adds `id` (entering at 5) and steps it up in 5-point increments until it reaches `percent`.
-    private static func stepUp(_ id: String, to percent: Int, in bill: GrainBill, content: ContentCatalog) -> GrainBill {
+    static func stepUp(_ id: String, to percent: Int, in bill: GrainBill, content: ContentCatalog) -> GrainBill {
         var bill = require(RecipeRules.addingFermentable(id, to: bill, content: content), "add \(id)")
         var current = RecipeRules.percentStep
         while current < percent {
@@ -184,7 +184,7 @@ enum RecipeGrid {
         return recipe
     }
 
-    private static func require<T>(_ value: T?, _ what: @autoclosure () -> String) -> T {
+    static func require<T>(_ value: T?, _ what: @autoclosure () -> String) -> T {
         guard let value else { fatalError("RecipeGrid could not build \(what())") }
         return value
     }

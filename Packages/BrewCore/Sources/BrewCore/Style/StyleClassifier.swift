@@ -19,6 +19,29 @@ package struct StyleDefinition: Decodable, Equatable, Sendable {
     /// Percent match needed to qualify. Fallbacks omit it.
     package var threshold: Int?
     package var conditions: [StyleCondition]
+    /// The glass this style is served in (D-19). Required in styles.json.
+    package var glass: GlassShape
+
+    package init(id: String, nameKey: String, threshold: Int?, conditions: [StyleCondition], glass: GlassShape = .shaker) {
+        self.id = id
+        self.nameKey = nameKey
+        self.threshold = threshold
+        self.conditions = conditions
+        self.glass = glass
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, nameKey, threshold, conditions, glass
+    }
+
+    package init(from decoder: any Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        nameKey = try c.decode(String.self, forKey: .nameKey)
+        threshold = try c.decodeIfPresent(Int.self, forKey: .threshold)
+        conditions = try c.decode([StyleCondition].self, forKey: .conditions)
+        glass = try c.decode(GlassShape.self, forKey: .glass)
+    }
 }
 
 package struct StyleTable: Decodable, Equatable, Sendable {

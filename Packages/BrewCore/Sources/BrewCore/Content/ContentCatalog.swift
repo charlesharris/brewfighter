@@ -226,6 +226,12 @@ package struct MoreyTable: Sendable, Equatable, Decodable {
     }
 }
 
+/// SRM color stops (RED stub: replaced by the real table).
+package struct SRMColorTable: Sendable, Equatable {
+    package static let stub = SRMColorTable()
+    package func rgb(srmTenths: Int) -> RGB { RGB(r: 0, g: 0, b: 0) }
+}
+
 /// A conditioning menu entry (D-16). Dry hop rows come from the chosen hop scaled by
 /// `aromaWeightPercent`; fruit rows come from the fruit adjunct per pound; lagering and
 /// bottle conditioning use their fixed `effects`. Effects are filled by the hop-content plan.
@@ -419,6 +425,13 @@ public struct ContentCatalog: Sendable {
     public func starterRecipe(_ id: String) -> Recipe? { starters[id] }
 
     /// String Catalog key for a style (or fallback) display name.
+    package var srmColors: SRMColorTable { .stub }
+
+    /// The glass shape a style is served in; unknown IDs get the plain shaker (never a crash).
+    package func glassShape(forStyle id: String) -> GlassShape {
+        (styles.styles + styles.fallbacks).first { $0.id == id }?.glass ?? .shaker
+    }
+
     public func styleNameKey(_ id: String) -> String? {
         (styles.styles + styles.fallbacks).first { $0.id == id }?.nameKey
     }

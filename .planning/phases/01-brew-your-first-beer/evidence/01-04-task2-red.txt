@@ -1,0 +1,309 @@
+[0/1] Planning build
+Building for debugging...
+[0/4] Write sources
+[1/4] Write swift-version--58304C5D6DBC2206.txt
+[3/15] Compiling BrewCoreTests GlassSpecTests.swift
+[4/15] Compiling BrewCoreTests LedgerInvariantTests.swift
+[5/15] Compiling BrewCoreTests Archetypes.swift
+[6/15] Compiling BrewCoreTests ContentValidationTests.swift
+[7/15] Compiling BrewCoreTests RecipeGrid.swift
+[8/15] Compiling BrewCoreTests HopContributionTests.swift
+[9/15] Compiling BrewCoreTests StatsTests.swift
+[10/15] Compiling BrewCoreTests RecipeRulesTests.swift
+[11/15] Emitting module BrewCoreTests
+[12/15] Compiling BrewCoreTests WalkingSkeletonTests.swift
+[13/15] Compiling BrewCoreTests StyleClassifierTests.swift
+[13/15] Write Objects.LinkFileList
+[14/15] Linking BrewCorePackageTests
+Build complete! (2.21s)
+Test Suite 'Selected tests' started at 2026-10-14 13:58:59.428.
+Test Suite 'BrewCorePackageTests.xctest' started at 2026-10-14 13:58:59.429.
+Test Suite 'BrewCorePackageTests.xctest' passed at 2026-10-14 13:58:59.429.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-14 13:58:59.429.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 124.4
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite GlassSpecTests started.
+◇ Test hazyIPAIsHazierThanThePilsner() started.
+◇ Test srmOutsideTheChartClampsToTheEndStops() started.
+◇ Test derivedValuesStayInRangeOverTheRecipeGrids(which:) started.
+◇ Test seedFollowsTheBatchNumber() started.
+◇ Test unknownStyleIDFallsBackToTheShaker() started.
+◇ Test stoutHeadIsDarkerThanPilsnerHead() started.
+◇ Test shapeComesFromTheStylesGlassField() started.
+◇ Test srmFiftyFiveIsTheIntegerMidpointBetweenStopsFiveAndSix() started.
+◇ Test srmStopsMatchTheChartEndpoints() started.
+◇ Test highAbvForcesTheSnifter() started.
+◇ Test sameBeerGivesEqualSpecs() started.
+◇ Test stoutIsDarkerInTheGlassThanPilsner() started.
+◇ Test glassArchetypesArePairwiseAtLeastSixtyApart() started.
+◇ Passing 1 argument which → "structured" to derivedValuesStayInRangeOverTheRecipeGrids(which:)
+◇ Passing 1 argument which → "sample" to derivedValuesStayInRangeOverTheRecipeGrids(which:)
+◇ Test distanceIsSymmetricAndZeroForEqualSpecs() started.
+✘ Test srmFiftyFiveIsTheIntegerMidpointBetweenStopsFiveAndSix() recorded an issue at GlassSpecTests.swift:57:9: Expectation failed: (five → RGB(r: 0, g: 0, b: 0)) == (RGB(r: 0xFB, g: 0xB1, b: 0x23) → RGB(r: 251, g: 177, b: 35))
+✘ Test highAbvForcesTheSnifter() recorded an issue at GlassSpecTests.swift:88:9: Expectation failed: (GlassSpec.make(for: strong, content: content).shape → .tulip) == .snifter
+✘ Test srmStopsMatchTheChartEndpoints() recorded an issue at GlassSpecTests.swift:42:9: Expectation failed: (content.srmColors.rgb(srmTenths: 10) → RGB(r: 0, g: 0, b: 0)) == (RGB(r: 0xFF, g: 0xE6, b: 0x99) → RGB(r: 255, g: 230, b: 153))
+✘ Test srmFiftyFiveIsTheIntegerMidpointBetweenStopsFiveAndSix() recorded an issue at GlassSpecTests.swift:58:9: Expectation failed: (six → RGB(r: 0, g: 0, b: 0)) == (RGB(r: 0xF8, g: 0xA6, b: 0x00) → RGB(r: 248, g: 166, b: 0))
+✘ Test hazyIPAIsHazierThanThePilsner() recorded an issue at GlassSpecTests.swift:142:9: Expectation failed: try archetypeSpec("hazy_ipa").hazePercent > (try archetypeSpec("pilsner").hazePercent)
+✘ Test highAbvForcesTheSnifter() recorded an issue at GlassSpecTests.swift:90:9: Expectation failed: (GlassSpec.make(for: strong, content: content).shape → .tulip) == (content.glassShape(forStyle: strong.result.styleID) → .shaker)
+✘ Test stoutHeadIsDarkerThanPilsnerHead() recorded an issue at GlassSpecTests.swift:132:9: Expectation failed: (stout.r + stout.g + stout.b → 0) < (pilsner.r + pilsner.g + pilsner.b → 0)
+✘ Test srmStopsMatchTheChartEndpoints() recorded an issue at GlassSpecTests.swift:43:9: Expectation failed: (content.srmColors.rgb(srmTenths: 400) → RGB(r: 0, g: 0, b: 0)) == (RGB(r: 0x36, g: 0x08, b: 0x0A) → RGB(r: 54, g: 8, b: 10))
+✔ Test unknownStyleIDFallsBackToTheShaker() passed after 0.027 seconds.
+✔ Test srmOutsideTheChartClampsToTheEndStops() passed after 0.027 seconds.
+✔ Test sameBeerGivesEqualSpecs() passed after 0.027 seconds.
+✘ Test srmFiftyFiveIsTheIntegerMidpointBetweenStopsFiveAndSix() failed after 0.027 seconds with 2 issues.
+✘ Test highAbvForcesTheSnifter() failed after 0.027 seconds with 2 issues.
+✘ Test hazyIPAIsHazierThanThePilsner() failed after 0.027 seconds with 1 issue.
+✘ Test srmStopsMatchTheChartEndpoints() failed after 0.027 seconds with 2 issues.
+✘ Test seedFollowsTheBatchNumber() recorded an issue at GlassSpecTests.swift:34:9: Expectation failed: (one.seed → 0) != (two.seed → 0)
+✘ Test stoutHeadIsDarkerThanPilsnerHead() failed after 0.027 seconds with 1 issue.
+✘ Test seedFollowsTheBatchNumber() recorded an issue at GlassSpecTests.swift:36:9: Expectation failed: (one.seed → 0) != 0
+✘ Test seedFollowsTheBatchNumber() failed after 0.027 seconds with 2 issues.
+✘ Test stoutIsDarkerInTheGlassThanPilsner() recorded an issue at GlassSpecTests.swift:138:9: Expectation failed: (stout.r + stout.g + stout.b → 0) < (pilsner.r + pilsner.g + pilsner.b → 0)
+✘ Test stoutIsDarkerInTheGlassThanPilsner() failed after 0.032 seconds with 1 issue.
+✔ Test distanceIsSymmetricAndZeroForEqualSpecs() passed after 0.032 seconds.
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ american_pale_ale vs stout distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ american_pale_ale vs pilsner distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ american_pale_ale vs hazy_ipa distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ american_pale_ale vs saison distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ american_pale_ale vs wheat_beer distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ stout vs pilsner distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ stout vs hazy_ipa distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ stout vs saison distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ stout vs wheat_beer distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ pilsner vs hazy_ipa distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ pilsner vs saison distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ pilsner vs wheat_beer distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ hazy_ipa vs saison distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ hazy_ipa vs wheat_beer distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() recorded an issue at GlassSpecTests.swift:117:17: Expectation failed: (d → 0) >= 60
+↳ saison vs wheat_beer distance 0
+✘ Test glassArchetypesArePairwiseAtLeastSixtyApart() failed after 0.033 seconds with 15 issues.
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #1
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #4
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #5
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #6
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #9
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #13
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #17
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #18
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #22
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #23
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #26
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #27
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #36
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #37
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #38
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #42
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #47
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #49
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #51
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #52
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #54
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #59
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #61
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #62
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #63
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #68
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #71
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #74
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #75
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #80
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #83
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #85
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #87
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #88
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #93
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #100
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #103
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #105
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #107
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #111
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #113
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #114
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #117
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #118
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #122
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #123
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #129
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #130
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #131
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #136
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #140
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #144
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #153
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #154
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #162
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #170
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #171
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #178
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #180
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #181
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #182
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #184
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #185
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #186
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #192
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #193
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #195
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #201
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #206
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #212
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #213
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #214
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #215
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #217
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #218
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #225
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #227
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #229
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #231
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #232
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #234
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #235
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #237
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #239
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #242
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #243
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #249
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #251
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #252
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #253
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #262
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #263
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #264
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #266
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #268
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #274
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #275
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #278
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #283
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #286
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #292
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:100:17: Expectation failed: (spec.shape → .tulip) == (content.glassShape(forStyle: b.result.styleID) → .shaker)
+↳ #294
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #296
+✘ Test shapeComesFromTheStylesGlassField() recorded an issue at GlassSpecTests.swift:98:17: Expectation failed: (spec.shape → .tulip) == .snifter
+↳ #298
+✘ Test shapeComesFromTheStylesGlassField() failed after 0.077 seconds with 104 issues.
+✔ Test derivedValuesStayInRangeOverTheRecipeGrids(which:) passed after 0.105 seconds.
+✘ Suite GlassSpecTests failed after 0.105 seconds with 130 issues.
+✘ Test run with 14 tests failed after 0.105 seconds with 130 issues.

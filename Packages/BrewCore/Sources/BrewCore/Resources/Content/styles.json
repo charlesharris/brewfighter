@@ -3,6 +3,7 @@
     {
       "id": "american_pale_ale",
       "nameKey": "style.american_pale_ale.name",
+      "glass": "shaker",
       "threshold": 75,
       "conditions": [
         { "attribute": "bitterness", "min": 25, "max": 55, "weight": 3, "required": true },
@@ -17,6 +18,7 @@
     {
       "id": "amber_ale",
       "nameKey": "style.amber_ale.name",
+      "glass": "shaker",
       "conditions": [
         { "attribute": "malt", "min": 30, "max": 100, "weight": 1, "required": true },
         { "attribute": "sweetness", "min": 20, "max": 100, "weight": 1, "required": true },
@@ -26,6 +28,7 @@
     {
       "id": "experimental_ale",
       "nameKey": "style.experimental_ale.name",
+      "glass": "tulip",
       "conditions": []
     }
   ]
