@@ -96,4 +96,88 @@ import Testing
         #expect(result.styleID == StyleClassifier.classify(result.attributes, styles: content.styles))
         #expect(result.styleID == "american_pale_ale")
     }
+
+    // MARK: Full roster (D-18)
+
+    private func classify(_ recipe: Recipe) throws -> String {
+        try Brewer.brew(recipe, content: content).styleID
+    }
+
+    private let expectedStyleOrder = [
+        "west_coast_ipa", "hazy_ipa", "american_pale_ale", "stout", "porter", "brown_ale", "english_bitter",
+        "saison", "wild_ale", "wheat_beer", "pilsner", "helles_lager", "blonde_ale",
+    ]
+
+    @Test func stylesFileDefinesThirteenStylesAndTwoFallbacksInOrder() {
+        #expect(content.styles.styles.map(\.id) == expectedStyleOrder)
+        #expect(content.styles.fallbacks.map(\.id) == ["amber_ale", "experimental_ale"])
+        #expect(Archetypes.allStyles == expectedStyleOrder)
+    }
+
+    @Test func everyStyleHasAStableASCIIIDAndACatalogNameKey() {
+        for style in content.styles.styles + content.styles.fallbacks {
+            #expect(style.id.range(of: "^[a-z]+(_[a-z]+)*$", options: .regularExpression) != nil, "\(style.id)")
+            #expect(style.nameKey == "style.\(style.id).name")
+        }
+    }
+
+    @Test(arguments: [
+        "west_coast_ipa", "hazy_ipa", "american_pale_ale", "stout", "porter", "brown_ale", "english_bitter",
+        "saison", "wild_ale", "wheat_beer", "pilsner", "helles_lager", "blonde_ale",
+    ])
+    func everyStyleIsReachableFromItsArchetypeRecipe(styleID: String) throws {
+        let result = try Brewer.brew(Archetypes.recipe(for: styleID, content: content), content: content)
+        let a = result.attributes
+        let summary = AttributeID.allCases.map { "\($0.rawValue)=\(a[$0])" }.joined(separator: " ")
+        #expect(result.styleID == styleID, "\(styleID) classified as \(result.styleID): \(summary)")
+    }
+
+    @Test func housePaleAleClassifiesAsAmericanPaleAle() throws {
+        #expect(try classify(content.housePaleAle) == "american_pale_ale")
+    }
+
+    @Test func westCoastAndHazyIPAAreDifferentBeers() throws {
+        let west = try classify(Archetypes.recipe(for: "west_coast_ipa", content: content))
+        let hazy = try classify(Archetypes.recipe(for: "hazy_ipa", content: content))
+        #expect(west != hazy)
+    }
+
+    @Test func fallbackShareOverTheStructuredGridIsAtMostHalf() throws {
+        let recipes = RecipeGrid.structured(content: content)
+        var fallbacks = 0
+        var counts: [String: Int] = [:]
+        for recipe in recipes {
+            let id = try classify(recipe)
+            counts[id, default: 0] += 1
+            if id == "amber_ale" || id == "experimental_ale" { fallbacks += 1 }
+        }
+        #expect(fallbacks * 2 <= recipes.count, "fallbacks \(fallbacks) of \(recipes.count): \(counts)")
+    }
+
+    @Test func everySampleRecipeClassifiesToAKnownStyle() throws {
+        let known = Set((content.styles.styles + content.styles.fallbacks).map(\.id))
+        for (index, recipe) in RecipeGrid.sample(seed: 7, count: 500, content: content).enumerated() {
+            let id = try classify(recipe)
+            #expect(known.contains(id), "#\(index) -> \(id)")
+        }
+    }
+
+    @Test func emptyAndMinimalRecipesFallBackInsteadOfClaimingAStyle() throws {
+        let fallbacks: Set<String> = ["amber_ale", "experimental_ale"]
+        #expect(fallbacks.contains(StyleClassifier.classify(.zero, styles: content.styles)))
+        let minimal = Recipe(
+            grainBill: GrainBill(baseID: "grain.g01", entries: [GrainEntry(fermentableID: "grain.g01", percent: 100)]),
+            yeastID: "yeast.y01")
+        #expect(fallbacks.contains(try classify(minimal)))
+    }
+
+    @Test func aBrewedBeerPersistsTheStyleIDAndNeverTheDisplayName() throws {
+        let result = try Brewer.brew(content.housePaleAle, content: content)
+        let beer = Beer(
+            id: UUID(uuidString: "00000000-0000-0000-0000-0000000000D1")!, batchNumber: 1, brewDay: 1,
+            recipe: content.housePaleAle, result: result, contentVersion: content.contentVersion)
+        let json = String(decoding: try JSONEncoder().encode(beer), as: UTF8.self)
+        #expect(json.contains("american_pale_ale"))
+        #expect(!json.contains("American Pale Ale"))
+    }
 }

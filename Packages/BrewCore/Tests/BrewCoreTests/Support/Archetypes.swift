@@ -8,8 +8,45 @@ enum Archetypes {
     /// The six styles whose glasses must look visibly different (ART-01).
     static let glassSet = ["american_pale_ale", "stout", "pilsner", "hazy_ipa", "saison", "wheat_beer"]
 
+    /// Every non-fallback style, in styles.json order.
+    static let allStyles = [
+        "west_coast_ipa", "hazy_ipa", "american_pale_ale", "stout", "porter", "brown_ale", "english_bitter",
+        "saison", "wild_ale", "wheat_beer", "pilsner", "helles_lager", "blonde_ale",
+    ]
+
     static func recipe(for styleID: String, content: ContentCatalog) -> Recipe {
         switch styleID {
+        case "west_coast_ipa":
+            return build(
+                base: "grain.g01", others: [("adjunct.a02", 10)], strength: .strong, mashTemp: .low,
+                hops: [
+                    ("hop.h03", .bittering, 6), ("hop.h03", .aroma, 4), ("hop.h01", .whirlpool, 6),
+                ],
+                yeast: "yeast.y01", conditioning: [(.dryHop, "hop.h03", 8)], content: content)
+        case "porter":
+            return build(
+                base: "grain.g01", others: [("grain.g05", 5), ("grain.g04", 5)],
+                hops: [("hop.h05", .bittering, 6)], yeast: "yeast.y02", content: content)
+        case "brown_ale":
+            return build(
+                base: "grain.g01", others: [("grain.g04", 10)],
+                hops: [("hop.h05", .bittering, 4)], yeast: "yeast.y02", content: content)
+        case "english_bitter":
+            return build(
+                base: "grain.g01", others: [("grain.g04", 5)], strength: .session,
+                hops: [("hop.h05", .bittering, 8), ("hop.h05", .flavor, 4)], yeast: "yeast.y02", content: content)
+        case "wild_ale":
+            return build(
+                base: "grain.g02", hops: [("hop.h05", .bittering, 2)], yeast: "yeast.y05",
+                fermentDuration: .extended, content: content)
+        case "helles_lager":
+            return build(
+                base: "grain.g01", hops: [("hop.h02", .bittering, 8)], yeast: "yeast.y03",
+                conditioning: [(.lagering, nil, nil)], content: content)
+        case "blonde_ale":
+            return build(
+                base: "grain.g01", hops: [("hop.h06", .bittering, 4)], yeast: "yeast.y01", fermentTemp: .warm,
+                content: content)
         case "american_pale_ale":
             return content.housePaleAle
         case "stout":

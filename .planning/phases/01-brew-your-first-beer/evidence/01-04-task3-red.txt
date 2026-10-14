@@ -1,0 +1,104 @@
+[0/1] Planning build
+Building for debugging...
+[0/3] Write sources
+[1/3] Write swift-version--58304C5D6DBC2206.txt
+[3/6] Emitting module BrewCoreTests
+[4/6] Compiling BrewCoreTests StyleClassifierTests.swift
+[5/6] Compiling BrewCoreTests Archetypes.swift
+[6/8] Compiling BrewCoreTests ZZDump.swift
+[7/8] Compiling BrewCoreTests GlassSpecTests.swift
+[7/9] Write Objects.LinkFileList
+[8/9] Linking BrewCorePackageTests
+Build complete! (1.83s)
+Test Suite 'Selected tests' started at 2026-10-14 14:02:30.224.
+Test Suite 'BrewCorePackageTests.xctest' started at 2026-10-14 14:02:30.225.
+Test Suite 'BrewCorePackageTests.xctest' passed at 2026-10-14 14:02:30.225.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-14 14:02:30.225.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 124.4
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Suite StyleClassifierTests started.
+◇ Test fullAmericanPaleAleMatchWins() started.
+◇ Test housePaleAleClassifiesAsAmericanPaleAle() started.
+◇ Test aBrewedBeerPersistsTheStyleIDAndNeverTheDisplayName() started.
+◇ Test styleNameKeysResolveForStylesAndFallbacks() started.
+◇ Test recipeJSONNeverContainsAStyleKey() started.
+◇ Test belowThresholdMatchDoesNotQualify() started.
+◇ Test fallbackShareOverTheStructuredGridIsAtMostHalf() started.
+◇ Test everySampleRecipeClassifiesToAKnownStyle() started.
+◇ Test westCoastAndHazyIPAAreDifferentBeers() started.
+◇ Test brewedBeerStyleIsInTheStyleTable() started.
+◇ Test everyStyleHasAStableASCIIIDAndACatalogNameKey() started.
+◇ Test unqualifiedMaltySweetBeerFallsBackToAmberAle() started.
+◇ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) started.
+◇ Test higherMatchPercentBeatsEarlierPosition() started.
+◇ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() started.
+◇ Test emptyAndMinimalRecipesFallBackInsteadOfClaimingAStyle() started.
+◇ Test stylesFileDefinesThirteenStylesAndTwoFallbacksInOrder() started.
+◇ Test failingARequiredConditionBlocksAStyleDespiteHighMatch() started.
+◇ Test zeroVectorFallsBackToExperimentalAle() started.
+◇ Passing 1 argument styleID → "west_coast_ipa" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "american_pale_ale" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "stout" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "hazy_ipa" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "porter" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "brown_ale" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "english_bitter" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "saison" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "wild_ale" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+✘ Test westCoastAndHazyIPAAreDifferentBeers() recorded an issue at StyleClassifierTests.swift:142:9: Expectation failed: (west → "experimental_ale") != (hazy → "experimental_ale")
+◇ Passing 1 argument styleID → "wheat_beer" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+◇ Passing 1 argument styleID → "pilsner" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "west_coast_ipa" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "west_coast_ipa")
+↳ west_coast_ipa classified as experimental_ale: malt=32 sweetness=0 dryness=30 body=0 bitterness=82 hopAroma=100 citrus=82 tropical=17 herbal=94 spice=0 roast=0 fruit=0 funk=0 sour=0 carbonation=50 abv=72
+◇ Passing 1 argument styleID → "helles_lager" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "stout" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "stout")
+↳ stout classified as experimental_ale: malt=39 sweetness=14 dryness=10 body=31 bitterness=41 hopAroma=0 citrus=0 tropical=0 herbal=0 spice=0 roast=70 fruit=20 funk=0 sour=0 carbonation=50 abv=46
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "english_bitter" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "amber_ale") == (styleID → "english_bitter")
+↳ english_bitter classified as amber_ale: malt=32 sweetness=20 dryness=0 body=22 bitterness=49 hopAroma=7 citrus=0 tropical=0 herbal=14 spice=7 roast=0 fruit=24 funk=0 sour=0 carbonation=50 abv=33
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "wild_ale" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "wild_ale")
+↳ wild_ale classified as experimental_ale: malt=20 sweetness=0 dryness=15 body=10 bitterness=9 hopAroma=1 citrus=0 tropical=0 herbal=1 spice=1 roast=0 fruit=10 funk=60 sour=30 carbonation=50 abv=60
+◇ Passing 1 argument styleID → "blonde_ale" to everyStyleIsReachableFromItsArchetypeRecipe(styleID:)
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "porter" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "porter")
+↳ porter classified as experimental_ale: malt=40 sweetness=17 dryness=5 body=32 bitterness=34 hopAroma=2 citrus=0 tropical=0 herbal=3 spice=2 roast=35 fruit=21 funk=0 sour=0 carbonation=50 abv=46
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "saison" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "saison")
+↳ saison classified as experimental_ale: malt=26 sweetness=15 dryness=48 body=21 bitterness=29 hopAroma=12 citrus=0 tropical=0 herbal=23 spice=62 roast=0 fruit=46 funk=0 sour=0 carbonation=70 abv=59
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "brown_ale" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "amber_ale") == (styleID → "brown_ale")
+↳ brown_ale classified as amber_ale: malt=47 sweetness=35 dryness=0 body=39 bitterness=17 hopAroma=1 citrus=0 tropical=0 herbal=2 spice=1 roast=0 fruit=21 funk=0 sour=0 carbonation=50 abv=46
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "hazy_ipa" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "hazy_ipa")
+↳ hazy_ipa classified as experimental_ale: malt=38 sweetness=8 dryness=0 body=74 bitterness=35 hopAroma=100 citrus=35 tropical=100 herbal=0 spice=0 roast=0 fruit=89 funk=0 sour=0 carbonation=50 abv=60
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "wheat_beer" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "wheat_beer")
+↳ wheat_beer classified as experimental_ale: malt=20 sweetness=4 dryness=5 body=41 bitterness=12 hopAroma=1 citrus=2 tropical=0 herbal=0 spice=0 roast=0 fruit=0 funk=0 sour=0 carbonation=70 abv=51
+✔ Test fullAmericanPaleAleMatchWins() passed after 0.043 seconds.
+✔ Test unqualifiedMaltySweetBeerFallsBackToAmberAle() passed after 0.043 seconds.
+✔ Test belowThresholdMatchDoesNotQualify() passed after 0.043 seconds.
+✔ Test styleNameKeysResolveForStylesAndFallbacks() passed after 0.043 seconds.
+✔ Test housePaleAleClassifiesAsAmericanPaleAle() passed after 0.043 seconds.
+✔ Test brewedBeerStyleIsInTheStyleTable() passed after 0.043 seconds.
+✔ Test everyStyleHasAStableASCIIIDAndACatalogNameKey() passed after 0.043 seconds.
+✔ Test recipeJSONNeverContainsAStyleKey() passed after 0.043 seconds.
+✔ Test aBrewedBeerPersistsTheStyleIDAndNeverTheDisplayName() passed after 0.043 seconds.
+✘ Test westCoastAndHazyIPAAreDifferentBeers() failed after 0.043 seconds with 1 issue.
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "pilsner" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "pilsner")
+↳ pilsner classified as experimental_ale: malt=20 sweetness=0 dryness=35 body=10 bitterness=26 hopAroma=18 citrus=0 tropical=0 herbal=30 spice=24 roast=0 fruit=0 funk=0 sour=0 carbonation=55 abv=51
+✔ Test emptyAndMinimalRecipesFallBackInsteadOfClaimingAStyle() passed after 0.053 seconds.
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "helles_lager" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "helles_lager")
+↳ helles_lager classified as experimental_ale: malt=30 sweetness=0 dryness=20 body=15 bitterness=24 hopAroma=3 citrus=0 tropical=0 herbal=5 spice=4 roast=0 fruit=0 funk=0 sour=0 carbonation=55 abv=51
+✔ Test equalMatchPercentGoesToTheEarlierStyleInTheTable() passed after 0.053 seconds.
+✔ Test failingARequiredConditionBlocksAStyleDespiteHighMatch() passed after 0.053 seconds.
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) recorded an issue with 1 argument styleID → "blonde_ale" at StyleClassifierTests.swift:132:9: Expectation failed: (result.styleID → "experimental_ale") == (styleID → "blonde_ale")
+↳ blonde_ale classified as experimental_ale: malt=30 sweetness=5 dryness=0 body=15 bitterness=24 hopAroma=2 citrus=3 tropical=0 herbal=1 spice=0 roast=0 fruit=15 funk=0 sour=0 carbonation=50 abv=51
+✘ Test everyStyleIsReachableFromItsArchetypeRecipe(styleID:) failed after 0.054 seconds with 12 issues.
+✔ Test higherMatchPercentBeatsEarlierPosition() passed after 0.054 seconds.
+✔ Test zeroVectorFallsBackToExperimentalAle() passed after 0.054 seconds.
+✘ Test stylesFileDefinesThirteenStylesAndTwoFallbacksInOrder() recorded an issue at StyleClassifierTests.swift:112:9: Expectation failed: (content.styles.styles.map(\.id) → ["american_pale_ale"]) == (expectedStyleOrder → ["west_coast_ipa", "hazy_ipa", "american_pale_ale", "stout", "porter", "brown_ale", "english_bitter", "saison", "wild_ale", "wheat_beer", "pilsner", "helles_lager", "blonde_ale"])
+± removed ["west_coast_ipa", "hazy_ipa", "stout", "porter", "brown_ale", "english_bitter", "saison", "wild_ale", "wheat_beer", "pilsner", "helles_lager", "blonde_ale"]
+✘ Test stylesFileDefinesThirteenStylesAndTwoFallbacksInOrder() failed after 0.054 seconds with 1 issue.
+✘ Test fallbackShareOverTheStructuredGridIsAtMostHalf() recorded an issue at StyleClassifierTests.swift:154:9: Expectation failed: (fallbacks * 2 → 1200) <= (recipes.count → 600)
+↳ fallbacks 600 of 600: ["amber_ale": 120, "experimental_ale": 480]
+✘ Test fallbackShareOverTheStructuredGridIsAtMostHalf() failed after 0.095 seconds with 1 issue.
+✔ Test everySampleRecipeClassifiesToAKnownStyle() passed after 0.113 seconds.
+✘ Suite StyleClassifierTests failed after 0.113 seconds with 15 issues.
+✘ Test run with 19 tests failed after 0.113 seconds with 15 issues.
