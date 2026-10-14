@@ -14,7 +14,8 @@ let package = Package(
         ),
         .testTarget(
             name: "BrewCoreTests",
-            dependencies: ["BrewCore"]
+            dependencies: ["BrewCore"],
+            resources: [.copy("Fixtures")]
         ),
     ]
 )

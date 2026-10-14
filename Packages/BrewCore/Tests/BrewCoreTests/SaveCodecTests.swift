@@ -68,4 +68,120 @@ import Testing
         let brewed = state(brewing: [content.housePaleAle, extremeRecipe()])
         #expect(try SaveCodec.encode(brewed) == SaveCodec.encode(brewed))
     }
+
+    // MARK: Migrator
+
+    @Test func migratingACurrentVersionSaveIsANoOp() throws {
+        let data = try SaveCodec.encode(state(brewing: [content.housePaleAle]))
+        #expect(try SaveMigrator.migrate(data, from: SaveCodec.currentSchemaVersion) == data)
+    }
+
+    @Test func migratingFromVersionZeroIsInvalid() {
+        #expect(throws: SaveError.invalid("schemaVersion")) { try SaveMigrator.migrate(Data(), from: 0) }
+        #expect(throws: SaveError.invalid("schemaVersion")) { try SaveMigrator.migrate(Data(), from: -3) }
+    }
+
+    @Test func migratingFromANewerVersionIsRefused() {
+        let newer = SaveCodec.currentSchemaVersion + 1
+        #expect(throws: SaveError.newerThanApp(newer)) { try SaveMigrator.migrate(Data(), from: newer) }
+    }
+
+    // MARK: Validator bounds
+
+    private func twoBeerState() -> GameState {
+        var minimal = content.housePaleAle
+        minimal.strength = .strong
+        return state(brewing: [content.housePaleAle, minimal])
+    }
+
+    private func expectInvalid(
+        _ state: GameState, prefix: String, sourceLocation: SourceLocation = #_sourceLocation
+    ) {
+        do {
+            try SaveValidator.validate(state, content: content)
+            Issue.record("expected .invalid(\(prefix)...)", sourceLocation: sourceLocation)
+        } catch let SaveError.invalid(path) {
+            #expect(path.hasPrefix(prefix), "got path \(path)", sourceLocation: sourceLocation)
+        } catch {
+            Issue.record("unexpected error \(error)", sourceLocation: sourceLocation)
+        }
+    }
+
+    @Test func theUntouchedTwoBeerStateValidates() throws {
+        try SaveValidator.validate(twoBeerState(), content: content)
+    }
+
+    @Test func dayZeroIsInvalid() {
+        var s = twoBeerState(); s.day = 0
+        expectInvalid(s, prefix: "day")
+    }
+
+    @Test func aDuplicateBeerIDIsInvalid() {
+        var s = twoBeerState(); s.beers[1].id = s.beers[0].id
+        expectInvalid(s, prefix: "beers[1].id")
+    }
+
+    @Test func nonIncreasingBatchNumbersAreInvalid() {
+        var s = twoBeerState(); s.beers[1].batchNumber = s.beers[0].batchNumber
+        expectInvalid(s, prefix: "beers[1].batchNumber")
+    }
+
+    @Test func aWrongNextBatchNumberIsInvalid() {
+        var s = twoBeerState(); s.nextBatchNumber += 1
+        expectInvalid(s, prefix: "nextBatchNumber")
+    }
+
+    @Test func aBrewDayAfterTheCurrentDayIsInvalid() {
+        var s = twoBeerState(); s.beers[0].brewDay = s.day + 1
+        expectInvalid(s, prefix: "beers[0].brewDay")
+    }
+
+    @Test func anUnknownStyleIDIsInvalid() {
+        var s = twoBeerState(); s.beers[0].result.styleID = "style_that_does_not_exist"
+        expectInvalid(s, prefix: "beers[0].result.styleID")
+    }
+
+    @Test func anUnknownFermentableIsInvalid() {
+        var s = twoBeerState(); s.beers[0].recipe.grainBill.entries[1].fermentableID = "grain.g99"
+        expectInvalid(s, prefix: "beers[0].recipe")
+    }
+
+    @Test func aGrainBillSummingToNinetyFiveIsInvalid() {
+        var s = twoBeerState(); s.beers[0].recipe.grainBill.entries[0].percent -= 5
+        expectInvalid(s, prefix: "beers[0].recipe")
+    }
+
+    @Test func anAttributeOverOneHundredIsInvalid() {
+        var s = twoBeerState(); s.beers[0].result.attributes[.body] = 101
+        expectInvalid(s, prefix: "beers[0].result.attributes.body")
+    }
+
+    @Test func aLedgerThatDoesNotSumToTheAttributeIsInvalid() {
+        var s = twoBeerState(); s.beers[0].result.ledger[0].delta += 1
+        expectInvalid(s, prefix: "beers[0].result.ledger")
+    }
+
+    @Test func anOversizedLedgerRowIsInvalidAndDoesNotTrap() {
+        var s = twoBeerState(); s.beers[0].result.ledger[0].delta = Int.min
+        expectInvalid(s, prefix: "beers[0].result.ledger[0].delta")
+    }
+
+    @Test func anOriginalGravityOfThirteenHundredIsInvalid() {
+        var s = twoBeerState(); s.beers[0].result.stats.ogPoints = 1300
+        expectInvalid(s, prefix: "beers[0].result.stats.ogPoints")
+    }
+
+    @Test func moreThanTenThousandBeersIsInvalid() {
+        var s = twoBeerState()
+        let template = s.beers[0]
+        s.beers = (0...SaveValidator.maxBeers).map { index in
+            var beer = template
+            beer.id = UUID()
+            beer.batchNumber = index + 1
+            return beer
+        }
+        s.nextBatchNumber = s.beers.count + 1
+        #expect(s.beers.count == 10_001)
+        expectInvalid(s, prefix: "beers")
+    }
 }
