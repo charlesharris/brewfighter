@@ -8,6 +8,7 @@ final class ChromeUITests: XCTestCase {
     @MainActor
     func testCellarEmptyChrome() throws {
         let app = launchApp(reset: true, pseudoLocalized: false)
+        closeWizardToCellar(in: app)
         let brew = app.buttons["cellar.brew"]
         XCTAssertTrue(brew.waitForExistence(timeout: 10))
         XCTAssertTrue(app.descendants(matching: .any)["cellar.empty"].exists)
@@ -22,10 +23,9 @@ final class ChromeUITests: XCTestCase {
     @MainActor
     func testCellarWithBeerChrome() throws {
         let app = launchApp(reset: true, pseudoLocalized: false)
+        brewFromWizard(in: app, expecting: "cellar.beer.1")
         let brew = app.buttons["cellar.brew"]
         XCTAssertTrue(brew.waitForExistence(timeout: 10))
-        brew.tap()
-        XCTAssertTrue(app.descendants(matching: .any)["cellar.beer.1"].waitForExistence(timeout: 5))
 
         assertTouchTargets(in: app)
         assertNoRawCatalogKeys(in: app)
@@ -36,10 +36,9 @@ final class ChromeUITests: XCTestCase {
     @MainActor
     func testSaveTransferSheetChrome() throws {
         let app = launchApp(reset: true, pseudoLocalized: false)
+        brewFromWizard(in: app, expecting: "cellar.beer.1")
         let brew = app.buttons["cellar.brew"]
         XCTAssertTrue(brew.waitForExistence(timeout: 10))
-        brew.tap()
-        XCTAssertTrue(app.descendants(matching: .any)["cellar.beer.1"].waitForExistence(timeout: 5))
 
         app.buttons["cellar.saveTransfer"].tap()
         let export = app.buttons["saveTransfer.export"]
@@ -55,6 +54,7 @@ final class ChromeUITests: XCTestCase {
     @MainActor
     func testCellarPseudoLocalized() {
         let app = launchApp(reset: true, pseudoLocalized: true)
+        closeWizardToCellar(in: app)
         let brew = app.buttons["cellar.brew"]
         XCTAssertTrue(brew.waitForExistence(timeout: 10))
 

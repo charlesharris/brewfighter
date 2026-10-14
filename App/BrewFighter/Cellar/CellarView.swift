@@ -37,7 +37,7 @@ struct CellarView: View {
         }
         .safeAreaInset(edge: .bottom) {
             Button("cellar.brewButton") {
-                store.brew(store.content.housePaleAle)
+                store.openWizard()
             }
             .buttonStyle(GameButtonStyle(.primary))
             .accessibilityIdentifier("cellar.brew")

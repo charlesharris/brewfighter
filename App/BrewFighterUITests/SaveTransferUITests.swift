@@ -10,10 +10,7 @@ final class SaveTransferUITests: XCTestCase {
     @MainActor
     func testExportOffersTheShareButton() {
         let app = launchApp(reset: true, pseudoLocalized: false)
-        let brew = app.buttons["cellar.brew"]
-        XCTAssertTrue(brew.waitForExistence(timeout: 10))
-        brew.tap()
-        XCTAssertTrue(app.descendants(matching: .any)["cellar.beer.1"].waitForExistence(timeout: 5))
+        brewFromWizard(in: app, expecting: "cellar.beer.1")
 
         let open = app.buttons["cellar.saveTransfer"]
         XCTAssertTrue(open.waitForExistence(timeout: 5))

@@ -73,4 +73,32 @@ extension XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
     }
+
+    /// The element with this accessibility identifier, of any type.
+    @MainActor
+    func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)[identifier]
+    }
+
+    /// First-run launches land on the pre-seeded wizard (D-06). Closes it to reach The Cellar.
+    @MainActor
+    func closeWizardToCellar(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        let close = app.buttons["wizard.close"]
+        XCTAssertTrue(close.waitForExistence(timeout: 10), "wizard did not open", file: file, line: line)
+        close.tap()
+        XCTAssertTrue(app.buttons["cellar.brew"].waitForExistence(timeout: 5), file: file, line: line)
+    }
+
+    /// Brews whatever the wizard currently holds: jump to Review, tap BREW, wait for the cellar.
+    @MainActor
+    func brewFromWizard(in app: XCUIApplication, expecting beer: String, file: StaticString = #filePath, line: UInt = #line) {
+        let review = app.buttons["wizard.stage.review"]
+        XCTAssertTrue(review.waitForExistence(timeout: 10), "wizard did not open", file: file, line: line)
+        review.tap()
+        let brew = app.buttons["review.brew"]
+        XCTAssertTrue(brew.waitForExistence(timeout: 5), file: file, line: line)
+        XCTAssertTrue(brew.isEnabled, "BREW should be enabled", file: file, line: line)
+        brew.tap()
+        XCTAssertTrue(element(beer, in: app).waitForExistence(timeout: 5), file: file, line: line)
+    }
 }

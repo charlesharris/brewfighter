@@ -29,6 +29,9 @@ final class GameStore {
     let content: ContentCatalog
     private(set) var lastEvents: [GameEvent] = []
     var screen: Screen = .cellar
+    /// Changes on every wizard opening, so the wizard always starts from a fresh pre-seeded draft even
+    /// if the player reopens it while the previous one is still animating out.
+    private(set) var wizardSession = UUID()
     private(set) var persistenceError: PersistenceFailure?
 
     private let repository: SaveRepository
@@ -49,7 +52,17 @@ final class GameStore {
             state = .new
             persistenceError = .unrecoverable
         }
+        // D-06: a first-run (empty) cellar opens the wizard pre-seeded. When the save was damaged the
+        // Cellar opens instead, because its banner is where the player learns what happened.
+        screen = (state.beers.isEmpty && persistenceError == nil) ? .wizard : .cellar
     }
+
+    func openWizard() {
+        wizardSession = UUID()
+        screen = .wizard
+    }
+
+    func closeWizard() { screen = .cellar }
 
     static func live() -> GameStore {
         let repository: SaveRepository
