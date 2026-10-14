@@ -1,6 +1,32 @@
 {
   "styles": [
     {
+      "id": "west_coast_ipa",
+      "nameKey": "style.west_coast_ipa.name",
+      "glass": "shaker",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "bitterness", "min": 55, "max": 100, "weight": 3, "required": true },
+        { "attribute": "hopAroma", "min": 50, "max": 100, "weight": 2, "required": false },
+        { "attribute": "dryness", "min": 25, "max": 100, "weight": 2, "required": false },
+        { "attribute": "sweetness", "min": 0, "max": 25, "weight": 1, "required": false },
+        { "attribute": "abv", "min": 58, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "hazy_ipa",
+      "nameKey": "style.hazy_ipa.name",
+      "glass": "tulip",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "tropical", "min": 40, "max": 100, "weight": 3, "required": true },
+        { "attribute": "body", "min": 35, "max": 100, "weight": 2, "required": false },
+        { "attribute": "hopAroma", "min": 60, "max": 100, "weight": 2, "required": false },
+        { "attribute": "bitterness", "min": 20, "max": 50, "weight": 2, "required": false },
+        { "attribute": "abv", "min": 58, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
       "id": "american_pale_ale",
       "nameKey": "style.american_pale_ale.name",
       "glass": "shaker",
@@ -10,7 +36,124 @@
         { "attribute": "hopAroma", "min": 35, "max": 80, "weight": 3, "required": false },
         { "attribute": "malt", "min": 15, "max": 45, "weight": 2, "required": false },
         { "attribute": "roast", "min": 0, "max": 10, "weight": 2, "required": true },
+        { "attribute": "citrus", "min": 20, "max": 100, "weight": 2, "required": false },
         { "attribute": "abv", "min": 0, "max": 100, "weight": 0, "required": false }
+      ]
+    },
+    {
+      "id": "stout",
+      "nameKey": "style.stout.name",
+      "glass": "nonic",
+      "threshold": 60,
+      "conditions": [
+        { "attribute": "roast", "min": 60, "max": 100, "weight": 3, "required": true },
+        { "attribute": "bitterness", "min": 30, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "porter",
+      "nameKey": "style.porter.name",
+      "glass": "nonic",
+      "threshold": 60,
+      "conditions": [
+        { "attribute": "roast", "min": 25, "max": 55, "weight": 3, "required": true },
+        { "attribute": "malt", "min": 30, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "brown_ale",
+      "nameKey": "style.brown_ale.name",
+      "glass": "nonic",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "malt", "min": 35, "max": 100, "weight": 3, "required": true },
+        { "attribute": "sweetness", "min": 15, "max": 100, "weight": 2, "required": false },
+        { "attribute": "roast", "min": 0, "max": 24, "weight": 2, "required": false },
+        { "attribute": "bitterness", "min": 10, "max": 35, "weight": 2, "required": true },
+        { "attribute": "hopAroma", "min": 0, "max": 30, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "english_bitter",
+      "nameKey": "style.english_bitter.name",
+      "glass": "nonic",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "bitterness", "min": 25, "max": 40, "weight": 3, "required": true },
+        { "attribute": "malt", "min": 25, "max": 45, "weight": 2, "required": false },
+        { "attribute": "fruit", "min": 15, "max": 35, "weight": 2, "required": false },
+        { "attribute": "abv", "min": 30, "max": 50, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "saison",
+      "nameKey": "style.saison.name",
+      "glass": "tulip",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "spice", "min": 25, "max": 100, "weight": 3, "required": true },
+        { "attribute": "dryness", "min": 40, "max": 100, "weight": 2, "required": false },
+        { "attribute": "carbonation", "min": 55, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "wild_ale",
+      "nameKey": "style.wild_ale.name",
+      "glass": "tulip",
+      "threshold": 60,
+      "conditions": [
+        { "attribute": "funk", "min": 35, "max": 100, "weight": 3, "required": true },
+        { "attribute": "sour", "min": 15, "max": 100, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "wheat_beer",
+      "nameKey": "style.wheat_beer.name",
+      "glass": "weizen",
+      "threshold": 75,
+      "conditions": [
+        { "attribute": "body", "min": 25, "max": 100, "weight": 2, "required": true },
+        { "attribute": "bitterness", "min": 0, "max": 25, "weight": 2, "required": false },
+        { "attribute": "roast", "min": 0, "max": 5, "weight": 2, "required": false },
+        { "attribute": "hopAroma", "min": 0, "max": 30, "weight": 2, "required": false }
+      ]
+    },
+    {
+      "id": "pilsner",
+      "nameKey": "style.pilsner.name",
+      "glass": "pilsnerFlute",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "fruit", "min": 0, "max": 10, "weight": 3, "required": true },
+        { "attribute": "bitterness", "min": 25, "max": 45, "weight": 3, "required": true },
+        { "attribute": "herbal", "min": 10, "max": 100, "weight": 2, "required": false },
+        { "attribute": "dryness", "min": 25, "max": 100, "weight": 2, "required": false },
+        { "attribute": "roast", "min": 0, "max": 5, "weight": 1, "required": false }
+      ]
+    },
+    {
+      "id": "helles_lager",
+      "nameKey": "style.helles_lager.name",
+      "glass": "pilsnerFlute",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "fruit", "min": 0, "max": 10, "weight": 3, "required": true },
+        { "attribute": "bitterness", "min": 15, "max": 28, "weight": 3, "required": true },
+        { "attribute": "malt", "min": 20, "max": 40, "weight": 2, "required": false },
+        { "attribute": "hopAroma", "min": 0, "max": 25, "weight": 1, "required": false }
+      ]
+    },
+    {
+      "id": "blonde_ale",
+      "nameKey": "style.blonde_ale.name",
+      "glass": "shaker",
+      "threshold": 70,
+      "conditions": [
+        { "attribute": "bitterness", "min": 15, "max": 30, "weight": 3, "required": true },
+        { "attribute": "malt", "min": 15, "max": 35, "weight": 2, "required": false },
+        { "attribute": "fruit", "min": 10, "max": 100, "weight": 2, "required": false },
+        { "attribute": "hopAroma", "min": 0, "max": 35, "weight": 1, "required": false },
+        { "attribute": "roast", "min": 0, "max": 5, "weight": 1, "required": false }
       ]
     }
   ],

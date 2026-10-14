@@ -1046,6 +1046,39 @@
         }
       }
     },
+    "style.blonde_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blonde Ale"
+          }
+        }
+      }
+    },
+    "style.brown_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brown Ale"
+          }
+        }
+      }
+    },
+    "style.english_bitter.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "English Bitter"
+          }
+        }
+      }
+    },
     "style.experimental_ale.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1053,6 +1086,105 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Experimental Ale"
+          }
+        }
+      }
+    },
+    "style.hazy_ipa.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hazy IPA"
+          }
+        }
+      }
+    },
+    "style.helles_lager.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helles Lager"
+          }
+        }
+      }
+    },
+    "style.pilsner.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilsner"
+          }
+        }
+      }
+    },
+    "style.porter.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porter"
+          }
+        }
+      }
+    },
+    "style.saison.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saison"
+          }
+        }
+      }
+    },
+    "style.stout.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stout"
+          }
+        }
+      }
+    },
+    "style.west_coast_ipa.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "West Coast IPA"
+          }
+        }
+      }
+    },
+    "style.wheat_beer.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wheat Beer"
+          }
+        }
+      }
+    },
+    "style.wild_ale.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wild Ale"
           }
         }
       }

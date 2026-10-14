@@ -30,6 +30,21 @@ Plan 01-04 appends style names.
 | Lager | Yeast | `content.yeast.y03.name` | Generic style descriptor | Generic descriptive term | generic descriptive term |
 | Farmhouse | Yeast | `content.yeast.y04.name` | Generic style descriptor | Generic descriptive term | generic descriptive term |
 | Wild Cellar Blend | Yeast | `content.yeast.y05.name` | Generic descriptor, no lab blend name | Generic descriptive term | generic descriptive term |
+| West Coast IPA | Style | `style.west_coast_ipa.name` | Generic beer style term; display-only, the persisted ID `west_coast_ipa` is neutral | Generic descriptive term | generic style term |
+| Hazy IPA | Style | `style.hazy_ipa.name` | Generic beer style term; display-only, the persisted ID `hazy_ipa` is neutral | Generic descriptive term | generic style term |
+| American Pale Ale | Style | `style.american_pale_ale.name` | Generic beer style term; display-only, the persisted ID `american_pale_ale` is neutral | Generic descriptive term | generic style term |
+| Stout | Style | `style.stout.name` | Generic beer style term; display-only, the persisted ID `stout` is neutral | Generic descriptive term | generic style term |
+| Porter | Style | `style.porter.name` | Generic beer style term; display-only, the persisted ID `porter` is neutral | Generic descriptive term | generic style term |
+| Brown Ale | Style | `style.brown_ale.name` | Generic beer style term; display-only, the persisted ID `brown_ale` is neutral | Generic descriptive term | generic style term |
+| English Bitter | Style | `style.english_bitter.name` | Generic beer style term; display-only, the persisted ID `english_bitter` is neutral | Generic descriptive term | generic style term |
+| Saison | Style | `style.saison.name` | Generic beer style term; display-only, the persisted ID `saison` is neutral | Generic descriptive term | generic style term |
+| Wild Ale | Style | `style.wild_ale.name` | Generic beer style term; display-only, the persisted ID `wild_ale` is neutral | Generic descriptive term | generic style term |
+| Wheat Beer | Style | `style.wheat_beer.name` | Generic beer style term; display-only, the persisted ID `wheat_beer` is neutral | Generic descriptive term | generic style term |
+| Pilsner | Style | `style.pilsner.name` | Generic beer style term; display-only, the persisted ID `pilsner` is neutral | Generic descriptive term | generic style term |
+| Helles Lager | Style | `style.helles_lager.name` | Generic beer style term; display-only, the persisted ID `helles_lager` is neutral | Generic descriptive term | generic style term |
+| Blonde Ale | Style | `style.blonde_ale.name` | Generic beer style term; display-only, the persisted ID `blonde_ale` is neutral | Generic descriptive term | generic style term |
+| Amber Ale | Style | `style.amber_ale.name` | Generic beer style term; display-only, the persisted ID `amber_ale` is neutral | Generic descriptive term | generic style term |
+| Experimental Ale | Style | `style.experimental_ale.name` | Generic beer style term; display-only, the persisted ID `experimental_ale` is neutral | Generic descriptive term | generic style term |
 
 ## Automated guard
 

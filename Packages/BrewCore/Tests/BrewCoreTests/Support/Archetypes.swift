@@ -34,7 +34,7 @@ enum Archetypes {
         case "english_bitter":
             return build(
                 base: "grain.g01", others: [("grain.g04", 5)], strength: .session,
-                hops: [("hop.h05", .bittering, 8), ("hop.h05", .flavor, 4)], yeast: "yeast.y02", content: content)
+                hops: [("hop.h05", .bittering, 5), ("hop.h05", .flavor, 2)], yeast: "yeast.y02", content: content)
         case "wild_ale":
             return build(
                 base: "grain.g02", hops: [("hop.h05", .bittering, 2)], yeast: "yeast.y05",
