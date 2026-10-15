@@ -123,4 +123,56 @@ final class WizardUITests: XCTestCase {
         app.buttons["mash.remove.grain.g01"].tap()
         XCTAssertTrue(element("mash.percent.grain.g02", in: app).label.contains("100"))
     }
+
+    @MainActor
+    func testAddHopToAromaSlot() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        let next = app.buttons["wizard.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        next.tap()
+        XCTAssertTrue(app.buttons["wizard.stage.boil"].isSelected)
+
+        // The seeded house pale ale has two additions, so the new one lands at index 2.
+        tapScrolling(app.buttons["boil.slot.whirlpool"], in: app)
+        XCTAssertTrue(app.buttons["boil.slot.whirlpool"].isSelected)
+        tapScrolling(app.buttons["boil.card.hop.h04"], in: app)
+
+        XCTAssertTrue(element("boil.additionLine.2", in: app).waitForExistence(timeout: 5))
+        XCTAssertTrue(element("boil.additionLine.2", in: app).label.contains("Island Haze · Whirlpool"))
+        XCTAssertTrue(element("boil.ounces.2", in: app).label.contains("1.00 oz"))
+
+        let plus = app.buttons["boil.step.2.increase"]
+        for _ in 0..<3 { tapScrolling(plus, in: app) }
+        XCTAssertTrue(element("boil.ounces.2", in: app).label.contains("1.75 oz"))
+
+        app.buttons["wizard.stage.review"].tap()
+        let boil = app.buttons["review.panel.boil"]
+        XCTAssertTrue(boil.waitForExistence(timeout: 5))
+        XCTAssertTrue(boil.label.contains("Island Haze · Whirlpool · 1.75 oz"), boil.label)
+
+        app.buttons["review.brew"].tap()
+        XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testHoplessBeerIsBrewable() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.next"].waitForExistence(timeout: 10))
+        app.buttons["wizard.next"].tap()
+
+        // Step every addition down to nothing: 0.75 oz and 1.00 oz are seven taps in all.
+        let minus = app.buttons["boil.step.0.decrease"]
+        var taps = 0
+        while taps < 12 {
+            if !element("boil.addition.0", in: app).exists { break }
+            tapScrolling(minus, in: app)
+            taps += 1
+        }
+        XCTAssertFalse(element("boil.addition.0", in: app).exists, "all additions removed")
+        XCTAssertTrue(element("boil.empty", in: app).exists)
+
+        app.buttons["wizard.stage.review"].tap()
+        XCTAssertTrue(app.buttons["review.brew"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["review.brew"].isEnabled, "hops are optional (D-07)")
+    }
 }

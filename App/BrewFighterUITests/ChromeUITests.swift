@@ -99,4 +99,30 @@ final class ChromeUITests: XCTestCase {
         assertDoubled(app.buttons["wizard.close"].label)
         attachScreenshot(app, name: "pseudo-mash")
     }
+
+    @MainActor
+    func testBoilStageChrome() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        let next = app.buttons["wizard.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        next.tap()
+        XCTAssertTrue(app.buttons["boil.slot.aroma"].waitForExistence(timeout: 5))
+        assertInThumbZone(next, app: app)
+
+        for _ in 0..<4 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+    }
+
+    @MainActor
+    func testBoilStagePseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        let next = app.buttons["wizard.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        next.tap()
+        XCTAssertTrue(app.buttons["boil.slot.aroma"].waitForExistence(timeout: 5))
+        attachScreenshot(app, name: "pseudo-boil")
+    }
 }

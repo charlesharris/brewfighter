@@ -474,6 +474,94 @@
         }
       }
     },
+    "boil.additionLine %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "boil.additions.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hop schedule"
+          }
+        }
+      }
+    },
+    "boil.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hops yet. Hop-less beers are allowed."
+          }
+        }
+      }
+    },
+    "boil.hops.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hops"
+          }
+        }
+      }
+    },
+    "boil.maxAdditions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to 8 hop additions"
+          }
+        }
+      }
+    },
+    "boil.maxAmount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That addition is at its 4 oz maximum"
+          }
+        }
+      }
+    },
+    "boil.ounces %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ oz"
+          }
+        }
+      }
+    },
+    "boil.slot.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add hops to…"
+          }
+        }
+      }
+    },
     "cellar.batchLabel %lld %@" : {
       "extractionState" : "manual",
       "localizations" : {
