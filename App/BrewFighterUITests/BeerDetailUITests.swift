@@ -93,4 +93,16 @@ final class BeerDetailUITests: XCTestCase {
             previousY = panel.frame.minY
         }
     }
+
+    @MainActor
+    func testGlassAndStatsVisible() {
+        let app = openHousePaleAleDetail()
+        let glass = element("detail.glass", in: app)
+        XCTAssertTrue(glass.waitForExistence(timeout: 5))
+        XCTAssertTrue(glass.label.contains("American Pale Ale"), "glass label names the style: \(glass.label)")
+        for stat in ["abv", "ibu", "srm", "og", "fg"] {
+            XCTAssertTrue(element("stats.\(stat)", in: app).exists, "missing stats.\(stat)")
+        }
+        XCTAssertTrue(element("stats.og", in: app).label.contains("1.050"), element("stats.og", in: app).label)
+    }
 }

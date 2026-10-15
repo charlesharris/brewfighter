@@ -1222,6 +1222,83 @@
         }
       }
     },
+    "glass.a11y %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ in a %2$@ glass"
+          }
+        }
+      }
+    },
+    "glass.shape.nonic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nonic pint"
+          }
+        }
+      }
+    },
+    "glass.shape.pilsnerFlute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pilsner"
+          }
+        }
+      }
+    },
+    "glass.shape.shaker" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pint"
+          }
+        }
+      }
+    },
+    "glass.shape.snifter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "snifter"
+          }
+        }
+      }
+    },
+    "glass.shape.tulip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tulip"
+          }
+        }
+      }
+    },
+    "glass.shape.weizen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "weizen"
+          }
+        }
+      }
+    },
     "issue.conditioning" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2087,6 +2164,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Whirlpool"
+          }
+        }
+      }
+    },
+    "stats.abv" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ABV"
+          }
+        }
+      }
+    },
+    "stats.fg" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Final gravity"
+          }
+        }
+      }
+    },
+    "stats.ibu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IBU"
+          }
+        }
+      }
+    },
+    "stats.og" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original gravity"
+          }
+        }
+      }
+    },
+    "stats.percentValue %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@%%"
+          }
+        }
+      }
+    },
+    "stats.srm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color (SRM)"
+          }
+        }
+      }
+    },
+    "stats.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brewing numbers"
           }
         }
       }

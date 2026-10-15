@@ -217,4 +217,48 @@ final class ChromeUITests: XCTestCase {
         assertDoubled(app.buttons["review.brew"].label)
         attachScreenshot(app, name: "pseudo-review")
     }
+
+    @MainActor
+    func testDetailAndLedgerChrome() throws {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        brewFromWizard(in: app, expecting: "cellar.beer.1")
+        app.buttons["cellar.beer.1"].tap()
+        XCTAssertTrue(element("detail", in: app).waitForExistence(timeout: 10))
+
+        // The detail scrolls; check what is on screen at each step.
+        for _ in 0..<3 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragDetailBody(in: app)
+        }
+
+        let citrus = app.buttons["detail.attribute.citrus"]
+        XCTAssertTrue(citrus.waitForExistence(timeout: 5))
+        citrus.tap()
+        XCTAssertTrue(element("ledger.total", in: app).waitForExistence(timeout: 5))
+        assertTouchTargets(in: app)
+        assertNoRawCatalogKeys(in: app)
+        XCTAssertGreaterThanOrEqual(app.buttons["ledger.close"].frame.height, 44)
+        assertInThumbZone(app.buttons["ledger.close"], app: app)
+    }
+
+    @MainActor
+    func testDetailAndLedgerPseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        // Pseudo-localization doubles every catalog string, so the wizard ids still resolve.
+        brewFromWizard(in: app, expecting: "cellar.beer.1")
+        app.buttons["cellar.beer.1"].tap()
+        let back = app.buttons["detail.back"]
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
+        assertDoubled(back.label)
+        attachScreenshot(app, name: "pseudo-detail")
+
+        let citrus = app.buttons["detail.attribute.citrus"]
+        XCTAssertTrue(citrus.waitForExistence(timeout: 5))
+        citrus.tap()
+        let close = app.buttons["ledger.close"]
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        assertDoubled(close.label)
+        attachScreenshot(app, name: "pseudo-ledger")
+    }
 }

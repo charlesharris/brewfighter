@@ -52,6 +52,13 @@ struct BeerDetailView: View {
                     .foregroundStyle(Palette.ink)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
+                    GlassView(spec: GlassSpec.make(for: beer, content: store.content), styleNameKey: nameKey, mode: .hero)
+                        .frame(height: 220)
+                        .frame(maxWidth: .infinity)
+                        .accessibilityIdentifier("detail.glass")
+
+                    NerdStatsPanel(stats: beer.result.stats)
+
                     AttributeFamilyBars(beer: beer) { attribute in
                         ledgerTarget = LedgerTarget(attribute: attribute)
                     }

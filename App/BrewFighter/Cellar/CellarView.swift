@@ -19,9 +19,9 @@ struct CellarView: View {
                 emptyState
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
                         ForEach(beers, id: \.id) { beer in
-                            row(for: beer)
+                            card(for: beer)
                         }
                     }
                     .padding(16)
@@ -104,7 +104,7 @@ struct CellarView: View {
         .accessibilityIdentifier("cellar.empty")
     }
 
-    private func row(for beer: Beer) -> some View {
+    private func card(for beer: Beer) -> some View {
         let batchNumber = beer.batchNumber
         let brewDay = beer.brewDay
         let nameKey = store.content.styleNameKey(beer.result.styleID) ?? "style.experimental_ale.name"
@@ -112,15 +112,21 @@ struct CellarView: View {
         return Button {
             store.showDetail(beer.id)
         } label: {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
+                // The card's text already names the style, so the still glass is decoration for VoiceOver.
+                GlassView(spec: GlassSpec.make(for: beer, content: store.content), styleNameKey: nameKey, mode: .thumbnail)
+                    .frame(height: 90)
+                    .frame(maxWidth: .infinity)
+                    .accessibilityHidden(true)
                 Text("cellar.batchLabel \(batchNumber) \(styleName)")
                     .font(.headline)
+                    .multilineTextAlignment(.leading)
                 Text("cellar.brewDayLabel \(brewDay)")
                     .font(.subheadline)
             }
             .foregroundStyle(Palette.ink)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(16)
+            .padding(12)
             .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.white))
         }
         .buttonStyle(.plain)

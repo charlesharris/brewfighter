@@ -22,6 +22,8 @@ extension XCTestCase {
     func assertTouchTargets(in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
         let snapshot = app.buttons.allElementsBoundByIndex.compactMap { button -> (id: String, frame: CGRect)? in
             guard button.exists, button.isHittable else { return nil }
+            // The system's sheet grabber is UIKit chrome with its own hit region, not game UI.
+            if button.label == "Sheet Grabber" { return nil }
             return (button.identifier, button.frame)
         }
         // Layout at fractional offsets can report a 44pt button as 43.99999999999997; a hundredth of a
@@ -120,6 +122,15 @@ extension XCTestCase {
         let scroll = app.scrollViews.firstMatch
         let from = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: up ? 0.6 : 0.3))
         let to = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: up ? 0.3 : 0.6))
+        from.press(forDuration: 0.05, thenDragTo: to)
+    }
+
+    /// One controlled drag over the beer detail, for the same reason as `dragWizardBody`.
+    @MainActor
+    func dragDetailBody(in app: XCUIApplication) {
+        let scroll = app.scrollViews.firstMatch
+        let from = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+        let to = scroll.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
         from.press(forDuration: 0.05, thenDragTo: to)
     }
 
