@@ -12,10 +12,10 @@ Requirements for initial release (native iOS: Swift/SwiftUI, iPhone portrait, Ap
 - [x] **BREW-01**: Player can compose a recipe from grain bill, hop choices with timing, yeast, fermentation temperature, and conditioning options
 - [x] **BREW-02**: Brewing choices deterministically produce a beer with the locked set of ~16 sensory attributes (malt, sweetness, dryness, body, bitterness, hop aroma, citrus, tropical, herbal, spice, roast, fruit, funk, sour, carbonation, ABV)
 - [ ] **BREW-03**: Player sees a live attribute preview that updates as recipe choices change, with "?" shown for undiscovered ingredient traits
-- [ ] **BREW-04**: Every attribute value carries a per-source contribution ledger the player can inspect (which ingredient/choice contributed what)
+- [x] **BREW-04**: Every attribute value carries a per-source contribution ledger the player can inspect (which ingredient/choice contributed what)
 - [ ] **BREW-05**: Player can rebrew any saved recipe in one action from the recipe journal
-- [ ] **BREW-06**: Beer style labels are computed from attributes (output), never chosen as input
-- [ ] **BREW-07**: Brewing resolves via the day counter (no real-time waits or timers); fermentation duration is a recipe choice that affects attributes
+- [x] **BREW-06**: Beer style labels are computed from attributes (output), never chosen as input
+- [x] **BREW-07**: Brewing resolves via the day counter (no real-time waits or timers); fermentation duration is a recipe choice that affects attributes
 
 ### Encounters
 
@@ -79,7 +79,7 @@ Requirements for initial release (native iOS: Swift/SwiftUI, iPhone portrait, Ap
 
 - [ ] **PLAT-01**: All screens are touch-first, portrait, one-handed friendly, using standard iOS gestures with generous tap targets
 - [ ] **PLAT-02**: The app resumes exactly where the player left off after backgrounding or termination — mid-encounter and mid-brew state is serialized and autosaved after every committed action
-- [ ] **PLAT-03**: Game state saves to a versioned Codable JSON envelope with explicit migrations, atomic writes, a backup copy, and golden-save fixtures per released schema version; player can export/import a save
+- [x] **PLAT-03**: Game state saves to a versioned Codable JSON envelope with explicit migrations, atomic writes, a backup copy, and golden-save fixtures per released schema version; player can export/import a save
 - [ ] **PLAT-04**: Settings persist independently of saves: audio sliders, haptics toggle, text speed; system settings (Dynamic Type, Reduce Motion) are respected
 - [ ] **PLAT-05**: The app builds on the current Xcode/iOS SDK, distributes via TestFlight from Phase 1, and ships with privacy manifest, recorded age rating (plan for 18+), and App Store metadata whose screenshots/icon are 4+-appropriate
 - [ ] **PLAT-06**: All player-facing strings are externalized in a String Catalog (localization-ready; English-only at launch)
@@ -88,7 +88,7 @@ Requirements for initial release (native iOS: Swift/SwiftUI, iPhone portrait, Ap
 
 ### Presentation
 
-- [ ] **ART-01**: Beers render procedurally (glass shape, liquid color/SRM, head, carbonation) from their attributes, visually distinct per beer
+- [x] **ART-01**: Beers render procedurally (glass shape, liquid color/SRM, head, carbonation) from their attributes, visually distinct per beer
 - [ ] **ART-02**: Patrons have AdCap-style flat/cartoon portraits with expression states (neutral/pleased/sour/delighted) that react to pours
 - [ ] **ART-03**: All AI-generated art passes through a locked style guide + post-process pipeline with a provenance manifest (tool, prompt, seed per asset)
 - [ ] **ART-04**: Locations have distinct backdrops; the app uses a consistent chunky custom UI treatment on game screens (system chrome avoided where it clashes)
@@ -155,10 +155,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BREW-01 | Phase 1 | Complete |
 | BREW-02 | Phase 1 | Complete |
 | BREW-03 | Phase 3 | Pending |
-| BREW-04 | Phase 1 | Pending |
+| BREW-04 | Phase 1 | Complete |
 | BREW-05 | Phase 3 | Pending |
-| BREW-06 | Phase 1 | Pending |
-| BREW-07 | Phase 1 | Pending |
+| BREW-06 | Phase 1 | Complete |
+| BREW-07 | Phase 1 | Complete |
 | ENC-01 | Phase 2 | Pending |
 | ENC-02 | Phase 2 | Pending |
 | ENC-03 | Phase 2 | Pending |
@@ -201,13 +201,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-06 | Phase 3 | Pending |
 | PLAT-01 | Phase 1 | Pending |
 | PLAT-02 | Phase 2 | Pending |
-| PLAT-03 | Phase 1 | Pending |
+| PLAT-03 | Phase 1 | Complete |
 | PLAT-04 | Phase 6 | Pending |
 | PLAT-05 | Phase 1 | Pending |
 | PLAT-06 | Phase 1 | Pending |
 | PLAT-07 | Phase 2 | Pending |
 | PLAT-08 | Phase 3 | Pending |
-| ART-01 | Phase 1 | Pending |
+| ART-01 | Phase 1 | Complete |
 | ART-02 | Phase 5 | Pending |
 | ART-03 | Phase 4 | Pending |
 | ART-04 | Phase 5 | Pending |
