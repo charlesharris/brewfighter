@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-10-14T19:17:14.713Z"
+stopped_at: Completed 01-06-PLAN.md
+last_updated: "2026-10-15T17:35:47.425Z"
 last_activity: 2026-10-14
 last_activity_desc: Phase 01 execution started
-state_head: 980093e186546a8e43582983e2e9eb181ceacb39
+state_head: 509c9f988fbd4077a0aa6b751ac23a35441c8515
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 5
-  percent: 50
+  completed_plans: 6
+  percent: 60
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 5 of 10
+Plan: 6 of 10 complete
 Status: Ready to execute
 Last activity: 2026-10-14 — Phase 01 execution started
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [█████░░░░░] 50%
 | Phase 01 P03 | 6 min | 3 tasks | 25 files |
 | Phase 01 P04 | 11min | 3 tasks | 19 files |
 | Phase 01 P05 | 7min | 3 tasks | 18 files |
+| Phase 01 P06 | ~60min | 3 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - [Phase 01]: ABV attribute rows are stage-attributed marginal ABV deltas of one attenuation chain; the clamp is its own yeast row with detail attenuationLimit — Telescoping needs no remainder rule and keeps the ABV bar and nerd-stats ABV in agreement
 - [Phase 01]: confirmImport writes the new save before swapping in-memory state, after a pre-import backup that aborts the replace on failure — A failed, invalid, newer, oversized or cancelled import can never lose the player's beers
 - [Phase 01]: Save schema changes need a version bump, one SaveMigrator step and a new frozen save_vN.json; save_v1.json is frozen at FNV-1a 64 0x1505d50a292b09fc — GoldenSaveTests turns a forgotten migration into a failing test
+- [Phase 01]: Wizard identity is renewed on every opening (GameStore.wizardSession), so a wizard reopened mid-animation never inherits the previous draft or stage
+- [Phase 01]: Wizard controls are disabled by asking RecipeRules (can... queries) before acting, so Make base, steppers and hop cards never fail silently
+- [Phase 01]: An empty cellar launches into the wizard only when the save loaded cleanly; a damaged or restored save opens The Cellar so its banner is seen
 
 ### Pending Todos
 
@@ -110,6 +114,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-14T19:17:10.410Z
-Stopped at: Completed 01-05-PLAN.md
+Last session: 2026-10-15T17:35:47.402Z
+Stopped at: Completed 01-06-PLAN.md
 Resume file: None
