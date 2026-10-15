@@ -1090,6 +1090,39 @@
         }
       }
     },
+    "detail.attribute.a11y %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@ out of 10"
+          }
+        }
+      }
+    },
+    "detail.back" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "detail.showMore %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show %1$lld more"
+          }
+        }
+      }
+    },
     "family.hop.name" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1251,6 +1284,226 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "An ingredient isn't available."
+          }
+        }
+      }
+    },
+    "ledger.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "ledger.empty %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing in this recipe added %1$@."
+          }
+        }
+      }
+    },
+    "ledger.source.attenuationLimit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attenuation limit"
+          }
+        }
+      }
+    },
+    "ledger.source.baseline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every beer starts here"
+          }
+        }
+      }
+    },
+    "ledger.source.bottleConditioning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bottle conditioning"
+          }
+        }
+      }
+    },
+    "ledger.source.capMax" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Capped at 10.0"
+          }
+        }
+      }
+    },
+    "ledger.source.capMin" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Floored at 0"
+          }
+        }
+      }
+    },
+    "ledger.source.dryHop %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry hop: %1$@"
+          }
+        }
+      }
+    },
+    "ledger.source.fermentDuration %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ fermentation"
+          }
+        }
+      }
+    },
+    "ledger.source.fermentTemp %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ferment"
+          }
+        }
+      }
+    },
+    "ledger.source.fermentable %@ %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$lld%%)"
+          }
+        }
+      }
+    },
+    "ledger.source.fruit %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fruit: %1$@"
+          }
+        }
+      }
+    },
+    "ledger.source.hop %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$@ slot)"
+          }
+        }
+      }
+    },
+    "ledger.source.lagering" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lagering"
+          }
+        }
+      }
+    },
+    "ledger.source.mashTemp %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mash: %1$@"
+          }
+        }
+      }
+    },
+    "ledger.source.strength %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batch strength: %1$@"
+          }
+        }
+      }
+    },
+    "ledger.source.yeast %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ yeast"
+          }
+        }
+      }
+    },
+    "ledger.source.yeastDuration %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@ fermentation"
+          }
+        }
+      }
+    },
+    "ledger.title %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where %1$@ comes from"
+          }
+        }
+      }
+    },
+    "ledger.total" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
           }
         }
       }

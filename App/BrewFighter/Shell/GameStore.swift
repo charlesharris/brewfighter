@@ -64,6 +64,10 @@ final class GameStore {
 
     func closeWizard() { screen = .cellar }
 
+    func showDetail(_ id: UUID) { screen = .detail(id) }
+
+    func backToCellar() { screen = .cellar }
+
     static func live() -> GameStore {
         let repository: SaveRepository
         do {

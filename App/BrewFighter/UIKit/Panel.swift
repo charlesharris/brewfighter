@@ -3,18 +3,28 @@ import SwiftUI
 /// A rounded, padded container with a title. Every wizard stage is built from these.
 struct Panel<Content: View>: View {
     private let title: LocalizedStringKey
+    private let systemImage: String?
     private let content: Content
 
-    init(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) {
+    /// `systemImage` is an optional SF Symbol shown beside the title. It is decoration: the title
+    /// carries the meaning, so the glyph is hidden from VoiceOver.
+    init(_ title: LocalizedStringKey, systemImage: String? = nil, @ViewBuilder content: () -> Content) {
         self.title = title
+        self.systemImage = systemImage
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
-                .accessibilityAddTraits(.isHeader)
+            HStack(spacing: 8) {
+                if let systemImage {
+                    Image(systemName: systemImage)
+                        .accessibilityHidden(true)
+                }
+                Text(title)
+                    .font(.headline)
+                    .accessibilityAddTraits(.isHeader)
+            }
             content
         }
         .foregroundStyle(Palette.ink)

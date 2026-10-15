@@ -109,17 +109,21 @@ struct CellarView: View {
         let brewDay = beer.brewDay
         let nameKey = store.content.styleNameKey(beer.result.styleID) ?? "style.experimental_ale.name"
         let styleName = Text(LocalizedStringKey(nameKey))
-        return VStack(alignment: .leading, spacing: 4) {
-            Text("cellar.batchLabel \(batchNumber) \(styleName)")
-                .font(.headline)
-            Text("cellar.brewDayLabel \(brewDay)")
-                .font(.subheadline)
+        return Button {
+            store.showDetail(beer.id)
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("cellar.batchLabel \(batchNumber) \(styleName)")
+                    .font(.headline)
+                Text("cellar.brewDayLabel \(brewDay)")
+                    .font(.subheadline)
+            }
+            .foregroundStyle(Palette.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.white))
         }
-        .foregroundStyle(Palette.ink)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.white))
-        .accessibilityElement(children: .combine)
+        .buttonStyle(.plain)
         .accessibilityIdentifier("cellar.beer.\(batchNumber)")
     }
 }
