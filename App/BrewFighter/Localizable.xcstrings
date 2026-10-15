@@ -1189,6 +1189,72 @@
         }
       }
     },
+    "issue.conditioning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conditioning needs a fix."
+          }
+        }
+      }
+    },
+    "issue.grainBill" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The grain bill needs a fix."
+          }
+        }
+      }
+    },
+    "issue.hops" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The hop schedule needs a fix."
+          }
+        }
+      }
+    },
+    "issue.noGrain" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add at least one grain."
+          }
+        }
+      }
+    },
+    "issue.noYeast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a yeast."
+          }
+        }
+      }
+    },
+    "issue.unknownIngredient" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An ingredient isn't available."
+          }
+        }
+      }
+    },
     "mash.baseBadge" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1321,6 +1387,17 @@
         }
       }
     },
+    "review.brewDisabledHint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fix the items above to brew."
+          }
+        }
+      }
+    },
     "review.conditionLine %@ %@ %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1328,6 +1405,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · %2$@ · %3$@"
+          }
+        }
+      }
+    },
+    "review.dayCost %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready in %1$lld days"
           }
         }
       }
@@ -1354,6 +1442,17 @@
         }
       }
     },
+    "review.fix" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fix"
+          }
+        }
+      }
+    },
     "review.grainLine %@ %lld" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1372,6 +1471,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ · %2$@ · %3$@ oz"
+          }
+        }
+      }
+    },
+    "review.issues.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Before you brew"
           }
         }
       }

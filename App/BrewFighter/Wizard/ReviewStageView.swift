@@ -9,6 +9,16 @@ struct ReviewStageView: View {
 
     var body: some View {
         VStack(spacing: 12) {
+            if !draft.issues.isEmpty {
+                issuesPanel
+            }
+            Text("review.dayCost \(draft.dayCost)")
+                .font(.headline)
+                .foregroundStyle(Palette.ink)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity)
+                .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Palette.amber.opacity(0.45)))
+                .accessibilityIdentifier("review.dayCost")
             ForEach([WizardStage.mash, .boil, .ferment, .condition]) { item in
                 Button {
                     stage = item
@@ -17,6 +27,24 @@ struct ReviewStageView: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("review.panel.\(item.slug)")
+            }
+        }
+        .accessibilityRegion("review")
+    }
+
+    /// What blocks BREW, each with a Fix button that jumps to the stage that owns it (D-07).
+    private var issuesPanel: some View {
+        Panel("review.issues.title") {
+            ForEach(draft.issues.distinctByMessage, id: \.messageKey) { issue in
+                HStack(spacing: 8) {
+                    Text(LocalizedStringKey(issue.messageKey))
+                        .font(.subheadline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("review.issue.\(issue.slug)")
+                    Button("review.fix") { stage = issue.stage }
+                        .buttonStyle(GameButtonStyle(.primary, size: .compact))
+                        .accessibilityIdentifier("review.fix.\(issue.slug)")
+                }
             }
         }
     }
@@ -36,6 +64,7 @@ struct ReviewBrewButton: View {
         }
         .buttonStyle(GameButtonStyle(.primary))
         .disabled(!draft.issues.isEmpty)
+        .accessibilityHint(draft.issues.isEmpty ? Text(verbatim: "") : Text("review.brewDisabledHint"))
         .accessibilityIdentifier("review.brew")
     }
 }

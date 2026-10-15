@@ -261,4 +261,38 @@ final class WizardUITests: XCTestCase {
         app.buttons["review.brew"].tap()
         XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
     }
+
+    @MainActor
+    func testMinimalRecipeFlow() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.clear"].waitForExistence(timeout: 10))
+        app.buttons["wizard.clear"].tap()
+        app.buttons["wizard.stage.review"].tap()
+
+        XCTAssertTrue(element("review.issue.noGrain", in: app).waitForExistence(timeout: 5))
+        XCTAssertTrue(element("review.issue.noYeast", in: app).exists)
+        XCTAssertEqual(element("review.issue.noGrain", in: app).label, "Add at least one grain.")
+        XCTAssertFalse(app.buttons["review.brew"].isEnabled, "BREW waits for a grain and a yeast")
+
+        app.buttons["review.fix.noGrain"].tap()
+        XCTAssertTrue(app.buttons["wizard.stage.mash"].isSelected, "Fix jumps to Mash")
+        app.buttons["mash.card.grain.g02"].tap()
+        app.buttons["wizard.stage.review"].tap()
+
+        XCTAssertTrue(app.buttons["review.fix.noYeast"].waitForExistence(timeout: 5))
+        XCTAssertFalse(element("review.issue.noGrain", in: app).exists)
+        app.buttons["review.fix.noYeast"].tap()
+        XCTAssertTrue(app.buttons["wizard.stage.ferment"].isSelected, "Fix jumps to Ferment")
+        tapScrolling(app.buttons["ferment.card.yeast.y03"], in: app)
+        app.buttons["wizard.stage.review"].tap()
+
+        let cost = element("review.dayCost", in: app)
+        XCTAssertTrue(cost.waitForExistence(timeout: 5))
+        XCTAssertFalse(element("review.issue.noYeast", in: app).exists, "no issues remain")
+        XCTAssertEqual(cost.label, "Ready in 14 days", "no hops and no conditioning: fermentation days only")
+        let brew = app.buttons["review.brew"]
+        XCTAssertTrue(brew.isEnabled, "one grain and a yeast is a legal beer")
+        brew.tap()
+        XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
+    }
 }

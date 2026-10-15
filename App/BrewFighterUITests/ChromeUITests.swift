@@ -168,4 +168,53 @@ final class ChromeUITests: XCTestCase {
         assertDoubled(app.buttons["wizard.back"].label)
         attachScreenshot(app, name: "pseudo-condition")
     }
+
+    @MainActor
+    func testReviewChrome() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.clear"].waitForExistence(timeout: 10))
+        app.buttons["wizard.clear"].tap()
+        app.buttons["wizard.stage.review"].tap()
+
+        // With issues: the issues panel, Fix buttons and a disabled BREW.
+        XCTAssertTrue(app.buttons["review.fix.noGrain"].waitForExistence(timeout: 5))
+        let brew = app.buttons["review.brew"]
+        assertInThumbZone(brew, app: app)
+        for _ in 0..<3 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+
+        // Without issues: fix both and look again.
+        dragWizardBody(in: app, up: false)
+        dragWizardBody(in: app, up: false)
+        dragWizardBody(in: app, up: false)
+        app.buttons["review.fix.noGrain"].tap()
+        app.buttons["mash.card.grain.g02"].tap()
+        app.buttons["wizard.stage.review"].tap()
+        app.buttons["review.fix.noYeast"].tap()
+        tapScrolling(app.buttons["ferment.card.yeast.y03"], in: app)
+        app.buttons["wizard.stage.review"].tap()
+        XCTAssertTrue(element("review.dayCost", in: app).waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["review.fix.noYeast"].exists)
+        assertInThumbZone(brew, app: app)
+        for _ in 0..<3 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+    }
+
+    @MainActor
+    func testReviewPseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        XCTAssertTrue(app.buttons["wizard.clear"].waitForExistence(timeout: 10))
+        app.buttons["wizard.clear"].tap()
+        app.buttons["wizard.stage.review"].tap()
+        XCTAssertTrue(app.buttons["review.fix.noGrain"].waitForExistence(timeout: 5))
+        assertDoubled(app.buttons["review.fix.noGrain"].label)
+        assertDoubled(app.buttons["review.brew"].label)
+        attachScreenshot(app, name: "pseudo-review")
+    }
 }
