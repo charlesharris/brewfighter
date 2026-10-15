@@ -463,6 +463,17 @@
         }
       }
     },
+    "band.tempF %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld°F"
+          }
+        }
+      }
+    },
     "cellar.batchLabel %lld %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -947,6 +958,127 @@
         }
       }
     },
+    "mash.baseBadge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Base"
+          }
+        }
+      }
+    },
+    "mash.grainBill.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grain bill"
+          }
+        }
+      }
+    },
+    "mash.makeBase" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Make base"
+          }
+        }
+      }
+    },
+    "mash.needBase" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a base malt first"
+          }
+        }
+      }
+    },
+    "mash.noRoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The base malt needs at least 10%"
+          }
+        }
+      }
+    },
+    "mash.og %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OG %1$@"
+          }
+        }
+      }
+    },
+    "mash.percent %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld%%"
+          }
+        }
+      }
+    },
+    "mash.remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        }
+      }
+    },
+    "mash.strength.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batch strength"
+          }
+        }
+      }
+    },
+    "mash.temp.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mash temperature"
+          }
+        }
+      }
+    },
+    "mash.total %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total %1$lld%%"
+          }
+        }
+      }
+    },
     "review.brewButton" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1350,6 +1482,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Whirlpool"
+          }
+        }
+      }
+    },
+    "stepper.decrease %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decrease %1$@"
+          }
+        }
+      }
+    },
+    "stepper.increase %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Increase %1$@"
           }
         }
       }

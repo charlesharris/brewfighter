@@ -91,7 +91,7 @@ for (key, value) in catalogStrings.sorted(by: { $0.key < $1.key }) {
 // Interpolations inside a localized literal must be simple local identifiers: \(name).
 let interpolationRE = regex(#"\\\([^()]*\)"#)
 let literalRE = regex(
-    #"(?:\b(?:Text|Button|Label|LocalizedStringKey|LocalizedStringResource)\(|\bString\(localized:)\s*"((?:[^"\\]|\\.)*)""#)
+    #"(?:\b(?:Text|Button|Label|Panel|LocalizedStringKey|LocalizedStringResource)\(|\bString\(localized:)\s*"((?:[^"\\]|\\.)*)""#)
 
 for file in files(under: appDir, withExtension: "swift") {
     guard let source = try? String(contentsOfFile: file, encoding: .utf8) else { continue }

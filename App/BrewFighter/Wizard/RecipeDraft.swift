@@ -65,6 +65,10 @@ final class RecipeDraft {
         return true
     }
 
+    func canMakeBase(_ id: String) -> Bool {
+        RecipeRules.settingBase(id, in: recipe.grainBill, content: content) != nil
+    }
+
     @discardableResult
     func makeBase(_ id: String) -> Bool {
         guard let bill = RecipeRules.settingBase(id, in: recipe.grainBill, content: content) else { return false }

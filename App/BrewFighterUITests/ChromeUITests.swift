@@ -73,4 +73,30 @@ final class ChromeUITests: XCTestCase {
         assertDoubled(app.buttons["saveTransfer.import"].label)
         attachScreenshot(app, name: "pseudo-save-transfer")
     }
+
+    @MainActor
+    func testMashStageChrome() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        let next = app.buttons["wizard.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        assertInThumbZone(next, app: app)
+
+        // Open the card controls so the stepper, base and remove buttons are on screen too.
+        app.buttons["mash.card.grain.g04"].tap()
+        for _ in 0..<4 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+    }
+
+    @MainActor
+    func testMashStagePseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        let next = app.buttons["wizard.next"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10))
+        assertDoubled(next.label)
+        assertDoubled(app.buttons["wizard.close"].label)
+        attachScreenshot(app, name: "pseudo-mash")
+    }
 }

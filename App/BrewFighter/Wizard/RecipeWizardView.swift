@@ -115,7 +115,9 @@ struct RecipeWizardView: View {
         switch stage {
         case .review:
             ReviewStageView(draft: draft, stage: $stage)
-        case .mash, .boil, .ferment, .condition:
+        case .mash:
+            MashStageView(draft: draft)
+        case .boil, .ferment, .condition:
             StageSummaryPanel(stage: stage, draft: draft)
         }
     }
