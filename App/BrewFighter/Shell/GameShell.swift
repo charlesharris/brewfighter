@@ -4,6 +4,7 @@ enum Screen: Equatable {
     case cellar
     case wizard
     case detail(UUID)
+    case reveal(UUID)
 }
 
 struct GameShell: View {
@@ -21,6 +22,9 @@ struct GameShell: View {
                     .transition(.move(edge: .bottom))
             case let .detail(id):
                 BeerDetailView(beerID: id)
+                    .transition(.opacity)
+            case let .reveal(id):
+                BrewRevealView(beerID: id)
                     .transition(.opacity)
             }
         }

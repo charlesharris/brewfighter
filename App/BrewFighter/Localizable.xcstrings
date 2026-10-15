@@ -1706,6 +1706,72 @@
         }
       }
     },
+    "reveal.brewing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brewing…"
+          }
+        }
+      }
+    },
+    "reveal.day %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day %1$lld"
+          }
+        }
+      }
+    },
+    "reveal.details" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See the details"
+          }
+        }
+      }
+    },
+    "reveal.skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
+    "reveal.style %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@"
+          }
+        }
+      }
+    },
+    "reveal.toCellar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To the Cellar"
+          }
+        }
+      }
+    },
     "review.brewButton" : {
       "extractionState" : "manual",
       "localizations" : {

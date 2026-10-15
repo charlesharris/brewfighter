@@ -102,16 +102,35 @@ extension XCTestCase {
         XCTAssertTrue(app.buttons["cellar.brew"].waitForExistence(timeout: 5), file: file, line: line)
     }
 
-    /// Brews whatever the wizard currently holds: jump to Review, tap BREW, wait for the cellar.
+    /// Where the reveal's final card sends the player.
+    enum RevealExit {
+        case cellar
+        case details
+    }
+
+    /// Taps BREW on Review, skips the reveal and leaves through the chosen exit. Skip may already be gone
+    /// if the reveal ran to completion first; the exit buttons exist either way.
+    @MainActor
+    func finishBrew(_ app: XCUIApplication, to destination: RevealExit = .cellar, file: StaticString = #filePath, line: UInt = #line) {
+        let brew = app.buttons["review.brew"]
+        XCTAssertTrue(brew.waitForExistence(timeout: 5), file: file, line: line)
+        XCTAssertTrue(brew.isEnabled, "BREW should be enabled", file: file, line: line)
+        brew.tap()
+        XCTAssertTrue(element("reveal", in: app).waitForExistence(timeout: 5), "the reveal did not open", file: file, line: line)
+        let skip = app.buttons["reveal.skip"]
+        if skip.exists, skip.isHittable { skip.tap() }
+        let exit = app.buttons[destination == .cellar ? "reveal.toCellar" : "reveal.details"]
+        XCTAssertTrue(exit.waitForExistence(timeout: 10), "the reveal did not finish", file: file, line: line)
+        exit.tap()
+    }
+
+    /// Brews whatever the wizard currently holds: jump to Review, BREW, skip the reveal, return to The Cellar.
     @MainActor
     func brewFromWizard(in app: XCUIApplication, expecting beer: String, file: StaticString = #filePath, line: UInt = #line) {
         let review = app.buttons["wizard.stage.review"]
         XCTAssertTrue(review.waitForExistence(timeout: 10), "wizard did not open", file: file, line: line)
         review.tap()
-        let brew = app.buttons["review.brew"]
-        XCTAssertTrue(brew.waitForExistence(timeout: 5), file: file, line: line)
-        XCTAssertTrue(brew.isEnabled, "BREW should be enabled", file: file, line: line)
-        brew.tap()
+        finishBrew(app, to: .cellar, file: file, line: line)
         XCTAssertTrue(element(beer, in: app).waitForExistence(timeout: 5), file: file, line: line)
     }
 

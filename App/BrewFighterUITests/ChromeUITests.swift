@@ -261,4 +261,44 @@ final class ChromeUITests: XCTestCase {
         assertDoubled(close.label)
         attachScreenshot(app, name: "pseudo-ledger")
     }
+
+    @MainActor
+    func testRevealChrome() throws {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        let review = app.buttons["wizard.stage.review"]
+        XCTAssertTrue(review.waitForExistence(timeout: 10))
+        review.tap()
+        app.buttons["review.brew"].tap()
+        let skip = app.buttons["reveal.skip"]
+        XCTAssertTrue(skip.waitForExistence(timeout: 5))
+        assertInThumbZone(skip, app: app)
+        XCTAssertGreaterThanOrEqual(skip.frame.height, 44)
+        skip.tap()
+
+        let toCellar = app.buttons["reveal.toCellar"]
+        XCTAssertTrue(toCellar.waitForExistence(timeout: 5))
+        assertTouchTargets(in: app)
+        assertNoRawCatalogKeys(in: app)
+        assertInThumbZone(toCellar, app: app)
+        assertInThumbZone(app.buttons["reveal.details"], app: app)
+        try app.performAccessibilityAudit(for: .hitRegion)
+    }
+
+    @MainActor
+    func testRevealPseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        let review = app.buttons["wizard.stage.review"]
+        XCTAssertTrue(review.waitForExistence(timeout: 10))
+        review.tap()
+        app.buttons["review.brew"].tap()
+        let skip = app.buttons["reveal.skip"]
+        XCTAssertTrue(skip.waitForExistence(timeout: 5))
+        assertDoubled(skip.label)
+        skip.tap()
+        let toCellar = app.buttons["reveal.toCellar"]
+        XCTAssertTrue(toCellar.waitForExistence(timeout: 5))
+        assertDoubled(toCellar.label)
+        assertDoubled(app.buttons["reveal.details"].label)
+        attachScreenshot(app, name: "pseudo-reveal")
+    }
 }

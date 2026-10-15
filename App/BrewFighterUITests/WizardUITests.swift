@@ -150,7 +150,7 @@ final class WizardUITests: XCTestCase {
         XCTAssertTrue(boil.waitForExistence(timeout: 5))
         XCTAssertTrue(boil.label.contains("Island Haze · Whirlpool · 1.75 oz"), boil.label)
 
-        app.buttons["review.brew"].tap()
+        finishBrew(app, to: .cellar)
         XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
     }
 
@@ -196,9 +196,7 @@ final class WizardUITests: XCTestCase {
             app.buttons["ferment.duration.extended"].label)
 
         app.buttons["wizard.stage.review"].tap()
-        let brew = app.buttons["review.brew"]
-        XCTAssertTrue(brew.waitForExistence(timeout: 5))
-        brew.tap()
+        finishBrew(app, to: .cellar)
 
         // Day 1 + 21 days of fermentation + the seeded 3-day dry hop. No waiting step in between.
         let day = element("cellar.day", in: app)
@@ -258,7 +256,7 @@ final class WizardUITests: XCTestCase {
         XCTAssertTrue(condition.label.contains("Island Haze · 2.00 oz"), condition.label)
         XCTAssertTrue(condition.label.contains("Raspberry Puree · 3 lb"), condition.label)
 
-        app.buttons["review.brew"].tap()
+        finishBrew(app, to: .cellar)
         XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
     }
 
@@ -292,7 +290,7 @@ final class WizardUITests: XCTestCase {
         XCTAssertEqual(cost.label, "Ready in 14 days", "no hops and no conditioning: fermentation days only")
         let brew = app.buttons["review.brew"]
         XCTAssertTrue(brew.isEnabled, "one grain and a yeast is a legal beer")
-        brew.tap()
+        finishBrew(app, to: .cellar)
         XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
     }
 }

@@ -58,8 +58,9 @@ struct ReviewBrewButton: View {
 
     var body: some View {
         Button("review.brewButton") {
-            if store.brew(draft.recipe) != nil {
-                store.closeWizard()
+            // The beer is committed and saved inside brew(); the reveal only replays what already happened.
+            if let beer = store.brew(draft.recipe) {
+                store.showReveal(beer.id)
             }
         }
         .buttonStyle(GameButtonStyle(.primary))

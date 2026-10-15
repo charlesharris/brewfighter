@@ -66,6 +66,8 @@ final class GameStore {
 
     func showDetail(_ id: UUID) { screen = .detail(id) }
 
+    func showReveal(_ id: UUID) { screen = .reveal(id) }
+
     func backToCellar() { screen = .cellar }
 
     static func live() -> GameStore {
