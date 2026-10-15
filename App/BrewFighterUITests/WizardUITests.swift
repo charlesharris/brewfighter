@@ -175,4 +175,35 @@ final class WizardUITests: XCTestCase {
         XCTAssertTrue(app.buttons["review.brew"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["review.brew"].isEnabled, "hops are optional (D-07)")
     }
+
+    @MainActor
+    func testFermentChoicesAdvanceDays() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.stage.ferment"].waitForExistence(timeout: 10))
+        app.buttons["wizard.stage.ferment"].tap()
+
+        // Before a yeast is chosen the real temperatures are unknown; the seeded house yeast is
+        // already picked, so choose another one and read its own range.
+        tapScrolling(app.buttons["ferment.card.yeast.y03"], in: app)
+        XCTAssertTrue(app.buttons["ferment.card.yeast.y03"].isSelected)
+        tapScrolling(app.buttons["ferment.temp.cold"], in: app)
+        XCTAssertTrue(app.buttons["ferment.temp.cold"].isSelected)
+        XCTAssertTrue(app.buttons["ferment.temp.cold"].label.contains("48°F"), app.buttons["ferment.temp.cold"].label)
+        tapScrolling(app.buttons["ferment.duration.extended"], in: app)
+        XCTAssertTrue(app.buttons["ferment.duration.extended"].isSelected)
+        XCTAssertTrue(
+            app.buttons["ferment.duration.extended"].label.contains("21 days"),
+            app.buttons["ferment.duration.extended"].label)
+
+        app.buttons["wizard.stage.review"].tap()
+        let brew = app.buttons["review.brew"]
+        XCTAssertTrue(brew.waitForExistence(timeout: 5))
+        brew.tap()
+
+        // Day 1 + 21 days of fermentation + the seeded 3-day dry hop. No waiting step in between.
+        let day = element("cellar.day", in: app)
+        XCTAssertTrue(day.waitForExistence(timeout: 5))
+        XCTAssertTrue(element("cellar.beer.1", in: app).exists, "the beer is in The Cellar immediately")
+        XCTAssertEqual(day.label, "Day 25")
+    }
 }

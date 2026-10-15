@@ -32,6 +32,23 @@ final class RecipeDraft {
 
     func setStrength(_ band: StrengthBand) { recipe.strength = band }
     func setMashTemp(_ band: MashTempBand) { recipe.mashTemp = band }
+    func setFermentTemp(_ band: FermentTempBand) { recipe.fermentTemp = band }
+    func setFermentDuration(_ band: FermentDurationBand) { recipe.fermentDuration = band }
+
+    // MARK: Yeast (D-03)
+
+    /// Picks one yeast. An id the catalog does not know is ignored, so the draft never holds a
+    /// yeast the engine would reject.
+    func setYeast(_ id: String) {
+        guard content.yeasts.contains(where: { $0.id == id }) else { return }
+        recipe.yeastID = id
+    }
+
+    /// Fermentation days plus conditioning days, from the engine (D-10). The brew advances the
+    /// day counter by exactly this much and never starts a real-time wait (BREW-07).
+    var dayCost: Int {
+        RecipeRules.dayCost(recipe, content: content)
+    }
 
     // MARK: Grain bill (D-14)
 

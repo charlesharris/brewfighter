@@ -1046,6 +1046,61 @@
         }
       }
     },
+    "ferment.days %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld days"
+          }
+        }
+      }
+    },
+    "ferment.duration.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermentation time"
+          }
+        }
+      }
+    },
+    "ferment.pickYeastFirst" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a yeast"
+          }
+        }
+      }
+    },
+    "ferment.temp.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermentation temperature"
+          }
+        }
+      }
+    },
+    "ferment.yeast.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeast"
+          }
+        }
+      }
+    },
     "mash.baseBadge" : {
       "extractionState" : "manual",
       "localizations" : {
