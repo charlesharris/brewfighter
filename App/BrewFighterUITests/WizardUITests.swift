@@ -206,4 +206,59 @@ final class WizardUITests: XCTestCase {
         XCTAssertTrue(element("cellar.beer.1", in: app).exists, "the beer is in The Cellar immediately")
         XCTAssertEqual(day.label, "Day 25")
     }
+
+    @MainActor
+    func testConditioningExclusivityAndDayCost() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.stage.condition"].waitForExistence(timeout: 10))
+        app.buttons["wizard.stage.condition"].tap()
+
+        // The seeded house pale ale: 14 days of fermentation plus a 3-day dry hop.
+        let cost = element("condition.dayCost", in: app)
+        XCTAssertTrue(cost.waitForExistence(timeout: 5))
+        XCTAssertEqual(cost.label, "This brew takes 17 days")
+
+        tapScrolling(app.buttons["condition.card.lagering"], in: app)
+        XCTAssertEqual(cost.label, "This brew takes 45 days", "lagering visibly costs 28 days")
+        XCTAssertFalse(app.buttons["condition.card.bottleConditioning"].isEnabled, "lagering blocks bottle conditioning")
+        XCTAssertTrue(
+            app.buttons["condition.card.bottleConditioning"].label.contains("not both"),
+            app.buttons["condition.card.bottleConditioning"].label)
+
+        tapScrolling(app.buttons["condition.card.lagering"], in: app)
+        XCTAssertEqual(cost.label, "This brew takes 17 days")
+        XCTAssertTrue(app.buttons["condition.card.bottleConditioning"].isEnabled)
+
+        tapScrolling(app.buttons["condition.card.bottleConditioning"], in: app)
+        XCTAssertEqual(cost.label, "This brew takes 31 days")
+        XCTAssertFalse(app.buttons["condition.card.lagering"].isEnabled, "bottle conditioning blocks lagering")
+    }
+
+    @MainActor
+    func testFruitAndDryHopAmounts() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        XCTAssertTrue(app.buttons["wizard.stage.condition"].waitForExistence(timeout: 10))
+        app.buttons["wizard.stage.condition"].tap()
+
+        tapScrolling(app.buttons["condition.card.fruit"], in: app)
+        let fruitPlus = app.buttons["condition.fruit.amount.increase"]
+        for _ in 0..<2 { tapScrolling(fruitPlus, in: app) }
+        XCTAssertTrue(element("condition.fruit.amountValue", in: app).label.contains("3 lb"))
+
+        // The seeded dry hop is 1.00 oz of the first hop; switch to Island Haze and go to 2.00 oz.
+        tapScrolling(app.buttons["condition.dryHop.hop.hop.h04"], in: app)
+        XCTAssertTrue(app.buttons["condition.dryHop.hop.hop.h04"].isSelected)
+        let hopPlus = app.buttons["condition.dryHop.amount.increase"]
+        for _ in 0..<4 { tapScrolling(hopPlus, in: app) }
+        XCTAssertTrue(element("condition.dryHop.amountValue", in: app).label.contains("2.00 oz"))
+
+        app.buttons["wizard.stage.review"].tap()
+        let condition = app.buttons["review.panel.condition"]
+        XCTAssertTrue(condition.waitForExistence(timeout: 5))
+        XCTAssertTrue(condition.label.contains("Island Haze · 2.00 oz"), condition.label)
+        XCTAssertTrue(condition.label.contains("Raspberry Puree · 3 lb"), condition.label)
+
+        app.buttons["review.brew"].tap()
+        XCTAssertTrue(element("cellar.beer.1", in: app).waitForExistence(timeout: 5))
+    }
 }

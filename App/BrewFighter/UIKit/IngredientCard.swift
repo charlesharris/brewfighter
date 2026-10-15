@@ -10,15 +10,21 @@ struct IngredientCard<Accessory: View>: View {
     var isSelected = false
     var isEnabled = true
     var disabledReason: LocalizedStringKey?
+    /// Optional one-line description under the name, and an optional bold tag beside the traits.
+    var blurbKey: String?
+    var badge: Text?
     let action: () -> Void
     private let accessory: Accessory
 
     init(
         nameKey: String, traitKeys: [String], identifier: String,
         isSelected: Bool = false, isEnabled: Bool = true, disabledReason: LocalizedStringKey? = nil,
+        blurbKey: String? = nil, badge: Text? = nil,
         action: @escaping () -> Void, @ViewBuilder accessory: () -> Accessory
     ) {
         self.nameKey = nameKey
+        self.blurbKey = blurbKey
+        self.badge = badge
         self.traitKeys = traitKeys
         self.identifier = identifier
         self.isSelected = isSelected
@@ -43,14 +49,30 @@ struct IngredientCard<Accessory: View>: View {
                                 .foregroundStyle(Palette.success)
                         }
                     }
-                    ChipFlow(spacing: 4) {
-                        ForEach(Array(traitKeys.prefix(3).enumerated()), id: \.offset) { _, key in
-                            Text(LocalizedStringKey(key))
-                                .font(.caption2.bold())
-                                .lineLimit(1)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(Capsule().fill(Palette.cellarBrown.opacity(0.12)))
+                    if let blurbKey {
+                        Text(LocalizedStringKey(blurbKey))
+                            .font(.caption)
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if !traitKeys.isEmpty || badge != nil {
+                        ChipFlow(spacing: 4) {
+                            ForEach(Array(traitKeys.prefix(3).enumerated()), id: \.offset) { _, key in
+                                Text(LocalizedStringKey(key))
+                                    .font(.caption2.bold())
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(Palette.cellarBrown.opacity(0.12)))
+                            }
+                            if let badge {
+                                badge
+                                    .font(.caption2.bold())
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(Palette.amber.opacity(0.6)))
+                            }
                         }
                     }
                     if !isEnabled, let disabledReason {
@@ -78,11 +100,13 @@ extension IngredientCard where Accessory == EmptyView {
     init(
         nameKey: String, traitKeys: [String], identifier: String,
         isSelected: Bool = false, isEnabled: Bool = true, disabledReason: LocalizedStringKey? = nil,
+        blurbKey: String? = nil, badge: Text? = nil,
         action: @escaping () -> Void
     ) {
         self.init(
             nameKey: nameKey, traitKeys: traitKeys, identifier: identifier, isSelected: isSelected,
-            isEnabled: isEnabled, disabledReason: disabledReason, action: action, accessory: { EmptyView() })
+            isEnabled: isEnabled, disabledReason: disabledReason, blurbKey: blurbKey, badge: badge,
+            action: action, accessory: { EmptyView() })
     }
 }
 

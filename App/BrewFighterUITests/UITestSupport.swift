@@ -24,9 +24,12 @@ extension XCTestCase {
             guard button.exists, button.isHittable else { return nil }
             return (button.identifier, button.frame)
         }
+        // Layout at fractional offsets can report a 44pt button as 43.99999999999997; a hundredth of a
+        // point is rounding, not a smaller target.
+        let floor: CGFloat = 44 - 0.01
         for item in snapshot {
-            XCTAssertGreaterThanOrEqual(item.frame.width, 44, "Button too narrow: \(item.id) \(item.frame)", file: file, line: line)
-            XCTAssertGreaterThanOrEqual(item.frame.height, 44, "Button too short: \(item.id) \(item.frame)", file: file, line: line)
+            XCTAssertGreaterThanOrEqual(item.frame.width, floor, "Button too narrow: \(item.id) \(item.frame)", file: file, line: line)
+            XCTAssertGreaterThanOrEqual(item.frame.height, floor, "Button too short: \(item.id) \(item.frame)", file: file, line: line)
         }
         // The wizard's header, stage chips and bottom bar sit outside the scrolling body; a card whose
         // frame is partly scrolled beneath them is clipped, not overlapping. Everything else must not overlap.

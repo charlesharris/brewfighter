@@ -683,6 +683,94 @@
         }
       }
     },
+    "condition.dayCost %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This brew takes %1$lld days"
+          }
+        }
+      }
+    },
+    "condition.days %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%1$lld days"
+          }
+        }
+      }
+    },
+    "condition.dryHop.choose" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dry hop with"
+          }
+        }
+      }
+    },
+    "condition.exclusive" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose lagering or bottle conditioning, not both"
+          }
+        }
+      }
+    },
+    "condition.fruit.choose" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fruit"
+          }
+        }
+      }
+    },
+    "condition.menu.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conditioning"
+          }
+        }
+      }
+    },
+    "condition.none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No conditioning: straight from the fermenter."
+          }
+        }
+      }
+    },
+    "condition.pounds %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld lb"
+          }
+        }
+      }
+    },
     "conditioning.bottleConditioning.blurb" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1229,6 +1317,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brew it!"
+          }
+        }
+      }
+    },
+    "review.conditionLine %@ %@ %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$@ · %3$@"
           }
         }
       }

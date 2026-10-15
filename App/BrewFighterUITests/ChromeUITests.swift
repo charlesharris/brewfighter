@@ -125,4 +125,47 @@ final class ChromeUITests: XCTestCase {
         XCTAssertTrue(app.buttons["boil.slot.aroma"].waitForExistence(timeout: 5))
         attachScreenshot(app, name: "pseudo-boil")
     }
+
+    @MainActor
+    func testFermentAndConditionChrome() {
+        let app = launchApp(reset: true, pseudoLocalized: false)
+        let ferment = app.buttons["wizard.stage.ferment"]
+        XCTAssertTrue(ferment.waitForExistence(timeout: 10))
+        ferment.tap()
+        XCTAssertTrue(app.buttons["ferment.temp.cold"].waitForExistence(timeout: 5))
+        assertInThumbZone(app.buttons["wizard.next"], app: app)
+        for _ in 0..<4 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+
+        app.buttons["wizard.stage.condition"].tap()
+        XCTAssertTrue(app.buttons["condition.card.fruit"].waitForExistence(timeout: 5))
+        assertInThumbZone(app.buttons["wizard.next"], app: app)
+        // The seeded dry hop is already expanded; turn fruit on too so both sets of controls show.
+        tapScrolling(app.buttons["condition.card.fruit"], in: app)
+        XCTAssertTrue(app.buttons["condition.fruit.amount.increase"].waitForExistence(timeout: 5))
+        for _ in 0..<6 {
+            assertTouchTargets(in: app)
+            assertNoRawCatalogKeys(in: app)
+            dragWizardBody(in: app, up: true)
+        }
+    }
+
+    @MainActor
+    func testFermentAndConditionPseudoLocalized() {
+        let app = launchApp(reset: true, pseudoLocalized: true)
+        let ferment = app.buttons["wizard.stage.ferment"]
+        XCTAssertTrue(ferment.waitForExistence(timeout: 10))
+        ferment.tap()
+        XCTAssertTrue(app.buttons["ferment.temp.cold"].waitForExistence(timeout: 5))
+        assertDoubled(app.buttons["wizard.next"].label)
+        attachScreenshot(app, name: "pseudo-ferment")
+
+        app.buttons["wizard.stage.condition"].tap()
+        XCTAssertTrue(app.buttons["condition.card.lagering"].waitForExistence(timeout: 5))
+        assertDoubled(app.buttons["wizard.back"].label)
+        attachScreenshot(app, name: "pseudo-condition")
+    }
 }

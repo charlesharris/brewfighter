@@ -99,6 +99,66 @@ final class RecipeDraft {
 
     func isBase(_ id: String) -> Bool { recipe.grainBill.baseID == id }
 
+    // MARK: Conditioning (D-16)
+
+    /// The ingredient a dry hop or fruit step starts with: the first hop already in the boil
+    /// schedule, else the first catalog hop; the first catalog fruit.
+    private func defaultConditioningIngredient(_ kind: ConditioningKind) -> String? {
+        switch kind {
+        case .dryHop: recipe.hops.first?.hopID ?? content.hops.first?.id
+        case .fruit: content.fruits.first?.id
+        case .lagering, .bottleConditioning: nil
+        }
+    }
+
+    func conditioningStep(_ kind: ConditioningKind) -> ConditioningStep? {
+        recipe.conditioning.first { $0.kind == kind }
+    }
+
+    /// False only when the rules refuse: turning on lagering while bottle conditioning is on (or
+    /// the reverse). Turning an option off is always allowed.
+    func canToggleConditioning(_ kind: ConditioningKind) -> Bool {
+        RecipeRules.togglingConditioning(
+            kind, defaultIngredientID: defaultConditioningIngredient(kind), in: recipe.conditioning) != nil
+    }
+
+    @discardableResult
+    func toggleConditioning(_ kind: ConditioningKind) -> Bool {
+        guard
+            let steps = RecipeRules.togglingConditioning(
+                kind, defaultIngredientID: defaultConditioningIngredient(kind), in: recipe.conditioning)
+        else { return false }
+        recipe.conditioning = steps
+        return true
+    }
+
+    func canSetConditioningAmount(_ kind: ConditioningKind, amount: Int) -> Bool {
+        RecipeRules.settingConditioningAmount(kind, amount: amount, in: recipe.conditioning) != nil
+    }
+
+    @discardableResult
+    func setConditioningAmount(_ kind: ConditioningKind, amount: Int) -> Bool {
+        guard let steps = RecipeRules.settingConditioningAmount(kind, amount: amount, in: recipe.conditioning)
+        else { return false }
+        recipe.conditioning = steps
+        return true
+    }
+
+    /// Accepts only a catalog hop for a dry hop and a catalog fruit for fruit, so a step can never
+    /// hold an ingredient the engine does not know.
+    @discardableResult
+    func setConditioningIngredient(_ kind: ConditioningKind, id: String) -> Bool {
+        switch kind {
+        case .dryHop: guard content.hops.contains(where: { $0.id == id }) else { return false }
+        case .fruit: guard content.fruits.contains(where: { $0.id == id }) else { return false }
+        case .lagering, .bottleConditioning: return false
+        }
+        guard let steps = RecipeRules.settingConditioningIngredient(kind, id: id, in: recipe.conditioning)
+        else { return false }
+        recipe.conditioning = steps
+        return true
+    }
+
     // MARK: Hops (D-15)
 
     func canAddHop(_ id: String, slot: HopSlot) -> Bool {
@@ -132,6 +192,7 @@ extension ContentCatalog {
     func yeastNameKey(_ id: String) -> String? { yeasts.first { $0.id == id }?.nameKey }
     func slotNameKey(_ slot: HopSlot) -> String? { hopSlots.first { $0.slot == slot }?.nameKey }
     func conditioningNameKey(_ kind: ConditioningKind) -> String? { conditioning.first { $0.kind == kind }?.nameKey }
+    func fruitNameKey(_ id: String) -> String? { fruits.first { $0.id == id }?.nameKey }
     func strengthNameKey(_ band: StrengthBand) -> String? { strengthBands.first { $0.id == band.rawValue }?.nameKey }
     func mashNameKey(_ band: MashTempBand) -> String? { mashBands.first { $0.id == band.rawValue }?.nameKey }
     func fermentTempNameKey(_ band: FermentTempBand) -> String? {

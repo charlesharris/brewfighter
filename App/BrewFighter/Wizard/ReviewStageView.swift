@@ -65,6 +65,26 @@ struct StageSummaryPanel: View {
         }
     }
 
+    /// Dry hop and fruit name their ingredient and amount; lagering and bottle conditioning are just named.
+    @ViewBuilder
+    private func conditioningLine(_ step: ConditioningStep, content: ContentCatalog) -> some View {
+        let name = Text(LocalizedStringKey(content.conditioningNameKey(step.kind) ?? ""))
+        switch step.kind {
+        case .dryHop:
+            let ingredient = Text(LocalizedStringKey(content.hopNameKey(step.ingredientID ?? "") ?? ""))
+            let ounces = Ounces.text(quarterOunces: step.amount ?? 0)
+            let amount = Text("boil.ounces \(ounces)")
+            Text("review.conditionLine \(name) \(ingredient) \(amount)")
+        case .fruit:
+            let ingredient = Text(LocalizedStringKey(content.fruitNameKey(step.ingredientID ?? "") ?? ""))
+            let pounds = step.amount ?? 0
+            let amount = Text("condition.pounds \(pounds)")
+            Text("review.conditionLine \(name) \(ingredient) \(amount)")
+        case .lagering, .bottleConditioning:
+            name
+        }
+    }
+
     @ViewBuilder
     private var lines: some View {
         let recipe = draft.recipe
@@ -105,7 +125,7 @@ struct StageSummaryPanel: View {
                 Text("review.noConditioning")
             }
             ForEach(recipe.conditioning, id: \.kind) { step in
-                Text(LocalizedStringKey(content.conditioningNameKey(step.kind) ?? ""))
+                conditioningLine(step, content: content)
             }
         case .review:
             EmptyView()
