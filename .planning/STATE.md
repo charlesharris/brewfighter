@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-06-PLAN.md
-last_updated: "2026-10-15T17:35:47.425Z"
+stopped_at: Completed 01-07-PLAN.md
+last_updated: "2026-10-15T18:08:01.655Z"
 last_activity: 2026-10-14
 last_activity_desc: Phase 01 execution started
-state_head: 509c9f988fbd4077a0aa6b751ac23a35441c8515
+state_head: 2a4c974e73d6dbfa8f0d05f14ba04092fde755b9
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 6
-  percent: 60
+  completed_plans: 7
+  percent: 70
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 6 of 10 complete
+Plan: 7 of 10 complete
 Status: Ready to execute
 Last activity: 2026-10-14 — Phase 01 execution started
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [██████░░░░] 60%
 | Phase 01 P04 | 11min | 3 tasks | 19 files |
 | Phase 01 P05 | 7min | 3 tasks | 18 files |
 | Phase 01 P06 | ~60min | 3 tasks | 20 files |
+| Phase 01 P07 | 28min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Wizard identity is renewed on every opening (GameStore.wizardSession), so a wizard reopened mid-animation never inherits the previous draft or stage
 - [Phase 01]: Wizard controls are disabled by asking RecipeRules (can... queries) before acting, so Make base, steppers and hop cards never fail silently
 - [Phase 01]: An empty cellar launches into the wizard only when the save loaded cleanly; a damaged or restored save opens The Cellar so its banner is seen
+- [Phase 01]: Ferment, Condition and Review stages complete recipe composition; the day-cost line sits at the top of Condition and Review, and Review lists conditioning ingredient and amount — Seeing lagering's 28 days before committing makes D-10 visible; listing dry hop and fruit choices on Review lets the player verify what they set
+- [Phase 01]: Small choosers inside scrolling stages use a non-lazy Grid, not LazyVGrid — Lazy rows scrolled away leave the accessibility tree, so VoiceOver and UI tests cannot find them
 
 ### Pending Todos
 
@@ -114,6 +117,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-15T17:35:47.402Z
-Stopped at: Completed 01-06-PLAN.md
+Last session: 2026-10-15T18:07:52.244Z
+Stopped at: Completed 01-07-PLAN.md
 Resume file: None
