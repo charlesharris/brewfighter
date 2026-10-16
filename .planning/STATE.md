@@ -101,7 +101,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- [2026-10-15] [general] Group encounters with pitcher serving — [todo file](.planning/todos/pending/2026-10-15-group-encounters-pitcher-serving.md) — Needs Design notes from the 2026-10-15 discussion (direction, not final):.
 
 ### Blockers/Concerns
 
