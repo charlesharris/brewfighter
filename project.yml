@@ -1,6 +1,6 @@
 name: BrewFighter
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.chuckco
   developmentLanguage: en
   deploymentTarget: { iOS: "26.0" }
   createIntermediateGroups: true
@@ -25,7 +25,8 @@ targets:
       - package: BrewCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.brewfighter
+        PRODUCT_BUNDLE_IDENTIFIER: com.chuckco.brewfighter
+        CODE_SIGN_STYLE: Automatic
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

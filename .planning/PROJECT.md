@@ -85,6 +85,10 @@ Players create beers, develop them over time, learn which people they work again
 | Generated BrewFighter.xcodeproj is committed; project.yml (XcodeGen, syncedFolder) is its source | Xcode Cloud and IDE edits need a checked-in project; regeneration must produce no diff; deliberate deviation from the generic scaffold reference | — Pending |
 | Engine numbers are Int fixed-point (attributes in tenths 0-10.0); attribute families malt/hop/yeast/mouthfeel | Exact ledger sums and cross-platform determinism; Phase 2 encounter breakdowns inherit the families | — Pending |
 | String Catalog keys are semantic dotted identifiers with positional format specifiers | Missing keys render visibly and are testable (check-strings, raw-key UI test); positional specifiers let translators reorder arguments. Note: -NSDoubleLocalizedStrings mangles the first copy of composite format strings, so pseudo-localization checks cover plain strings only | — Pending |
+| Age rating 18+ (alcohol references: frequent); recorded in App Store Connect | The game's premise is beer; Apple's tiers map frequent alcohol references to 18+; re-check in Phase 5, finalize in Phase 6 | — Pending |
+| Permanent bundle ID com.chuckco.brewfighter; App Store name "BrewFighter" (one word) | One-way door confirmed before the 01-10 upload; the user accepted the trademark-proximity risk (Street Fighter) for the name | — Pending |
+| No Declared Age Range integration in Phase 1 | 18+ rating and no accounts; Texas SB 2420 status is volatile; re-verify in Phase 6 | — Pending |
+| Screenshot spec noted for Phase 6: iPhone with Dynamic Island (medium display) 1179x2556 (alt 1206x2622); none needed for internal TestFlight | Records the App Store screenshot size so Phase 6 capture needs no rediscovery | — Pending |
 
 ## Evolution
 

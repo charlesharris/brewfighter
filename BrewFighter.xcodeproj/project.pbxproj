@@ -198,6 +198,9 @@
 					191A452FF1CAB8ED10D11972 = {
 						TestTargetID = E2CE5828272E88731A1866F8;
 					};
+					E2CE5828272E88731A1866F8 = {
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = A59EB1D8797ABCCE0C2B6B4D /* Build configuration list for PBXProject "BrewFighter" */;
@@ -362,7 +365,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.BrewFighterUITests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = BrewFighter;
@@ -378,7 +381,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.BrewFighterTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewFighter.app/BrewFighter";
@@ -394,7 +397,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.BrewFighterTests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BrewFighter.app/BrewFighter";
@@ -466,6 +469,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_KEY_CFBundleDisplayName = "Brew Fighter";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -475,7 +479,7 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.brewfighter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.brewfighter;
 				SDKROOT = iphoneos;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
@@ -493,7 +497,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.BrewFighterUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.BrewFighterUITests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = BrewFighter;
@@ -505,6 +509,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_KEY_CFBundleDisplayName = "Brew Fighter";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -514,7 +519,7 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.brewfighter;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuckco.brewfighter;
 				SDKROOT = iphoneos;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;

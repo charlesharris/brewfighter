@@ -4,11 +4,11 @@ Every player-facing name shipped in Brew Fighter, with the real-world analog it 
 
 Ingredient IDs are neutral (`grain.gNN`, `hop.hNN`, `yeast.yNN`, `adjunct.aNN`) and display names live only in the String Catalog (`content.<id>.name`). Renaming a display name therefore never touches saves, content JSON or tests.
 
-Plan 01-04 appends style names.
+Plan 01-04 appended style names. Plan 01-10 resolved the app-name row (accepted risk); the 8 fictional hop rows keep their existing "USPTO search pending" status.
 
 | Name | Kind | Used as | Real-world analog / risk | Check performed | Status |
 |------|------|---------|--------------------------|-----------------|--------|
-| Brew Fighter | App name | App Store name, home-screen name, `CFBundleDisplayName` | Similarity to Capcom's "Street Fighter" (fighting-game franchise, registered marks in games). Different goods and a different second word, but the "-Fighter" construction is shared. | Informal comparison only | needs human trademark search before ASC name reservation (plan 01-10) |
+| BrewFighter | App name | App Store name (reserved in App Store Connect 2026-10-20, one word), bundle ID `com.chuckco.brewfighter`; `CFBundleDisplayName` remains "Brew Fighter" (two words) pending a later decision | Similarity to Capcom's "Street Fighter" (fighting-game franchise, registered marks in games). Different goods and a different second word, but the "-Fighter" construction is shared. | Informal comparison only; name reserved in App Store Connect 2026-10-20; formal USPTO trademark search skipped | resolved, accepted risk (2026-10-20): the user knowingly accepted the Street Fighter proximity risk and reserved the name |
 | Solstice | Hop | `content.hop.h01.name` | Citrus-tropical hop family; generic English word | Compared against the known commercial hop variety list by eye; not matched | fictional; USPTO search pending |
 | Old Meadow | Hop | `content.hop.h02.name` | Herbal-spicy noble-style hop family | Compared against the known commercial hop variety list by eye; not matched | fictional; USPTO search pending |
 | Timberline | Hop | `content.hop.h03.name` | Piney-resinous high-alpha hop family; "Timberline" is a common place and product word | Compared against the known commercial hop variety list by eye; not matched | fictional; USPTO search pending |
