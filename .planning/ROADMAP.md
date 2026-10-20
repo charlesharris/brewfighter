@@ -53,7 +53,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. A pseudo-localized run shows every on-screen string coming from the String Catalog, and every interactive control meets the 44pt minimum.
 
 **Research flags**: Xcode 27 / iOS 27 SDK project setup and deployment target; `package`-access spike to hide domain internals (true palates) from the app target; custom chrome vs Liquid Glass decision for game screens; confirm required screenshot sizes and Declared Age Range scope when creating the app record; start a names-cleared log. An optional art style-lock spike can settle name/icon direction early (the pipeline requirement itself lands in Phase 4).
-**Plans**: 9/10 plans executed
+**Plans**: 10/10 plans executed
 
 Plans:
 **Wave 1**
@@ -84,7 +84,7 @@ Plans:
 - [x] 01-09-PLAN.md — Human toolchain upgrade gate, iOS 26.0 floor, full suite on iOS 26+ SDK, app icon, pseudo-loc sweep
 
 **Wave 10** *(blocked on Wave 9 completion)*
-- [ ] 01-10-PLAN.md — Bundle ID decision, App Store Connect record + 18+ rating, archive/upload script, TestFlight install
+- [x] 01-10-PLAN.md — Bundle ID decision, App Store Connect record + 18+ rating, archive/upload script, TestFlight install
 
 **UI hint**: yes
 
@@ -180,7 +180,7 @@ Phases execute in numeric order: 1 → 2 → 3 → (fun-gate) → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Brew Your First Beer | 9/10 | In Progress | - |
+| 1. Brew Your First Beer | 10/10 | In Progress | - |
 | 2. Serve & Deduce | 0/TBD | Not started | - |
 | 3. Iterate & Prove the Fun | 0/TBD | Not started | - |
 | 4. Collect & Evolve | 0/TBD | Not started | - |

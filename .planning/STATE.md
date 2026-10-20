@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-09-PLAN.md
-last_updated: "2026-10-20T21:23:21.610Z"
+stopped_at: Completed 01-10-PLAN.md
+last_updated: "2026-10-20T21:54:01.343Z"
 last_activity: 2026-10-20
 last_activity_desc: Phase 01 execution started
-state_head: 2401c84d5e28b425f1939bf72a2c354b6414f2a1
+state_head: 9268b9ddc2c307b87f2b8467d668f49917e3bead
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 9 of 10 complete
-Status: Ready to execute
+Plan: 10 of 10 complete
+Status: All plans executed; awaiting phase verification (real-device TestFlight check pending)
 Last activity: 2026-10-20 — Phase 01 execution started
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [█████████░] 90%
 | Phase 01 P07 | 28min | 3 tasks | 11 files |
 | Phase 01 P08 | 41min | 3 tasks | 18 files |
 | Phase 01 P09 | 53 min | 3 tasks | 8 files |
+| Phase 01 P10 | 26 min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Haze fades with liquid darkness in the renderer; GlassSpec is unchanged — Dark beers stay opaque instead of gray while the spec stays the single source of what a beer looks like
 - [Phase 01]: Animatable View structs use nonisolated animatableData over a nonisolated(unsafe) stored value; the UI harness exempts the system Sheet Grabber from the 44pt check — Swift 6 main-actor inference blocks Animatable conformance otherwise; the grabber is UIKit chrome with its own hit region
 - [Phase 01]: Xcode 26+ concurrency defaults (approachable concurrency, MainActor default isolation) apply to the app target only; BrewCore stays nonisolated and SaveRepository types are marked nonisolated — Matches CLAUDE.md new-project defaults while keeping the engine headless-testable and save I/O off the main actor
+- [Phase 01]: Bundle ID com.chuckco.brewfighter and App Store name BrewFighter are permanent; the user accepted the Street Fighter trademark-proximity risk — One-way door confirmed before the first upload; recorded in PROJECT.md and names-cleared.md
+- [Phase 01]: archive-upload.sh archives unsigned and signs at export, with a per-run timestamp build number — A signed Release archive needs a development profile (team has no registered devices), and manageAppVersionAndBuildNumber did not prevent Redundant Binary Upload on re-run
 
 ### Pending Todos
 
@@ -107,7 +110,7 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- [Phase 1]: Apple Developer enrollment and an App Store Connect app record are needed before the first TestFlight upload
+- [Phase 1] RESOLVED 2026-10-20: Apple Developer enrollment active, App Store Connect record created, first build uploaded (plan 01-10); only the on-device TestFlight install check remains, deferred to /gsd-verify-work
 - [Phase 3]: Outside playtesters (5-8 craft-beer players plus 2 non-beer players) must be recruited and a written protocol prepared before the gate
 - [Phase 3]: If the gate picks free-with-unlock or IAP, a StoreKit/monetization requirement must be added before Phase 4 planning (no v1 requirement covers it yet)
 - [Phase 6]: Declared Age Range API obligations (Texas SB 2420) are unclear; verify before submission
@@ -123,6 +126,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-20T21:23:13.873Z
-Stopped at: Completed 01-09-PLAN.md
+Last session: 2026-10-20T21:53:55.618Z
+Stopped at: Completed 01-10-PLAN.md
 Resume file: None
