@@ -77,12 +77,12 @@ Requirements for initial release (native iOS: Swift/SwiftUI, iPhone portrait, Ap
 
 ### Platform
 
-- [ ] **PLAT-01**: All screens are touch-first, portrait, one-handed friendly, using standard iOS gestures with generous tap targets
+- [x] **PLAT-01**: All screens are touch-first, portrait, one-handed friendly, using standard iOS gestures with generous tap targets
 - [ ] **PLAT-02**: The app resumes exactly where the player left off after backgrounding or termination — mid-encounter and mid-brew state is serialized and autosaved after every committed action
 - [x] **PLAT-03**: Game state saves to a versioned Codable JSON envelope with explicit migrations, atomic writes, a backup copy, and golden-save fixtures per released schema version; player can export/import a save
 - [ ] **PLAT-04**: Settings persist independently of saves: audio sliders, haptics toggle, text speed; system settings (Dynamic Type, Reduce Motion) are respected
 - [ ] **PLAT-05**: The app builds on the current Xcode/iOS SDK, distributes via TestFlight from Phase 1, and ships with privacy manifest, recorded age rating (plan for 18+), and App Store metadata whose screenshots/icon are 4+-appropriate
-- [ ] **PLAT-06**: All player-facing strings are externalized in a String Catalog (localization-ready; English-only at launch)
+- [x] **PLAT-06**: All player-facing strings are externalized in a String Catalog (localization-ready; English-only at launch)
 - [ ] **PLAT-07**: Simulation logic (brewing, scoring, palate effects, clues) lives in a UI-free Swift package testable headlessly on macOS, with a balance harness verifying ≥70% encounter solvability and ≥4 distinct best-in-class archetype beers
 - [ ] **PLAT-08**: The economy stays monetization-neutral until the model is decided (entitlement abstraction, single soft currency with a sources/sinks ledger, no randomized paid rewards, no timer/energy mechanics)
 
@@ -199,12 +199,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-04 | Phase 3 | Pending |
 | UX-05 | Phase 3 | Pending |
 | UX-06 | Phase 3 | Pending |
-| PLAT-01 | Phase 1 | Pending |
+| PLAT-01 | Phase 1 | Complete |
 | PLAT-02 | Phase 2 | Pending |
 | PLAT-03 | Phase 1 | Complete |
 | PLAT-04 | Phase 6 | Pending |
 | PLAT-05 | Phase 1 | Pending |
-| PLAT-06 | Phase 1 | Pending |
+| PLAT-06 | Phase 1 | Complete |
 | PLAT-07 | Phase 2 | Pending |
 | PLAT-08 | Phase 3 | Pending |
 | ART-01 | Phase 1 | Complete |

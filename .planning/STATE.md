@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Brew Your First Beer
 status: executing
-stopped_at: Completed 01-08-PLAN.md
-last_updated: "2026-10-15T18:52:29.856Z"
-last_activity: 2026-10-14
+stopped_at: Completed 01-09-PLAN.md
+last_updated: "2026-10-20T21:23:21.610Z"
+last_activity: 2026-10-20
 last_activity_desc: Phase 01 execution started
-state_head: ab3d20f52a3b3ebbbd79867fec75658bebf9e5f9
+state_head: 2401c84d5e28b425f1939bf72a2c354b6414f2a1
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 10
-  completed_plans: 8
-  percent: 80
+  completed_plans: 9
+  percent: 0
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-08)
 ## Current Position
 
 Phase: 01 (Brew Your First Beer) — EXECUTING
-Plan: 8 of 10 complete
+Plan: 9 of 10 complete
 Status: Ready to execute
-Last activity: 2026-10-14 — Phase 01 execution started
+Last activity: 2026-10-20 — Phase 01 execution started
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [████████░░] 80%
 | Phase 01 P06 | ~60min | 3 tasks | 20 files |
 | Phase 01 P07 | 28min | 3 tasks | 11 files |
 | Phase 01 P08 | 41min | 3 tasks | 18 files |
+| Phase 01 P09 | 53 min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Reveal phases chain through animation completions; the phase flips inside each phase's own withAnimation; BREW saves before showReveal and .reveal is never restored — No clock gates play, a force quit mid-reveal keeps the beer once, and an implicit phase animation would have shortened the fill and day roll
 - [Phase 01]: Haze fades with liquid darkness in the renderer; GlassSpec is unchanged — Dark beers stay opaque instead of gray while the spec stays the single source of what a beer looks like
 - [Phase 01]: Animatable View structs use nonisolated animatableData over a nonisolated(unsafe) stored value; the UI harness exempts the system Sheet Grabber from the 44pt check — Swift 6 main-actor inference blocks Animatable conformance otherwise; the grabber is UIKit chrome with its own hit region
+- [Phase 01]: Xcode 26+ concurrency defaults (approachable concurrency, MainActor default isolation) apply to the app target only; BrewCore stays nonisolated and SaveRepository types are marked nonisolated — Matches CLAUDE.md new-project defaults while keeping the engine headless-testable and save I/O off the main actor
 
 ### Pending Todos
 
@@ -121,6 +123,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-15T18:52:24.720Z
-Stopped at: Completed 01-08-PLAN.md
+Last session: 2026-10-20T21:23:13.873Z
+Stopped at: Completed 01-09-PLAN.md
 Resume file: None
