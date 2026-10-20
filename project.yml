@@ -2,7 +2,7 @@ name: BrewFighter
 options:
   bundleIdPrefix: com.example
   developmentLanguage: en
-  deploymentTarget: { iOS: "18.0" }
+  deploymentTarget: { iOS: "26.0" }
   createIntermediateGroups: true
 packages:
   BrewCore:
