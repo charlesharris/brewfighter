@@ -33,9 +33,10 @@ extension XCTestCase {
             XCTAssertGreaterThanOrEqual(item.frame.width, floor, "Button too narrow: \(item.id) \(item.frame)", file: file, line: line)
             XCTAssertGreaterThanOrEqual(item.frame.height, floor, "Button too short: \(item.id) \(item.frame)", file: file, line: line)
         }
-        // The wizard's header, stage chips and bottom bar sit outside the scrolling body; a card whose
-        // frame is partly scrolled beneath them is clipped, not overlapping. Everything else must not overlap.
-        func isWizardChrome(_ id: String) -> Bool { id.hasPrefix("wizard.") || id == "review.brew" }
+        // The wizard's header, stage chips and bottom bar, and the detail screen's back button, sit outside
+        // the scrolling body; a card whose frame is partly scrolled beneath them is clipped, not overlapping.
+        // Everything else must not overlap.
+        func isWizardChrome(_ id: String) -> Bool { id.hasPrefix("wizard.") || id == "review.brew" || id == "detail.back" }
         for (i, first) in snapshot.enumerated() {
             for second in snapshot.dropFirst(i + 1) {
                 if isWizardChrome(first.id) != isWizardChrome(second.id) { continue }

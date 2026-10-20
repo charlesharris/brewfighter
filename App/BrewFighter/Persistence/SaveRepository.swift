@@ -1,12 +1,12 @@
 import BrewCore
 import Foundation
 
-enum SaveSource: Equatable, Sendable {
+nonisolated enum SaveSource: Equatable, Sendable {
     case primary
     case backup
 }
 
-enum SaveLoadOutcome: Equatable, Sendable {
+nonisolated enum SaveLoadOutcome: Equatable, Sendable {
     case loaded(GameState, source: SaveSource)
     case fresh
     case unrecoverable(primary: SaveError?, backup: SaveError?)
@@ -15,7 +15,7 @@ enum SaveLoadOutcome: Equatable, Sendable {
 /// App-side file I/O for the save. Written only from the main-actor `GameStore`.
 /// Deliberately avoids preferences stores and file-timestamp APIs so the privacy
 /// manifest stays empty.
-struct SaveRepository: Sendable {
+nonisolated struct SaveRepository: Sendable {
     let directory: URL
 
     static let primaryName = "save.json"
