@@ -1,0 +1,43 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Brew Your First Beer",
+      "status": "in_progress"
+    },
+    {
+      "number": "2",
+      "name": "Serve & Deduce",
+      "status": "pending"
+    },
+    {
+      "number": "3",
+      "name": "Iterate & Prove the Fun",
+      "status": "pending"
+    },
+    {
+      "number": "4",
+      "name": "Collect & Evolve",
+      "status": "pending"
+    },
+    {
+      "number": "5",
+      "name": "The City & Its Bosses",
+      "status": "pending"
+    },
+    {
+      "number": "6",
+      "name": "Onboarding, Feel & Launch",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd:progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 01 of 6 · 0% · executing"
+  },
+  "updated_at": "2026-10-20T21:53:54.898Z"
+}

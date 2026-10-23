@@ -66,3 +66,6 @@ xcuserdata/
 *.p8
 *.p12
 *.mobileprovision
+
+# GSD ephemeral session lock
+.planning/milestone.lock
